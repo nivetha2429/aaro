@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { Instagram, Mail, Phone, MapPin, Github } from "lucide-react";
 import { INSTAGRAM_URL } from "@/data/products";
 
 const Footer = () => (
@@ -37,9 +37,14 @@ const Footer = () => (
 
         <div>
           <h4 className="font-semibold text-foreground mb-3">Follow Us</h4>
-          <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-            <Instagram className="w-5 h-5" /> @techzone
-          </a>
+          <div className="flex flex-col gap-2">
+            <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Instagram className="w-5 h-5" /> @techzone
+            </a>
+            <a href="https://github.com/nivetha2429/cyberspot" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Github className="w-5 h-5" /> GitHub
+            </a>
+          </div>
         </div>
       </div>
 
