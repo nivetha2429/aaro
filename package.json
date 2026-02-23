@@ -5,7 +5,10 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nivetha2429/cyberspot.git"
+    "url": "https://github.com/nivetha2429/aaro.git"
+  },
+  "engines": {
+    "node": "20.x"
   },
   "scripts": {
     "dev": "vite",
