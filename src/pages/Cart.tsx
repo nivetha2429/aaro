@@ -15,7 +15,7 @@ const Cart = () => {
         <ShoppingCart className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
         <h2 className="text-xl font-bold text-foreground mb-2">Your cart is empty</h2>
         <p className="text-muted-foreground mb-4 text-sm">Start shopping to add items to your cart.</p>
-        <Link to="/shop" className="inline-block gradient-peach text-primary-foreground px-6 py-2.5 rounded-lg font-medium">Browse Products</Link>
+        <Link to="/shop" className="inline-block gradient-purple text-primary-foreground px-6 py-2.5 rounded-lg font-medium">Browse Products</Link>
       </div>
     );
   }
@@ -40,7 +40,8 @@ const Cart = () => {
 
               <div className="hidden sm:block flex-1 min-w-0">
                 <Link to={`/product/${item.product.id}`} className="font-medium text-foreground text-sm hover:text-primary truncate block">{item.product.name}</Link>
-                <p className="text-sm text-muted-foreground">${item.product.price}</p>
+                <p className="text-xs font-semibold text-primary/80 uppercase tracking-tighter mb-0.5">{item.product.brand}</p>
+                <p className="text-sm text-muted-foreground">₹{item.product.price}</p>
               </div>
 
               <div className="flex items-center justify-between w-full sm:w-auto gap-4 mt-2 sm:mt-0">
@@ -83,7 +84,7 @@ const Cart = () => {
             </div>
           </div>
           <div className="space-y-2 mt-4">
-            <Link to="/order" className="block w-full gradient-peach text-primary-foreground py-3 rounded-lg font-medium text-center hover:opacity-90 transition-opacity">
+            <Link to="/order" className="block w-full gradient-purple text-primary-foreground py-3 rounded-lg font-medium text-center hover:opacity-90 transition-opacity">
               Place Order
             </Link>
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="block w-full bg-[hsl(142,70%,45%)] text-primary-foreground py-3 rounded-lg font-medium text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2">

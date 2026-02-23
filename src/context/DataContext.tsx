@@ -17,6 +17,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const API_URL = "http://localhost:5000/api";
+
 export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [products, setProducts] = useState<Product[]>(() => {
         const saved = localStorage.getItem("products");
@@ -33,6 +35,22 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         return saved ? JSON.parse(saved) : initialOffers;
     });
 
+    // Fetch products from API on mount
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch(`${API_URL}/products`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setProducts(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch products from API:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
     useEffect(() => {
         localStorage.setItem("products", JSON.stringify(products));
     }, [products]);
@@ -45,16 +63,58 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("offers", JSON.stringify(offers));
     }, [offers]);
 
-    const addProduct = (product: Product) => {
-        setProducts((prev) => [...prev, product]);
+    const addProduct = async (product: Product) => {
+        try {
+            const response = await fetch(`${API_URL}/products`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(product),
+            });
+            if (response.ok) {
+                const newProduct = await response.json();
+                setProducts((prev) => [...prev, newProduct]);
+            } else {
+                setProducts((prev) => [...prev, product]);
+            }
+        } catch (error) {
+            setProducts((prev) => [...prev, product]);
+        }
     };
 
-    const updateProduct = (updatedProduct: Product) => {
-        setProducts((prev) => prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+    const updateProduct = async (updatedProduct: Product) => {
+        try {
+            // MongoDB uses _id, but we use id in frontend. 
+            // We'll need to handle this mapping in the backend or frontend.
+            // For now, let's assume the backend handles the mapping or we use the existing id.
+            const response = await fetch(`${API_URL}/products/${updatedProduct.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updatedProduct),
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setProducts((prev) => prev.map((p) => (p.id === data.id ? data : p)));
+            } else {
+                setProducts((prev) => prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+            }
+        } catch (error) {
+            setProducts((prev) => prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p)));
+        }
     };
 
-    const deleteProduct = (id: string) => {
-        setProducts((prev) => prev.filter((p) => p.id !== id));
+    const deleteProduct = async (id: string) => {
+        try {
+            const response = await fetch(`${API_URL}/products/${id}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                setProducts((prev) => prev.filter((p) => p.id !== id));
+            } else {
+                setProducts((prev) => prev.filter((p) => p.id !== id));
+            }
+        } catch (error) {
+            setProducts((prev) => prev.filter((p) => p.id !== id));
+        }
     };
 
     const addReview = (review: Review) => {

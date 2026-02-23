@@ -11,7 +11,7 @@ const ReviewSection = ({ productId }: { productId?: string }) => {
         <div key={review.id} className="glass-card rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full gradient-peach flex items-center justify-center text-primary-foreground text-sm font-semibold">
+              <div className="w-8 h-8 rounded-full gradient-purple flex items-center justify-center text-primary-foreground text-sm font-semibold">
                 {review.name[0]}
               </div>
               <span className="font-medium text-foreground text-sm">{review.name}</span>

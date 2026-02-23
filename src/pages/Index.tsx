@@ -33,7 +33,7 @@ const Index = () => {
           <div className="glass p-6 md:p-8 rounded-2xl max-w-lg transform transition-all hover:scale-105 duration-500">
             <h1 className="text-2xl md:text-5xl font-extrabold text-foreground mb-2 text-glow">Summer Sale</h1>
             <p className="text-lg md:text-3xl font-bold text-foreground/90 mb-4">50% OFF on All Products</p>
-            <Link to="/shop" className="inline-block gradient-peach text-primary-foreground px-5 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg">
+            <Link to="/shop" className="inline-block gradient-purple text-primary-foreground px-5 py-2 md:px-6 md:py-3 rounded-lg font-semibold text-sm md:text-base hover:opacity-90 transition-opacity shadow-lg">
               Shop Now
             </Link>
           </div>
@@ -85,7 +85,7 @@ const Index = () => {
           <p className="text-sm text-muted-foreground mb-4">Subscribe for the latest deals and offers.</p>
           <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-2">
             <input type="email" placeholder="Your email address" className="flex-1 px-4 py-2 rounded-lg border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            <button className="gradient-peach text-primary-foreground px-6 py-2 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity whitespace-nowrap">Subscribe</button>
+            <button className="gradient-purple text-primary-foreground px-6 py-2 rounded-lg font-medium text-sm hover:opacity-90 transition-opacity whitespace-nowrap">Subscribe</button>
           </div>
         </div>
       </section>

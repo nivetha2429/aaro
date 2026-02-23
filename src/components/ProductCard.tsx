@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Check } from "lucide-react";
+import { toast } from "sonner";
 import { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
-import { toast } from "sonner";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart } = useCart();
+  const [isAdded, setIsAdded] = useState(false);
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
 
   return (
     <div className="glass-card rounded-lg p-4 group animate-fade-in">
@@ -35,9 +44,12 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
       </Link>
 
-      <Link to={`/product/${product.id}`}>
-        <h3 className="font-semibold text-foreground text-sm truncate hover:text-primary transition-colors">{product.name}</h3>
-      </Link>
+      <div className="mt-2">
+        <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-0.5">{product.brand}</p>
+        <Link to={`/product/${product.id}`}>
+          <h3 className="font-semibold text-foreground text-sm truncate hover:text-primary transition-colors">{product.name}</h3>
+        </Link>
+      </div>
 
       <div className="flex items-center gap-1 mt-1">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -53,16 +65,29 @@ const ProductCard = ({ product }: { product: Product }) => {
             <span className="text-sm text-muted-foreground line-through ml-2">₹{product.originalPrice}</span>
           )}
         </div>
-        {discount > 0 && <span className="text-xs gradient-peach text-primary-foreground px-1.5 py-0.5 rounded-md font-medium">{discount}% OFF</span>}
+        {discount > 0 && <span className="text-xs gradient-purple text-primary-foreground px-1.5 py-0.5 rounded-md font-medium">{discount}% OFF</span>}
       </div>
 
       <button
-        onClick={() => { addToCart(product); toast.success(`${product.name} added to cart!`); }}
-        className="w-full mt-3 py-2 rounded-lg gradient-peach text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+        onClick={handleAddToCart}
+        className={`w-full mt-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 ${isAdded
+            ? "bg-green-500 text-white shadow-lg scale-105"
+            : "gradient-purple text-primary-foreground hover:opacity-90"
+          }`}
+        disabled={isAdded}
       >
-        <ShoppingCart className="w-4 h-4" /> Add to Cart
+        {isAdded ? (
+          <>
+            <Check className="w-4 h-4 animate-scale-in" /> Added!
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="w-4 h-4" /> Add to Cart
+          </>
+        )}
       </button>
-    </div>
+
+    </div >
   );
 };
 

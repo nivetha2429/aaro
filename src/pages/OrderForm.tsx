@@ -2,22 +2,33 @@ import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { WHATSAPP_NUMBER } from "@/data/products";
 import { MessageCircle, CheckCircle } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 const OrderForm = () => {
   const { items, totalPrice, clearCart } = useCart();
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", address: "", phone: "", email: "" });
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.phone) { toast.error("Please fill in required fields."); return; }
+    if (!form.name || !form.phone) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
     setSubmitted(true);
-    toast.success("Order placed successfully!");
+    toast({
+      title: "Order placed!",
+      description: "Your order has been submitted successfully.",
+    });
     clearCart();
   };
 
-  const whatsappMsg = `Order from ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}\n\nProducts:\n${items.map((i) => `${i.product.name} x${i.quantity} - $${i.product.price * i.quantity}`).join("\n")}\n\nTotal: $${totalPrice}`;
+  const whatsappMsg = `Order from ${form.name}\nPhone: ${form.phone}\nAddress: ${form.address}\n\nProducts:\n${items.map((i) => `${i.product.name} x${i.quantity} - ₹${i.product.price * i.quantity}`).join("\n")}\n\nTotal: ₹${totalPrice}`;
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMsg)}`;
 
   if (submitted) {
@@ -65,11 +76,11 @@ const OrderForm = () => {
         {items.length > 0 && (
           <div className="border-t border-border pt-3">
             <p className="text-sm text-muted-foreground mb-1">Items: {items.length}</p>
-            <p className="font-bold text-foreground">Total: ${totalPrice}</p>
+            <p className="font-bold text-foreground">Total: ₹{totalPrice}</p>
           </div>
         )}
 
-        <button type="submit" className="w-full gradient-peach text-primary-foreground py-3 rounded-lg font-medium hover:opacity-90 transition-opacity">
+        <button type="submit" className="w-full gradient-purple text-primary-foreground py-3 rounded-lg font-medium hover:opacity-90 transition-opacity">
           Submit Order
         </button>
       </form>

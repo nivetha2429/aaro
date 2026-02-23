@@ -12,11 +12,15 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 glass-nav transition-all duration-300">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
-          <Link to="/" className="flex items-center gap-2 shrink-0 mr-2">
-            <div className="w-8 h-8 rounded-lg gradient-peach flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">T</span>
-            </div>
-            <span className="text-xl font-bold text-foreground">TechZone</span>
+          <Link to="/" className="flex items-center gap-2 shrink-0 mr-2 logo-hover">
+            <img
+              src="/src/assets/logo.png"
+              alt="AARO Systems Logo"
+              className="h-10 w-auto md:h-16 lg:h-20 object-contain logo-glow animate-float"
+              onError={(e) => {
+                e.currentTarget.src = "https://placehold.co/400x120/7c3aed/ffffff?text=AARO+SYSTEMS";
+              }}
+            />
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-md mx-4">

@@ -49,12 +49,12 @@ export const OfferPopup = () => {
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full gradient-peach mx-auto flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full gradient-purple mx-auto flex items-center justify-center mb-4">
                 <Tag className="w-8 h-8 text-primary-foreground" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">{activeOffer.title}</h3>
               <p className="text-3xl font-extrabold text-primary mb-4">{activeOffer.discount}% OFF</p>
-              <Link to="/shop" onClick={handleClose} className="inline-block gradient-peach text-primary-foreground px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity">
+              <Link to="/shop" onClick={handleClose} className="inline-block gradient-purple text-primary-foreground px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-opacity">
                 Shop Now
               </Link>
             </div>
@@ -66,7 +66,7 @@ export const OfferPopup = () => {
       {minimized && !open && (
         <button
           onClick={handleMaximize}
-          className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full gradient-peach flex items-center justify-center shadow-soft hover:scale-110 transition-transform animate-fade-in"
+          className="fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full gradient-purple flex items-center justify-center shadow-soft hover:scale-110 transition-transform animate-fade-in"
         >
           <Tag className="w-5 h-5 text-primary-foreground" />
         </button>

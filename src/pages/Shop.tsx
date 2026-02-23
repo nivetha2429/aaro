@@ -6,7 +6,6 @@ import { useData } from "@/context/DataContext";
 
 const Shop = () => {
   const { products } = useData();
-  const brands = useMemo(() => [...new Set(products.map((p) => p.brand))], [products]);
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") || "";
 
@@ -15,6 +14,19 @@ const Shop = () => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Dynamically calculate brands based on the current category
+  const brands = useMemo(() => {
+    const relevantProducts = category
+      ? products.filter(p => p.category === category)
+      : products;
+    return [...new Set(relevantProducts.map((p) => p.brand))].sort();
+  }, [products, category]);
+
+  const handleCategoryChange = (val: string) => {
+    setCategory(val);
+    setSelectedBrands([]); // Reset brand selection when category changes
+  };
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((prev) => prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]);
@@ -76,7 +88,7 @@ const Shop = () => {
               <div className="space-y-1.5">
                 {[{ label: "All", value: "" }, { label: "Phones", value: "phone" }, { label: "Laptops", value: "laptop" }].map((c) => (
                   <label key={c.value} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="radio" name="category" checked={category === c.value} onChange={() => setCategory(c.value)} className="accent-primary" />
+                    <input type="radio" name="category" checked={category === c.value} onChange={() => handleCategoryChange(c.value)} className="accent-primary" />
                     <span className="text-foreground">{c.label}</span>
                   </label>
                 ))}

@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Star, ShoppingCart, MessageCircle, ArrowLeft } from "lucide-react";
+import { Star, ShoppingCart, MessageCircle, ArrowLeft, Check } from "lucide-react";
 import { WHATSAPP_NUMBER } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useData } from "@/context/DataContext";
@@ -11,6 +12,7 @@ const ProductDetails = () => {
   const { products } = useData();
   const product = products.find((p) => p.id === id);
   const { addToCart } = useCart();
+  const [isAdded, setIsAdded] = useState(false);
 
   if (!product) {
     return (
@@ -20,6 +22,13 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    addToCart(product);
+    toast.success(`${product.name} added to cart!`);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=I want to order ${product.name} - ₹${product.price}`;
@@ -75,10 +84,22 @@ const ProductDetails = () => {
 
           <div className="flex flex-col sm:flex-row gap-3 mt-6">
             <button
-              onClick={() => { addToCart(product); toast.success(`${product.name} added to cart!`); }}
-              className="flex-1 gradient-peach text-primary-foreground py-3 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              onClick={handleAddToCart}
+              className={`flex-1 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 ${isAdded
+                  ? "bg-green-500 text-white shadow-lg"
+                  : "gradient-purple text-primary-foreground hover:opacity-90"
+                }`}
+              disabled={isAdded}
             >
-              <ShoppingCart className="w-4 h-4" /> Add to Cart
+              {isAdded ? (
+                <>
+                  <Check className="w-4 h-4 animate-scale-in" /> Added!
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4" /> Add to Cart
+                </>
+              )}
             </button>
             <a
               href={whatsappLink}

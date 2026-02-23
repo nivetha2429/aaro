@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Package, ShoppingCart, Star, Tag, LogOut, LayoutDashboard, Pencil, Trash2, X, Plus } from "lucide-react";
 import { useData } from "@/context/DataContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Product, Offer } from "@/data/products";
 import { toast } from "sonner";
 
@@ -48,6 +48,9 @@ const AdminDashboard = () => {
     }
   };
 
+  const uniqueBrands = useMemo(() => [...new Set(products.map(p => p.brand))].sort(), [products]);
+  const uniqueCategories = useMemo(() => [...new Set(products.map(p => p.category))].sort(), [products]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const productData = {
@@ -56,7 +59,7 @@ const AdminDashboard = () => {
       id: editingProduct ? editingProduct.id : Date.now().toString(),
       rating: formData.rating || 0,
       reviewCount: formData.reviewCount || 0,
-      images: [],
+      images: formData.images || [],
       featured: formData.featured || false,
       specifications: Array.isArray(formData.specifications) ? formData.specifications.filter(s => s.trim() !== "") : []
     } as Product;
@@ -121,7 +124,7 @@ const AdminDashboard = () => {
               setEditingProduct(null);
               setFormData({ name: "", brand: "", category: "phone", price: 0, originalPrice: 0, description: "", specifications: [], rating: 0, reviewCount: 0 });
               setShowProductForm(true);
-            }} className="gradient-peach text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90">
+            }} className="gradient-purple text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90">
               + Add Product
             </button>
           </div>
@@ -132,10 +135,27 @@ const AdminDashboard = () => {
               <h3 className="font-bold mb-4">{editingProduct ? "Edit Product" : "Add New Product"}</h3>
               <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
                 <input required placeholder="Name" value={formData.name || ""} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="input-field" />
-                <input required placeholder="Brand" value={formData.brand || ""} onChange={(e) => setFormData({ ...formData, brand: e.target.value })} className="input-field" />
+
+                <div className="relative">
+                  <input
+                    required
+                    placeholder="Brand"
+                    list="brand-suggestions"
+                    value={formData.brand || ""}
+                    onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                    className="input-field w-full"
+                  />
+                  <datalist id="brand-suggestions">
+                    {uniqueBrands.map(brand => <option key={brand} value={brand} />)}
+                  </datalist>
+                </div>
+
                 <select value={formData.category || "phone"} onChange={(e) => setFormData({ ...formData, category: e.target.value as any })} className="input-field">
                   <option value="phone">Phone</option>
                   <option value="laptop">Laptop</option>
+                  {uniqueCategories.filter(c => c !== "phone" && c !== "laptop").map((c: any) => (
+                    <option key={c} value={c}>{(c as string).charAt(0).toUpperCase() + (c as string).slice(1)}</option>
+                  ))}
                 </select>
                 <input required type="number" placeholder="Price" value={formData.price || ""} onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })} className="input-field" />
                 <input required type="number" placeholder="Original Price" value={formData.originalPrice || ""} onChange={(e) => setFormData({ ...formData, originalPrice: Number(e.target.value) })} className="input-field" />
@@ -150,7 +170,7 @@ const AdminDashboard = () => {
                     <span className="text-sm">Featured Product</span>
                   </label>
                 </div>
-                <button type="submit" className="md:col-span-2 gradient-peach text-primary-foreground py-2 rounded-lg font-medium">Save Product</button>
+                <button type="submit" className="md:col-span-2 gradient-purple text-primary-foreground py-2 rounded-lg font-medium">Save Product</button>
               </form>
             </div>
           )}
@@ -191,7 +211,7 @@ const AdminDashboard = () => {
             <button onClick={() => {
               const title = prompt("Enter Offer Title:");
               if (title) addOffer({ id: Date.now().toString(), title, description: "Limited time offer!", discount: 10, active: true });
-            }} className="gradient-peach text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90">
+            }} className="gradient-purple text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90">
               + Add Offer
             </button>
           </div>
