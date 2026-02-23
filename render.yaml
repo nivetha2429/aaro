@@ -1,0 +1,29 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: cyberspot-backend
+    env: node
+    plan: free # Use free tier
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: MONGODB_URI
+        sync: false # Set this in Render Dashboard (Atlas URI)
+
+  # Frontend Static Site
+  - type: web
+    name: cyberspot-frontend
+    env: static
+    plan: free # Use free tier
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: cyberspot-backend
+          property: host
+        path: /api # Append /api to the auto-generated host
