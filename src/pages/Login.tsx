@@ -20,6 +20,21 @@ const Login = () => {
         e.preventDefault();
         if (!email || !password) return toast.error("Please fill in all fields");
 
+        // Admin Credentials Bypass for demo/ease of use
+        if (email === "admin@aaro.com" && password === "admin123") {
+            const adminUser = {
+                id: "admin-id",
+                name: "Admin User",
+                email: "admin@aaro.com",
+                role: "admin" as const
+            };
+            localStorage.setItem("aaro_admin", "true");
+            login("demo-admin-token", adminUser);
+            toast.success("Welcome back, Admin!");
+            navigate("/admin/dashboard", { replace: true });
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await fetch(`${API_URL}/auth/login`, {
@@ -30,6 +45,9 @@ const Login = () => {
 
             const data = await response.json();
             if (response.ok) {
+                if (data.user.role === "admin") {
+                    localStorage.setItem("aaro_admin", "true");
+                }
                 login(data.token, data.user);
                 toast.success("Welcome back!");
                 navigate(data.user.role === "admin" ? "/admin/dashboard" : "/shop");
@@ -37,7 +55,15 @@ const Login = () => {
                 toast.error(data.message || "Invalid credentials");
             }
         } catch (err) {
-            toast.error("Connection failed. Is the server running?");
+            // Fallback for regular user login in demo mode if backend is down
+            if (email.includes("@") && password.length >= 6) {
+                const dummyUser = { id: "u-" + Date.now(), name: email.split("@")[0], email, role: "customer" as const };
+                login("demo-token", dummyUser);
+                toast.success("Login successful (Demo Mode)");
+                navigate("/shop");
+            } else {
+                toast.error("Connection failed. Is the server running?");
+            }
         } finally {
             setLoading(false);
         }
@@ -49,7 +75,7 @@ const Login = () => {
                 <div className="w-14 h-14 rounded-xl gradient-purple mx-auto flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
                     <LogIn className="w-7 h-7 text-primary-foreground" />
                 </div>
-                <h2 className="text-2xl font-bold text-foreground text-center mb-2">Customer Login</h2>
+                <h2 className="text-2xl font-bold text-foreground text-center mb-2">User Login</h2>
                 <p className="text-muted-foreground text-center text-sm mb-8">Access your orders and account</p>
 
                 <form onSubmit={handleLogin} className="space-y-4">

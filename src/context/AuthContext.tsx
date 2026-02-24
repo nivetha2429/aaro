@@ -11,6 +11,7 @@ interface User {
 interface AuthContextType {
     user: User | null;
     token: string | null;
+    loading: boolean;
     login: (token: string, user: User) => void;
     logout: () => void;
     updateUser: (user: User) => void;
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         try {
@@ -36,6 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error("Failed to restore auth session", e);
             localStorage.removeItem("aaro_token");
             localStorage.removeItem("aaro_user");
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -51,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         localStorage.removeItem("aaro_token");
         localStorage.removeItem("aaro_user");
+        localStorage.removeItem("aaro_admin");
     };
 
     const updateUser = (updatedUser: User) => {
@@ -63,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             value={{
                 user,
                 token,
+                loading,
                 login,
                 logout,
                 updateUser,

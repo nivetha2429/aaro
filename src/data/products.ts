@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   name: string;
   brand: string;
-  category: "phone" | "laptop";
+  category: string;
   price: number;
   originalPrice: number;
   rating: number;
@@ -11,6 +11,39 @@ export interface Product {
   specifications: string[];
   images: string[];
   featured: boolean;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  productCount: number;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: "customer" | "admin";
+  joinedDate: string;
+  totalOrders: number;
+}
+
+export interface Order {
+  id: string;
+  customerId: string;
+  customerName: string;
+  items: {
+    productId: string;
+    productName: string;
+    quantity: number;
+    price: number;
+  }[];
+  totalAmount: number;
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+  date: string;
 }
 
 export interface Review {
@@ -58,6 +91,38 @@ export const products: Product[] = [
   { id: "l7", name: "Galaxy Book4 Ultra", brand: "Samsung", category: "laptop", price: 2399, originalPrice: 2599, rating: 4.6, reviewCount: 95, description: "Ultra performance with NVIDIA GeForce RTX.", specifications: ["16\" 3K AMOLED", "Core Ultra 9", "RTX 4070", "1TB SSD"], images: [], featured: false },
   { id: "l8", name: "Surface Laptop 5", brand: "Microsoft", category: "laptop", price: 999, originalPrice: 1199, rating: 4.4, reviewCount: 210, description: "Sleek, fast, and light with touch screen.", specifications: ["13.5\" PixelSense", "Intel Core i5", "8GB RAM", "256GB SSD"], images: [], featured: false },
   { id: "l9", name: "MSI Stealth 14 Studio", brand: "MSI", category: "laptop", price: 1499, originalPrice: 1699, rating: 4.5, reviewCount: 120, description: "Slim gaming laptop with studio-grade color.", specifications: ["14\" QHD+ 240Hz", "Intel Core i7", "RTX 4060", "16GB RAM"], images: [], featured: false },
+];
+
+export const categories: Category[] = [
+  { id: "c1", name: "Phones", slug: "phone", description: "Latest smartphones from top brands", productCount: 14 },
+  { id: "c2", name: "Laptops", slug: "laptop", description: "Powerful laptops for work and play", productCount: 9 },
+  { id: "c3", name: "Accessories", slug: "accessories", description: "Essential tech accessories", productCount: 0 },
+];
+
+export const customers: Customer[] = [
+  { id: "u1", name: "John Doe", email: "john@example.com", phone: "+91 9876543210", role: "customer", joinedDate: "2024-01-15", totalOrders: 3 },
+  { id: "u2", name: "Jane Smith", email: "jane@example.com", phone: "+91 8765432109", role: "customer", joinedDate: "2024-02-10", totalOrders: 1 },
+];
+
+export const orders: Order[] = [
+  {
+    id: "ord1",
+    customerId: "u1",
+    customerName: "John Doe",
+    items: [{ productId: "p1", productName: "iPhone 15 Pro", quantity: 1, price: 999 }],
+    totalAmount: 999,
+    status: "Delivered",
+    date: "2024-03-01"
+  },
+  {
+    id: "ord2",
+    customerId: "u2",
+    customerName: "Jane Smith",
+    items: [{ productId: "l1", productName: "HP Spectre x360", quantity: 1, price: 1249 }],
+    totalAmount: 1249,
+    status: "Processing",
+    date: "2024-03-20"
+  },
 ];
 
 export const reviews: Review[] = [
