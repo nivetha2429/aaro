@@ -79,7 +79,7 @@ const Navbar = () => {
 
           {!isAuthenticated ? (
             <Link to="/login" className="flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:bg-secondary transition-all">
-              <User className="w-4 h-4 text-muted-foreground" />
+              <User className="w-4 h-4 text-primary" />
               <span className="text-xs font-bold text-foreground">Login</span>
             </Link>
           ) : (

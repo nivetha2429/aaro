@@ -35,7 +35,11 @@ const connectDB = async () => {
     } catch (err) {
         console.log(`${err.message}. Initializing Fallback Memory Server...`);
         try {
-            const mongoServer = await MongoMemoryServer.create();
+            const mongoServer = await MongoMemoryServer.create({
+                binary: {
+                    version: '6.0.0'
+                }
+            });
             const memoryUri = mongoServer.getUri();
             await mongoose.connect(memoryUri);
             console.log('Connected to MongoDB Memory Server');
