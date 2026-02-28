@@ -1,13 +1,19 @@
-import { Link } from "react-router-dom";
-import { Minus, Plus, Trash2, ShoppingCart, MessageCircle } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { WHATSAPP_NUMBER } from "@/data/products";
+import { useAuth } from "@/context/AuthContext";
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, totalItems } = useCart();
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
 
-  const whatsappMessage = items.map((i) => `${i.product.name} x${i.quantity} - $${i.product.price * i.quantity}`).join("\n");
-  const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hi! I'd like to place an order:\n\n${whatsappMessage}\n\nTotal: $${totalPrice}`)}`;
+  useEffect(() => {
+    if (isAdmin) {
+      navigate("/");
+    }
+  }, [isAdmin, navigate]);
 
   if (items.length === 0) {
     return (
@@ -21,38 +27,41 @@ const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
       <h1 className="text-3xl md:text-5xl font-black text-foreground mb-8 tracking-tight">Your Cart <span className="text-primary/50 text-xl font-bold">({totalItems} items)</span></h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
-            <div key={item.product.id} className="glass-card rounded-3xl p-4 md:p-6 flex flex-col sm:flex-row items-center gap-6 border border-white/50 shadow-xl shadow-primary/5 group">
+            <div key={`${item.product.id}-${item.ram}-${item.storage}-${item.color}`} className="glass-card rounded-3xl p-4 md:p-6 flex flex-col sm:flex-row items-center gap-6 border border-white/50 shadow-xl shadow-primary/5 group">
               <div className="w-full sm:w-32 h-32 rounded-2xl bg-white/60 flex items-center justify-center shrink-0 text-5xl transform transition-transform group-hover:scale-105">
                 {item.product.category === "phone" ? "📱" : "💻"}
               </div>
 
               <div className="flex-1 w-full text-center sm:text-left">
-                <Link to={`/product/${item.product.id}`} className="font-black text-lg md:text-xl text-foreground hover:text-primary transition-colors block mb-1">{item.product.name}</Link>
-                <div className="flex items-center justify-center sm:justify-start gap-2 mb-4">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
                   <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-full">{item.product.brand}</span>
-                  <span className="text-sm font-bold text-muted-foreground">₹{item.product.price.toLocaleString()} each</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-[#7a869a] bg-gray-100 px-2 py-0.5 rounded-full">{item.ram} / {item.storage} / {item.color}</span>
+                </div>
+                <Link to={`/product/${item.product.id}`} className="font-black text-lg md:text-xl text-foreground hover:text-primary transition-colors block mb-1">{item.product.name}</Link>
+                <div className="mb-4">
+                  <span className="text-sm font-bold text-muted-foreground">₹{item.price.toLocaleString()} each</span>
                 </div>
 
                 <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
                   <div className="flex items-center gap-1 bg-secondary/50 p-1 rounded-xl border border-border/50">
-                    <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
+                    <button onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-10 text-center font-black text-sm">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
+                    <button onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
 
                   <div className="flex items-center gap-6">
-                    <span className="font-black text-xl text-primary">₹{(item.product.price * item.quantity).toLocaleString()}</span>
-                    <button onClick={() => removeFromCart(item.product.id)} className="w-10 h-10 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-xl transition-colors" title="Remove Item">
+                    <span className="font-black text-xl text-primary">₹{(item.price * item.quantity).toLocaleString()}</span>
+                    <button onClick={() => removeFromCart(item.product.id, item.ram, item.storage, item.color)} className="w-10 h-10 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-xl transition-colors" title="Remove Item">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>
@@ -84,9 +93,6 @@ const Cart = () => {
             <Link to="/order" className="block w-full gradient-purple text-primary-foreground py-5 rounded-2xl font-black text-center shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
               Proceed to Checkout
             </Link>
-            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-5 rounded-2xl font-black text-center flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-              <MessageCircle className="w-5 h-5" /> Quick Buy via WA
-            </a>
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-4">

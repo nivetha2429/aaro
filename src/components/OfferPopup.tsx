@@ -1,173 +1,222 @@
-import { X, Tag, Sparkles, Copy, Check, ArrowRight } from "lucide-react";
+import { X, Tag, ArrowRight, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useData } from "@/context/DataContext";
 import { Link } from "react-router-dom";
-import summerSaleImg from "@/assets/summer-sale-bg.png";
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+// ── Template definitions ──────────────────────────────────────────────────────
+const TEMPLATES: Record<string, {
+  bg: string;
+  accent: string;
+  emoji: string;
+  heading: string;
+  sub: string;
+  pill: string;
+}> = {
+  T1: {
+    bg: "from-orange-500 via-red-500 to-rose-600",
+    accent: "bg-white/20",
+    emoji: "⚡",
+    heading: "Flash Sale!",
+    sub: "Lightning deals — grab yours before they're gone",
+    pill: "Hot Deal",
+  },
+  T2: {
+    bg: "from-violet-600 via-purple-600 to-indigo-700",
+    accent: "bg-white/20",
+    emoji: "🎉",
+    heading: "Weekend Deals!",
+    sub: "Special prices every weekend — don't miss out",
+    pill: "Weekend Special",
+  },
+  T3: {
+    bg: "from-slate-700 via-slate-800 to-slate-900",
+    accent: "bg-white/15",
+    emoji: "👑",
+    heading: "Premium Offer",
+    sub: "Exclusive deals curated for you — limited units",
+    pill: "Members Only",
+  },
+  T4: {
+    bg: "from-emerald-500 via-teal-500 to-cyan-600",
+    accent: "bg-white/20",
+    emoji: "🌟",
+    heading: "Festival Sale!",
+    sub: "Celebrate with unbeatable prices on all devices",
+    pill: "Festival Savings",
+  },
+};
+
+// ── Countdown box ─────────────────────────────────────────────────────────────
+const Box = ({ value, label }: { value: number; label: string }) => (
+  <div className="flex flex-col items-center gap-1">
+    <div className="w-12 h-12 rounded-xl bg-white/20 border border-white/30 backdrop-blur-sm flex items-center justify-center shadow-inner">
+      <span className="text-xl font-black text-white tabular-nums">{String(value).padStart(2, "0")}</span>
+    </div>
+    <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">{label}</span>
+  </div>
+);
 
 export const OfferPopup = () => {
   const { offers } = useData();
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 7, hours: 0, minutes: 0, seconds: 0 });
 
-  const activeOffer = offers.find((o) => o.active);
+  // The popup offer is identified by title === "__popup__" and active === true
+  const popupOffer = offers.find(o => o.title === "__popup__" && o.active)
+    ?? offers.find(o => o.active); // fallback to any active offer
 
+  const templateId = popupOffer?.code || "T1";
+  const tpl = TEMPLATES[templateId] || TEMPLATES.T1;
+
+  // ── Countdown timer ───────────────────────────────────────────────────────
   useEffect(() => {
-    const hasSeenOffer = sessionStorage.getItem("seenOffer");
+    if (!popupOffer) return;
 
-    if (activeOffer) {
-      if (!hasSeenOffer) {
-        const timer = setTimeout(() => {
-          setOpen(true);
-          sessionStorage.setItem("seenOffer", "true");
-        }, 1500);
-        return () => clearTimeout(timer);
-      } else {
-        setMinimized(true);
+    const getEnd = () => {
+      if (popupOffer.description) {
+        const d = new Date(popupOffer.description);
+        if (!isNaN(d.getTime())) return d;
       }
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      return d;
+    };
+
+    const end = getEnd();
+    const tick = () => {
+      const diff = end.getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return; }
+      setTimeLeft({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+        minutes: Math.floor((diff % 3600000) / 60000),
+        seconds: Math.floor((diff % 60000) / 1000),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [popupOffer?.description]);
+
+  // ── Auto-show logic ───────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!popupOffer) return;
+    if (!sessionStorage.getItem("seenOffer")) {
+      const t = setTimeout(() => {
+        setOpen(true);
+        sessionStorage.setItem("seenOffer", "true");
+      }, 1500);
+      return () => clearTimeout(t);
     }
-  }, [activeOffer]);
-
-  const handleClose = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    setOpen(false);
-    // When manually closed, we keep it as a minimized tag so users can still access it
     setMinimized(true);
-  };
+  }, [popupOffer]);
 
-  const handleDismissForever = (e: React.MouseEvent) => {
+  const close = (e?: React.MouseEvent) => { e?.stopPropagation(); setOpen(false); setMinimized(true); };
+  const dismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOpen(false);
-    setMinimized(false);
-    // Optional: could set a flag in sessionStorage to hide the tag too
+    setOpen(false); setMinimized(false);
     sessionStorage.setItem("dismissedOffer", "true");
   };
 
-  const handleMaximize = () => {
-    setMinimized(false);
-    setOpen(true);
-  };
-
-  const copyCode = () => {
-    if (activeOffer) {
-      navigator.clipboard.writeText(activeOffer.code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  // If already dismissed in this session, don't show anything
-  const isDismissed = sessionStorage.getItem("dismissedOffer") === "true";
-
-  if (!activeOffer || isDismissed) return null;
+  if (!popupOffer || sessionStorage.getItem("dismissedOffer") === "true") return null;
 
   return (
     <>
-      {/* Main Popup */}
+      {/* ── Main popup ── */}
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/30 backdrop-blur-sm animate-fade-in"
-          onClick={() => handleClose()}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in"
+          onClick={close}
         >
           <div
-            className="bg-card w-full max-w-4xl overflow-hidden rounded-[2rem] shadow-2xl relative animate-scale-in flex flex-col md:flex-row"
-            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg rounded-[2rem] overflow-hidden shadow-2xl relative animate-scale-in"
+            onClick={e => e.stopPropagation()}
           >
-            {/* Close Button */}
-            <button
-              onClick={() => handleClose()}
-              className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/50 backdrop-blur-sm text-foreground hover:bg-background/80 transition-all shadow-lg border border-white/20"
-              title="Minimize"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {/* Template gradient body */}
+            <div className={`bg-gradient-to-br ${tpl.bg} p-8 md:p-10 relative overflow-hidden`}>
+              {/* Decorative blobs */}
+              <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
+              <div className="absolute -bottom-10 -left-10 w-52 h-52 rounded-full bg-white/5" />
 
-            {/* Left Side: Image */}
-            <div className="w-full md:w-1/2 h-48 md:h-auto relative overflow-hidden group">
-              <img
-                src={activeOffer.image || summerSaleImg}
-                alt={activeOffer.title}
-                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-primary/30 to-transparent" />
-              <div className="absolute bottom-4 left-4 md:bottom-8 md:left-8 glass-light p-3 md:p-4 rounded-xl border border-white/30 backdrop-blur-md">
-                <p className="text-white font-bold text-xs uppercase tracking-widest mb-1 flex items-center gap-2">
-                  <Sparkles className="w-3 h-3" /> Limited Time
-                </p>
-                <p className="text-white text-lg md:text-xl font-black">Ends Soon!</p>
-              </div>
-            </div>
+              {/* Close */}
+              <button
+                onClick={close}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/20 hover:bg-black/30 text-white transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
 
-            {/* Right Side: Content */}
-            <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center text-center md:text-left bg-gradient-to-br from-background via-background to-primary/5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary self-center md:self-start mb-6 border border-primary/20">
-                <Tag className="w-4 h-4" />
-                <span className="text-xs font-extrabold uppercase tracking-wider">{activeOffer.title}</span>
+              {/* Pill */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${tpl.accent} border border-white/20 mb-5`}>
+                <Tag className="w-3 h-3 text-white/80" />
+                <span className="text-[10px] font-black text-white/90 uppercase tracking-widest">{tpl.pill}</span>
               </div>
 
-              <h3 className="text-3xl md:text-5xl font-black text-foreground mb-4 leading-tight">
-                Get <span className="text-gradient-offer">{activeOffer.discount}% OFF</span> Everything
-              </h3>
+              {/* Emoji + heading */}
+              <div className="mb-2">
+                <span className="text-5xl">{tpl.emoji}</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-2">{tpl.heading}</h2>
+              <p className="text-white/70 text-sm mb-8 max-w-xs">{tpl.sub}</p>
 
-              <p className="text-muted-foreground text-sm md:text-base mb-8 max-w-sm mx-auto md:mx-0">
-                {activeOffer.description}
-              </p>
-
-              {/* Promo Code Section */}
-              <div className="mb-8 p-4 rounded-2xl bg-secondary/50 border border-dashed border-primary/30 relative">
-                <p className="text-[10px] font-bold uppercase text-muted-foreground mb-2 tracking-tighter">Use code at checkout</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-mono font-black tracking-widest text-primary">{activeOffer.code}</span>
-                  <button
-                    onClick={copyCode}
-                    className="flex items-center gap-2 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
-                  >
-                    {copied ? (
-                      <><Check className="w-4 h-4 text-green-500" /> Copied!</>
-                    ) : (
-                      <><Copy className="w-4 h-4" /> Copy Code</>
-                    )}
-                  </button>
+              {/* Countdown */}
+              <div className="mb-8">
+                <div className="flex items-center gap-1.5 mb-3">
+                  <Clock className="w-3.5 h-3.5 text-white/60" />
+                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Box value={timeLeft.days} label="Days" />
+                  <span className="text-white/40 font-black text-xl pb-4">:</span>
+                  <Box value={timeLeft.hours} label="Hrs" />
+                  <span className="text-white/40 font-black text-xl pb-4">:</span>
+                  <Box value={timeLeft.minutes} label="Min" />
+                  <span className="text-white/40 font-black text-xl pb-4">:</span>
+                  <Box value={timeLeft.seconds} label="Sec" />
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              {/* CTA */}
+              <div className="flex items-center gap-4">
                 <Link
                   to="/shop"
-                  onClick={() => handleClose()}
-                  className="group flex-1 inline-flex items-center justify-between gap-4 bg-foreground text-background pl-8 pr-2 py-2 rounded-2xl font-black text-lg hover:opacity-90 transition-all shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] border border-white/10 hover:shadow-primary/40"
+                  onClick={close}
+                  className="group flex-1 inline-flex items-center justify-between bg-white text-gray-900 pl-6 pr-2 py-2 rounded-full font-black text-sm hover:bg-white/90 transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  <span>Shop the Sale</span>
-                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border-l border-white/20 ml-2">
-                    <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                  <span>Shop Now</span>
+                  <div className="w-9 h-9 rounded-full bg-black/10 flex items-center justify-center ml-3">
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </Link>
+                <button onClick={dismiss} className="text-white/50 hover:text-white/80 text-xs font-bold transition-colors whitespace-nowrap">
+                  Don't show
+                </button>
               </div>
-
-              <p className="mt-6 text-[10px] text-muted-foreground italic">
-                *T&C apply. Valid on all phones and laptops. Limited stock available.
-              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Minimized Icon */}
+      {/* ── Minimized pill ── */}
       {minimized && !open && (
         <button
-          onClick={handleMaximize}
-          className="fixed bottom-6 left-6 z-50 w-16 h-16 rounded-3xl gradient-purple flex items-center justify-center shadow-2xl hover:scale-110 hover:-rotate-6 transition-all animate-fade-in group"
+          onClick={() => { setMinimized(false); setOpen(true); }}
+          className={`fixed bottom-6 left-6 z-50 bg-gradient-to-br ${tpl.bg} text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 hover:scale-105 transition-all animate-fade-in group border border-white/20`}
         >
-          <div className="relative">
-            <Tag className="w-7 h-7 text-primary-foreground" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-white text-[10px] font-bold text-primary items-center justify-center">!</span>
-            </span>
-          </div>
-          <div className="absolute left-full ml-4 px-4 py-2 bg-white rounded-xl shadow-xl opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all pointer-events-none whitespace-nowrap border border-primary/10">
-            <p className="text-sm font-black text-primary">Don't miss out! 🔥</p>
-          </div>
+          <span className="text-base">{tpl.emoji}</span>
+          <span className="text-xs font-black">{tpl.pill}</span>
+          <span className="flex h-2 w-2 ml-1">
+            <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+          </span>
         </button>
       )}
     </>

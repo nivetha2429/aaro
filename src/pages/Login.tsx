@@ -13,7 +13,7 @@ const Login = () => {
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     useEffect(() => {
-        if (isAuthenticated) navigate("/shop", { replace: true });
+        if (isAuthenticated) navigate("/", { replace: true });
     }, [isAuthenticated, navigate]);
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -30,12 +30,9 @@ const Login = () => {
 
             const data = await response.json();
             if (response.ok) {
-                if (data.user.role === "admin") {
-                    localStorage.setItem("aaro_admin", "true");
-                }
                 login(data.token, data.user);
                 toast.success("Welcome back!");
-                navigate(data.user.role === "admin" ? "/admin/dashboard" : "/shop");
+                navigate("/");
             } else {
                 toast.error(data.message || "Invalid credentials");
             }

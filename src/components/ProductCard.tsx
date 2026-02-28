@@ -2,29 +2,56 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart, Check } from "lucide-react";
 import { toast } from "sonner";
-import { Product } from "@/data/products";
+import { Product, Variant } from "@/data/products";
 import { useCart } from "@/context/CartContext";
+import { useData } from "@/context/DataContext";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useMemo } from "react";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart } = useCart();
+  const { fetchVariants } = useData();
+  const { isAdmin } = useAuth();
   const [isAdded, setIsAdded] = useState(false);
-  const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  const [variants, setVariants] = useState<Variant[]>([]);
+
+  useEffect(() => {
+    fetchVariants(product.id || (product as any)._id).then(setVariants);
+  }, [product.id, fetchVariants]);
+
+  const baseVariant = useMemo(() => {
+    if (variants.length === 0) return null;
+    return variants.find(v => v.stock > 0) || variants[0];
+  }, [variants]);
+
+  const currentPrice = baseVariant?.price || 0;
+  const originalPrice = baseVariant?.originalPrice || 0;
+  const discount = originalPrice > 0 ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0;
 
   const handleAddToCart = () => {
-    addToCart(product);
+    if (isAdmin) return toast.info("Admins cannot add products to cart");
+    if (!baseVariant) return toast.error("No variant available");
+    addToCart(product, {
+      ram: baseVariant.ram,
+      storage: baseVariant.storage,
+      color: baseVariant.color,
+      price: baseVariant.price,
+      originalPrice: baseVariant.originalPrice
+    });
     toast.success(`${product.name} added to cart!`);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
   return (
-    <div className="glass-card rounded-[2rem] p-4 group animate-fade-in relative flex flex-col h-full border border-white/40 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1">
-      <Link to={`/product/${product.id}`} className="block relative overflow-hidden rounded-2xl mb-4 h-48 md:h-56">
+    <div className="glass-card rounded-3xl p-4 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2">
+      <Link to={`/product/${product.id}`} className="block relative aspect-[4/3] sm:aspect-square overflow-hidden rounded-2xl mb-4 w-full">
         <div className="w-full h-full bg-secondary/30 flex items-center justify-center transition-transform duration-700 group-hover:scale-110">
           {product.images && product.images.length > 0 ? (
             <img
               src={product.images[0]}
               alt={product.name}
+              loading="lazy"
               className="w-full h-full object-contain p-4 drop-shadow-2xl"
             />
           ) : (
@@ -41,15 +68,15 @@ const ProductCard = ({ product }: { product: Product }) => {
         )}
       </Link>
 
-      <div className="flex-1 flex flex-col">
-        <div className="mb-2">
-          <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">{product.brand}</p>
+      <div className="flex-1 flex flex-col px-1">
+        <div className="mb-1.5">
+          <p className="text-[9px] font-black text-primary uppercase tracking-widest mb-0.5">{product.brand}</p>
           <Link to={`/product/${product.id}`}>
-            <h3 className="font-black text-foreground text-sm md:text-base leading-tight hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
+            <h3 className="font-black text-foreground text-sm leading-tight hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
           </Link>
         </div>
 
-        <div className="flex items-center gap-1.5 mb-3">
+        <div className="flex items-center gap-1.5 mb-2.5">
           <div className="flex items-center">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
@@ -59,29 +86,31 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
 
         <div className="mt-auto">
-          <div className="flex items-baseline gap-2 mb-4">
-            <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">₹{product.price.toLocaleString()}</span>
-            {product.originalPrice > product.price && (
-              <span className="text-xs text-muted-foreground line-through opacity-50 font-bold">₹{product.originalPrice.toLocaleString()}</span>
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="text-lg md:text-xl font-black text-primary tracking-tighter">
+              {currentPrice > 0 ? `₹${currentPrice.toLocaleString()}` : "Price Pending"}
+            </span>
+            {originalPrice > currentPrice && currentPrice > 0 && (
+              <span className="text-[10px] text-muted-foreground line-through opacity-50 font-bold">₹{originalPrice.toLocaleString()}</span>
             )}
           </div>
 
           <button
             onClick={handleAddToCart}
-            className={`w-full py-3.5 rounded-2xl text-xs font-black transition-all flex items-center justify-center gap-2 border border-white/10 ${isAdded
-              ? "bg-green-500 text-white shadow-xl shadow-green-500/20"
-              : "bg-foreground text-background hover:opacity-90 shadow-xl shadow-primary/10 hover:scale-[1.02] active:scale-[0.98]"
+            className={`w-full py-2.5 rounded-full text-xs font-black transition-all duration-300 flex items-center justify-center gap-2 border border-white/10 ${isAdded
+              ? "bg-green-500 text-white shadow-lg shadow-green-500/20"
+              : isAdmin
+                ? "bg-gray-400 text-white cursor-not-allowed opacity-80"
+                : "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]"
               }`}
-            disabled={isAdded}
+            disabled={isAdded || (isAdmin && !isAdded)}
           >
             {isAdded ? (
-              <>
-                <Check className="w-4 h-4 animate-scale-in" /> Added
-              </>
+              <><Check className="w-3.5 h-3.5" /> Added</>
+            ) : isAdmin ? (
+              "ADMIN PREVIEW"
             ) : (
-              <>
-                <ShoppingCart className="w-4 h-4" /> Add to Cart
-              </>
+              <><ShoppingCart className="w-3.5 h-3.5" /> Add to Cart</>
             )}
           </button>
         </div>

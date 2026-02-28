@@ -12,7 +12,7 @@ const Register = () => {
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
     useEffect(() => {
-        if (isAuthenticated) navigate("/shop", { replace: true });
+        if (isAuthenticated) navigate("/", { replace: true });
     }, [isAuthenticated, navigate]);
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -31,7 +31,7 @@ const Register = () => {
             if (response.ok) {
                 login(data.token, data.user);
                 toast.success("Account created successfully!");
-                navigate("/shop");
+                navigate("/");
             } else {
                 toast.error(data.message || "Registration failed");
             }

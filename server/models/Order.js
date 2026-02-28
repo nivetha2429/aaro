@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
     shippingAddress: { type: String, required: true },
     status: {
         type: String,
-        enum: ["Pending", "Processing", "Shipped", "Delivered"],
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
         default: "Pending"
     }
 }, { timestamps: true });

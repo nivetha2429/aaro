@@ -45,7 +45,7 @@ const MyOrders = () => {
     if (loading) return <div className="container mx-auto p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-4xl animate-fade-in">
+        <div className="container mx-auto px-4 py-8 pb-24 md:pb-8 max-w-4xl animate-fade-in">
             <h1 className="text-3xl font-bold mb-8 text-foreground">My Orders</h1>
 
             {orders.length === 0 ? (
@@ -75,9 +75,36 @@ const MyOrders = () => {
                             <div className="p-6 space-y-4">
                                 <div className="space-y-3">
                                     {order.items.map((item: any, idx: number) => (
-                                        <div key={idx} className="flex justify-between items-center text-sm border-b border-border/50 pb-2 last:border-0">
-                                            <span className="text-foreground font-medium">{item.product.name} <span className="text-muted-foreground">x{item.quantity}</span></span>
-                                            <span className="text-foreground">₹{(item.product.price * item.quantity).toLocaleString()}</span>
+                                        <div key={idx} className="flex items-center gap-4 border-b border-border/50 pb-3 last:border-0">
+                                            {/* Product Image */}
+                                            <div className="w-16 h-16 rounded-xl bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
+                                                {item.product?.images?.[0] ? (
+                                                    <img
+                                                        src={item.product.images[0]}
+                                                        alt={item.product.name}
+                                                        className="w-full h-full object-contain p-1"
+                                                        onError={(e) => {
+                                                            e.currentTarget.style.display = "none";
+                                                            e.currentTarget.parentElement!.innerHTML = item.product?.category === "phone" ? "📱" : "💻";
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <span className="text-2xl">{item.product?.category === "phone" ? "📱" : "💻"}</span>
+                                                )}
+                                            </div>
+                                            {/* Details */}
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-foreground truncate">{item.product?.name}</p>
+                                                {(item.ram || item.storage || item.color) && (
+                                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                                        {[item.ram, item.storage, item.color].filter(Boolean).join(" / ")}
+                                                    </p>
+                                                )}
+                                                <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                                            </div>
+                                            <span className="text-sm font-black text-primary shrink-0">
+                                                ₹{((item.price ?? item.product?.price ?? 0) * item.quantity).toLocaleString()}
+                                            </span>
                                         </div>
                                     ))}
                                 </div>

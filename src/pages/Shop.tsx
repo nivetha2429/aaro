@@ -1,20 +1,29 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, Check } from "lucide-react";
+import { Search, SlidersHorizontal, Check, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { useData } from "@/context/DataContext";
 
 const Shop = () => {
   const { products } = useData();
   const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
   const initialCategory = searchParams.get("category") || "";
   const initialBrand = searchParams.get("brand") || "";
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [category, setCategory] = useState(initialCategory);
   const [selectedBrands, setSelectedBrands] = useState<string[]>(initialBrand ? [initialBrand] : []);
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Sync state when URL params change (e.g., from Navbar search)
+  useEffect(() => {
+    const urlSearch = searchParams.get("search");
+    if (urlSearch !== null) {
+      setSearch(urlSearch);
+    }
+  }, [searchParams]);
 
   // Dynamically calculate brands based on the current category
   const brands = useMemo(() => {
@@ -42,20 +51,20 @@ const Shop = () => {
     });
 
     switch (sortBy) {
-      case "price-low": result.sort((a, b) => a.price - b.price); break;
-      case "price-high": result.sort((a, b) => b.price - a.price); break;
+      case "name-asc": result.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "name-desc": result.sort((a, b) => b.name.localeCompare(a.name)); break;
       case "rating": result.sort((a, b) => b.rating - a.rating); break;
     }
     return result;
   }, [search, category, selectedBrands, sortBy]);
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 pb-24 md:pb-6">
       <h1 className="text-3xl font-bold text-foreground mb-6">Shop</h1>
 
       {/* Search & Sort Bar */}
-      <div className="flex items-center gap-2 mb-8 h-12">
-        <div className="relative flex-1 h-full">
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1 h-14 sm:h-auto">
           <input
             type="text"
             placeholder="Search products..."
@@ -71,8 +80,8 @@ const Shop = () => {
           className="h-full px-3 md:px-4 rounded-xl border border-border bg-card text-xs md:text-sm font-bold focus:outline-none cursor-pointer"
         >
           <option value="featured">Featured</option>
-          <option value="price-low">Price Low</option>
-          <option value="price-high">Price High</option>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
           <option value="rating">Top Rated</option>
         </select>
         <button
@@ -83,6 +92,34 @@ const Shop = () => {
           <span className="hidden sm:inline text-xs font-bold uppercase tracking-widest">Filters</span>
         </button>
       </div>
+
+      {/* Active Filter Chips */}
+      {(search || category || selectedBrands.length > 0) && (
+        <div className="flex flex-wrap items-center gap-2 mb-6 animate-fade-in">
+          <span className="text-xs font-bold text-muted-foreground mr-2">Active Filters:</span>
+          {search && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-primary/20 text-xs font-bold text-foreground shadow-sm">
+              Search: "{search}"
+              <button onClick={() => setSearch("")} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
+            </div>
+          )}
+          {category && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-primary/20 text-xs font-bold text-foreground shadow-sm">
+              Category: {category === "phone" ? "Phones" : "Laptops"}
+              <button onClick={() => handleCategoryChange("")} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
+            </div>
+          )}
+          {selectedBrands.map(b => (
+            <div key={b} className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20 text-xs font-bold shadow-sm">
+              Brand: {b}
+              <button onClick={() => toggleBrand(b)} className="ml-1 hover:bg-white rounded-full"><X className="w-3 h-3" /></button>
+            </div>
+          ))}
+          <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); }} className="text-[10px] uppercase font-black tracking-widest text-muted-foreground hover:text-red-500 ml-2 transition-colors">
+            Clear All
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Sidebar Filters */}
@@ -121,9 +158,9 @@ const Shop = () => {
         </aside>
 
         {/* Product Grid */}
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           {filtered.length > 0 ? (
-            <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

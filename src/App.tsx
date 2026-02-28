@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import MobileNav from "@/components/MobileNav";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Phones from "./pages/Phones";
@@ -22,6 +23,8 @@ import MyOrders from "./pages/MyOrders";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import Brands from "./pages/Brands";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,37 +53,42 @@ const AppContents = () => {
   const isAdminPath = location.pathname.startsWith("/admin");
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Toaster richColors position="bottom-right" />
-      {!isAdminPath && <Navbar />}
-      <main className={`flex-1 ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/phones" element={<Phones />} />
-          <Route path="/laptops" element={<Laptops />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 flex justify-center selection:bg-primary/20">
+      <div className="w-full max-w-[1400px] bg-background shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
+        <Toaster richColors position="bottom-right" />
+        {!isAdminPath && <Navbar />}
+        <main className={`flex-1 flex flex-col ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/phones" element={<Phones />} />
+            <Route path="/laptops" element={<Laptops />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/brands" element={<Brands />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Customer Routes */}
-          <Route path="/order" element={<ProtectedRoute><OrderForm /></ProtectedRoute>} />
-          <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            {/* Customer Routes */}
+            <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+            <Route path="/order" element={<ProtectedRoute><OrderForm /></ProtectedRoute>} />
+            <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-          <Route path="/offers" element={<Offers />} />
+            <Route path="/offers" element={<Offers />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<Navigate to="/login" replace />} />
-          <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/orders" element={<ProtectedRoute adminOnly><AdminOrders /></ProtectedRoute>} />
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Navigate to="/login" replace />} />
+            <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/admin/orders" element={<ProtectedRoute adminOnly><AdminOrders /></ProtectedRoute>} />
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      {!isAdminPath && <Footer />}
-      {!isAdminPath && <WhatsAppButton />}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        {!isAdminPath && <Footer />}
+        {!isAdminPath && <MobileNav />}
+        {!isAdminPath && <WhatsAppButton />}
+      </div>
     </div>
   );
 };

@@ -28,6 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         try {
+            // Use localStorage so session ends when tab is closed
             const savedToken = localStorage.getItem("aaro_token");
             const savedUser = localStorage.getItem("aaro_user");
             if (savedToken && savedUser) {
@@ -64,18 +65,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                token,
-                loading,
-                login,
-                logout,
-                updateUser,
-                isAuthenticated: !!token,
-                isAdmin: user?.role === "admin",
-            }}
-        >
+        <AuthContext.Provider value={{
+            user, token, loading, login, logout, updateUser,
+            isAuthenticated: !!token,
+            isAdmin: user?.role === "admin",
+        }}>
             {children}
         </AuthContext.Provider>
     );
@@ -83,8 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
+    if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
     return context;
 };
