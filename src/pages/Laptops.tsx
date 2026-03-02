@@ -30,7 +30,7 @@ const Laptops = () => {
     <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10 border-b border-primary/10 pb-6">
         <div>
-          <h1 className="text-glow mb-1">Laptops & PCs</h1>
+          <h1 className="text-glow mb-1">Laptops</h1>
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Premium Computing Range</p>
         </div>
 

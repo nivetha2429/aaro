@@ -8,4 +8,7 @@ const reviewSchema = new mongoose.Schema({
     rating: { type: Number, required: true, min: 1, max: 5, default: 5 },
 }, { timestamps: true });
 
+// Index for fast review lookups per product
+reviewSchema.index({ productId: 1, createdAt: -1 });
+
 export default mongoose.model('Review', reviewSchema);

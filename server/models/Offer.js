@@ -1,23 +1,15 @@
 import mongoose from 'mongoose';
 
 const offerSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    discount: { type: Number, required: true },
-    code: { type: String, required: true },
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    discount: { type: Number, default: 0 },
+    code: { type: String, default: '' },
     image: { type: String, default: '' },
     active: { type: Boolean, default: false },
+    tag: { type: String, default: '' },
 }, { timestamps: true });
 
-// Pre-save hook: when this offer is set active, deactivate all others
-offerSchema.pre('save', async function (next) {
-    if (this.active && this.isModified('active')) {
-        await mongoose.model('Offer').updateMany(
-            { _id: { $ne: this._id } },
-            { active: false }
-        );
-    }
-    next();
-});
+// No pre-save hook — active/inactive management is handled atomically in route handlers
 
 export default mongoose.model('Offer', offerSchema);

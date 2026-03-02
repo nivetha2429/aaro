@@ -83,7 +83,7 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
     <Card className="border-none shadow-sm rounded-3xl p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden">
       <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary/50 flex items-center justify-center mb-3 overflow-hidden border border-border relative">
         {imgSrc
-          ? <img src={imgSrc} alt={brand.name} className="w-full h-full object-contain p-2 grayscale" />
+          ? <img src={imgSrc} alt={brand.name} className="w-full h-full object-contain p-2" />
           : fetching
             ? <Loader2 className="w-6 h-6 text-primary animate-spin" />
             : <Tag className="w-6 h-6 text-muted-foreground" />
@@ -495,9 +495,6 @@ const AdminDashboard = () => {
                 <Link to="/" className="flex items-center gap-3 px-4 py-2 text-xs font-bold text-[#4f566b] hover:bg-[#f8f9fc]" onClick={() => setIsProfileOpen(false)}>
                   <Smartphone className="w-4 h-4 text-primary" /> View Store
                 </Link>
-                <Link to="/profile" className="flex items-center gap-3 px-4 py-2 text-xs font-bold text-[#4f566b] hover:bg-[#f8f9fc]" onClick={() => setIsProfileOpen(false)}>
-                  <Users className="w-4 h-4 text-primary" /> My Profile
-                </Link>
                 <button onClick={() => { setIsProfileOpen(false); handleLogout(); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-destructive hover:bg-destructive/5 transition-colors">
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
@@ -744,7 +741,13 @@ const AdminDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {categories.map(c => (
                     <Card key={c.id} className="border-none shadow-sm rounded-3xl p-6 group hover:shadow-xl transition-all duration-300">
-                      {c.image && <img src={c.image} alt={c.name} className="w-full h-32 object-cover rounded-2xl mb-4" />}
+                      <div className="w-full h-40 bg-[#f8f9fc] rounded-2xl mb-4 overflow-hidden border border-border flex items-center justify-center relative group-hover:border-primary/20 transition-colors">
+                        {c.image ? (
+                          <img src={c.image} alt={c.name} className="w-full h-full object-contain p-4 transition-transform group-hover:scale-105" />
+                        ) : (
+                          <Layers className="w-10 h-10 text-[#eaedf3]" />
+                        )}
+                      </div>
                       <div className="flex justify-between items-start mb-4">
                         <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Layers className="w-6 h-6" /></div>
                         <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[10px]">{c.productCount} Items</Badge>
@@ -765,28 +768,6 @@ const AdminDashboard = () => {
                 <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-4">
                   <div><h3 className="text-xl font-black text-[#1a1f36]">Brands</h3><p className="text-xs text-[#7a869a]">Manage featured product brands</p></div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={async () => {
-                        const missingCount = brands.filter(b => !b.image).length;
-                        if (missingCount === 0) return toast.info("All brands already have logos");
-                        toast.info(`Fetching logos for ${missingCount} brand(s)…`);
-                        try {
-                          const token = localStorage.getItem("aaro_token");
-                          const res = await fetch(`${API_URL}/brands/fetch-all-logos`, {
-                            method: "POST",
-                            headers: { Authorization: `Bearer ${token}` },
-                          });
-                          const data = await res.json();
-                          if (data.success?.length) toast.success(`Fetched ${data.success.length} logo(s): ${data.success.join(", ")}`);
-                          if (data.failed?.length) toast.error(`Failed: ${data.failed.map((f: any) => f.name).join(", ")}`);
-                          window.location.reload();
-                        } catch { toast.error("Bulk fetch failed"); }
-                      }}
-                      className="rounded-2xl h-10 px-4 font-black uppercase text-[10px] tracking-widest border-primary/20 text-primary hover:bg-primary/5"
-                    >
-                      <Wand2 className="w-3.5 h-3.5 mr-1.5" />Fetch All Logos
-                    </Button>
                     <Button onClick={() => openBrandForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 px-6 font-black uppercase text-[10px] tracking-widest transition-transform hover:scale-105">
                       <Plus className="w-4 h-4 mr-2" />New Brand
                     </Button>

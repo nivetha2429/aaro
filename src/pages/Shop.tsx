@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Search, SlidersHorizontal, Check, X } from "lucide-react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { Search, SlidersHorizontal, Check, X, ArrowLeft } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { useData } from "@/context/DataContext";
 
 const Shop = () => {
   const { products } = useData();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   const initialCategory = searchParams.get("category") || "";
@@ -59,38 +60,48 @@ const Shop = () => {
   }, [search, category, selectedBrands, sortBy]);
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-24 md:pb-6">
-      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6">Shop</h1>
+    <div className="container mx-auto px-4 py-6 pb-16 md:pb-4">
+      <div className="flex items-center gap-4 mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 rounded-full bg-secondary/80 hover:bg-secondary transition-colors border border-border"
+        >
+          <ArrowLeft className="w-5 h-5 text-primary" />
+        </button>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground tracking-tighter">Shop</h1>
+      </div>
 
       {/* Search & Sort Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <div className="relative flex-1 h-14 sm:h-auto">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-8">
+        <div className="relative flex-1">
           <input
             type="text"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-full pl-10 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            className="w-full h-12 pl-10 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
           />
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="h-full px-3 md:px-4 rounded-xl border border-border bg-card text-xs md:text-sm font-bold focus:outline-none cursor-pointer"
-        >
-          <option value="featured">Featured</option>
-          <option value="name-asc">Name (A-Z)</option>
-          <option value="name-desc">Name (Z-A)</option>
-          <option value="rating">Top Rated</option>
-        </select>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="lg:hidden h-full flex items-center justify-center gap-2 px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/5 transition-all"
-        >
-          <SlidersHorizontal className="w-4 h-4" />
-          <span className="hidden sm:inline text-xs font-bold uppercase tracking-widest">Filters</span>
-        </button>
+        <div className="flex gap-2 h-12">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="flex-1 sm:flex-none h-full px-3 md:px-4 rounded-xl border border-border bg-card text-xs md:text-sm font-bold focus:outline-none cursor-pointer"
+          >
+            <option value="featured">Featured</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="rating">Top Rated</option>
+          </select>
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="lg:hidden h-full flex items-center justify-center gap-2 px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/5 transition-all"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Filters</span>
+          </button>
+        </div>
       </div>
 
       {/* Active Filter Chips */}
@@ -128,7 +139,7 @@ const Shop = () => {
             <div>
               <h3 className="font-black text-foreground text-xs uppercase tracking-widest mb-4 border-b border-primary/10 pb-2">Category</h3>
               <div className="space-y-3">
-                {[{ label: "All Products", value: "" }, { label: "Smartphones", value: "phone" }, { label: "Laptops & PCs", value: "laptop" }].map((c) => (
+                {[{ label: "All Products", value: "" }, { label: "Phones", value: "phone" }, { label: "Laptops", value: "laptop" }].map((c) => (
                   <label key={c.value} className="flex items-center gap-3 text-sm cursor-pointer group">
                     <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${category === c.value ? "bg-primary border-primary" : "border-border group-hover:border-primary/50"}`}>
                       {category === c.value && <div className="w-2 h-2 bg-white rounded-full" />}

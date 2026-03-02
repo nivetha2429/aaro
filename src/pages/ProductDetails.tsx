@@ -43,6 +43,13 @@ const ProductDetails = () => {
   const [selectedStorage, setSelectedStorage] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  useEffect(() => {
+    if (product?.images?.length) {
+      setSelectedImage(product.images[0]);
+    }
+  }, [product]);
 
   useEffect(() => {
     if (product) {
@@ -135,7 +142,7 @@ const ProductDetails = () => {
   const discount = currentMRP > 0 ? Math.round(((currentMRP - currentPrice) / currentMRP) * 100) : 0;
   const savings = currentMRP > currentPrice ? currentMRP - currentPrice : 0;
 
-  const productUrl = `${window.location.origin}/product/${product.id || (product as any)._id}`;
+  const productUrl = `${window.location.origin}/product/${product?.id || (product as any)?._id}`;
 
   const buildWhatsAppMessage = () => {
     const specLines = Object.entries(product.specifications || {})
@@ -186,9 +193,8 @@ const ProductDetails = () => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  const [selectedImage, setSelectedImage] = useState(product.images?.[0] || "");
-  const hasImages = product.images && product.images.length > 0;
-  const videoEmbed = getYouTubeEmbedUrl(product.videoUrl || "");
+  const hasImages = product?.images && product.images.length > 0;
+  const videoEmbed = getYouTubeEmbedUrl(product?.videoUrl || "");
 
   const specs = product.specifications || {};
   const specEntries = Object.entries(specs).filter(([, v]) => v && v.trim() !== "");
@@ -212,7 +218,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl pb-40 lg:pb-8">
+    <div className="container mx-auto px-4 py-6 max-w-7xl pb-16 lg:pb-4">
       <Link to="/shop" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>

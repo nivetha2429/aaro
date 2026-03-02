@@ -16,4 +16,8 @@ const orderSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Indexes for fast order lookups
+orderSchema.index({ userId: 1, createdAt: -1 });
+orderSchema.index({ status: 1 });
+
 export default mongoose.model("Order", orderSchema);

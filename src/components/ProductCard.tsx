@@ -44,7 +44,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   return (
-    <div className="glass-card rounded-3xl p-4 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2">
+    <div className="glass-card rounded-3xl p-4 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect">
       <Link to={`/product/${product.id}`} className="block relative aspect-[4/3] sm:aspect-square overflow-hidden rounded-2xl mb-4 w-full">
         <div className="w-full h-full bg-secondary/30 flex items-center justify-center transition-transform duration-700 group-hover:scale-110">
           {product.images && product.images.length > 0 ? (

@@ -58,7 +58,7 @@ const Brands = () => {
           <Link
             key={brand.name}
             to={`/shop?brand=${encodeURIComponent(brand.name)}`}
-            className="group relative overflow-hidden rounded-2xl bg-white border border-border shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1.5 transition-all duration-300"
+            className="group relative overflow-hidden rounded-3xl bg-white border border-border shadow-sm hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300 hover-scale click-scale shine-effect"
           >
             {/* Hover tint */}
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
@@ -70,7 +70,7 @@ const Brands = () => {
                   <img
                     src={brand.image}
                     alt={brand.name}
-                    className="w-12 h-12 object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                    className="w-12 h-12 object-contain transition-all duration-300"
                   />
                 ) : (
                   <span className="text-2xl font-black text-foreground/40 tracking-tight">{brand.initial}</span>
@@ -79,8 +79,8 @@ const Brands = () => {
 
               {/* Brand Name */}
               <div>
-                <p className="font-black text-foreground text-sm leading-tight group-hover:text-primary transition-colors">{brand.name}</p>
-                <p className="text-muted-foreground text-[10px] font-bold mt-0.5">
+                <p className="font-bold text-muted-foreground text-sm leading-tight group-hover:text-primary transition-colors">{brand.name}</p>
+                <p className="text-muted-foreground/60 text-[10px] font-bold mt-0.5">
                   {brand.count} {brand.count === 1 ? "model" : "models"}
                 </p>
               </div>
@@ -99,8 +99,8 @@ const Brands = () => {
   return (
     <div className="container mx-auto px-4 py-10 pb-24 md:pb-10 max-w-7xl">
       {/* Header */}
-      <div className="mb-12 text-center">
-        <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3 tracking-tight">
+      <div className="mb-12 text-center animate-slide-up">
+        <h1 className="text-4xl md:text-6xl font-black animate-shimmer mb-4 tracking-tighter">
           Our Brands
         </h1>
         <p className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto">
@@ -135,7 +135,7 @@ const Brands = () => {
             <BrandGrid brands={phoneBrands} label="Smartphone Brands" Icon={Smartphone} />
           )}
           {laptopBrands.length > 0 && (
-            <BrandGrid brands={laptopBrands} label="Laptop & PC Brands" Icon={Laptop} />
+            <BrandGrid brands={laptopBrands} label="Laptop Brands" Icon={Laptop} />
           )}
         </>
       )}

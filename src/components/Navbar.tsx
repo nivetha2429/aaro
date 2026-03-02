@@ -64,7 +64,7 @@ const Navbar = () => {
           <img
             src={logo}
             alt="AARO Systems Logo"
-            className="h-14 md:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-16 md:h-18 lg:h-20 w-auto object-contain transition-transform group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.src = "https://placehold.co/200x60/7c3aed/ffffff?text=AARO+SYSTEMS";
             }}
@@ -72,12 +72,12 @@ const Navbar = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8 ml-8">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Home</Link>
-          <Link to="/phones" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Phones</Link>
-          <Link to="/laptops" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Laptops</Link>
-          <Link to="/brands" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Brands</Link>
-          <Link to="/offers" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Offers</Link>
+        <nav className="hidden md:flex items-center gap-6 lg:gap-8 ml-4 lg:ml-8">
+          <Link to="/" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Home</Link>
+          <Link to="/phones" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Phones</Link>
+          <Link to="/laptops" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Laptops</Link>
+          <Link to="/brands" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Brands</Link>
+          <Link to="/offers" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Offers</Link>
         </nav>
 
         <div className="flex-1 max-w-xs md:max-w-sm lg:max-w-lg hidden md:flex relative">

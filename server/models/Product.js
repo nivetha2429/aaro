@@ -25,4 +25,10 @@ const productSchema = new mongoose.Schema({
     isTrending: { type: Boolean, default: false },
 }, { timestamps: true });
 
+// Indexes for fast product lookups
+productSchema.index({ category: 1 });
+productSchema.index({ brand: 1, category: 1 });
+productSchema.index({ featured: 1 });
+productSchema.index({ isTrending: 1 });
+
 export default mongoose.model('Product', productSchema);

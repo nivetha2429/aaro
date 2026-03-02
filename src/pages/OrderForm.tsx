@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { WHATSAPP_NUMBER } from "@/data/products";
-import { MessageCircle, CheckCircle, Package } from "lucide-react";
+import { MessageCircle, CheckCircle, Package, Home } from "lucide-react";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
@@ -34,6 +35,14 @@ const OrderForm = () => {
   }, [user]);
 
   const buildWhatsAppMessage = () => {
+    // Helper to ensure image URLs are absolute for WhatsApp
+    const BASE_URL = API_URL.replace(/\/api$/, "");
+    const getImageUrl = (url: string) => {
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+    };
+
     const productLines = items
       .map(
         (i) =>
@@ -42,13 +51,12 @@ const OrderForm = () => {
       .join("\n");
 
     const imageLines = items
-      .map((i, idx) =>
-        i.product.images?.[0]
-          ? `  ${idx + 1}. ${i.product.name}: ${i.product.images[0]}`
-          : null
-      )
+      .map((i, idx) => {
+        const imgUrl = i.product.images?.[0] ? getImageUrl(i.product.images[0]) : null;
+        return imgUrl ? `  ${idx + 1}. ${i.product.name}:\n  ${imgUrl}` : null;
+      })
       .filter(Boolean)
-      .join("\n");
+      .join("\n\n");
 
     return [
       `🛒 *New Order — AARO*`,
@@ -126,8 +134,11 @@ const OrderForm = () => {
   if (submitted) {
     return (
       <div className="container mx-auto px-4 py-16 text-center animate-fade-in">
-        <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-        <h2 className="text-2xl font-black text-foreground mb-2">Order Placed!</h2>
+        <div className="relative inline-block mb-4">
+          <CheckCircle className="w-20 h-20 mx-auto text-green-500 animate-elastic" />
+          <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full scale-150 -z-10" />
+        </div>
+        <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 tracking-tighter animate-slide-up">Order Placed!</h2>
         <p className="text-muted-foreground mb-2 text-sm">
           Your order is confirmed. WhatsApp should have opened automatically.
         </p>
@@ -147,25 +158,34 @@ const OrderForm = () => {
           </button>
           .
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={() =>
-              window.open(
-                `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`,
-                "_blank",
-                "noopener,noreferrer"
-              )
-            }
-            className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-xl font-black hover:opacity-90 transition-opacity"
+        <div className="flex flex-col gap-4 max-w-sm mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() =>
+                window.open(
+                  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition-all whatsapp-pulse click-scale shadow-xl shadow-green-500/20"
+            >
+              <MessageCircle className="w-5 h-5" /> Open WhatsApp Again
+            </button>
+            <Link
+              to="/my-orders"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-secondary text-foreground px-8 py-4 rounded-2xl font-black hover:bg-border transition-all click-scale"
+            >
+              <Package className="w-5 h-5" /> View My Orders
+            </Link>
+          </div>
+
+          <Link
+            to="/"
+            className="inline-flex items-center justify-center gap-3 bg-white/40 backdrop-blur-md border border-primary/20 text-primary px-8 py-4 rounded-2xl font-black hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 click-scale group"
           >
-            <MessageCircle className="w-4 h-4" /> Open WhatsApp Again
-          </button>
-          <a
-            href="/my-orders"
-            className="inline-flex items-center gap-2 bg-secondary text-foreground px-6 py-3 rounded-xl font-black hover:bg-border transition-colors"
-          >
-            <Package className="w-4 h-4" /> View My Orders
-          </a>
+            <Home className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> Back to Home
+          </Link>
         </div>
       </div>
     );
@@ -262,9 +282,9 @@ const OrderForm = () => {
         <button
           type="submit"
           disabled={loading || items.length === 0}
-          className="w-full bg-[#25D366] text-white py-4 rounded-2xl font-black text-base flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 hover:opacity-90 hover:-translate-y-0.5 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#25D366] text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 hover:opacity-90 hover:-translate-y-1 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed click-scale whatsapp-pulse"
         >
-          <MessageCircle className="w-5 h-5" />
+          <MessageCircle className="w-6 h-6" />
           {loading ? "Placing Order..." : "Confirm & Send to WhatsApp"}
         </button>
 

@@ -25,6 +25,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/AdminOrders";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import Brands from "./pages/Brands";
+import Elite from "./pages/Elite";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,32 +59,34 @@ const AppContents = () => {
         <Toaster richColors position="bottom-right" />
         {!isAdminPath && <Navbar />}
         <main className={`flex-1 flex flex-col ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/phones" element={<Phones />} />
-            <Route path="/laptops" element={<Laptops />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/brands" element={<Brands />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          <div key={location.pathname} className="page-transition flex-1 flex flex-col">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/phones" element={<Phones />} />
+              <Route path="/laptops" element={<Laptops />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/brands" element={<Brands />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            {/* Customer Routes */}
-            <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
-            <Route path="/order" element={<ProtectedRoute><OrderForm /></ProtectedRoute>} />
-            <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              {/* Customer Routes */}
+              <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
+              <Route path="/order" element={<ProtectedRoute><OrderForm /></ProtectedRoute>} />
+              <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-            <Route path="/offers" element={<Offers />} />
+              <Route path="/offers" element={<Offers />} />
+              <Route path="/elite" element={<Elite />} />
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<Navigate to="/login" replace />} />
-            <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/orders" element={<ProtectedRoute adminOnly><AdminOrders /></ProtectedRoute>} />
+              {/* Admin Routes */}
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </main>
         {!isAdminPath && <Footer />}
         {!isAdminPath && <MobileNav />}
