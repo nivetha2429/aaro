@@ -339,9 +339,13 @@ const AdminDashboard = () => {
   // ── Popup Offer Form State ──
   const [showPopupForm, setShowPopupForm] = useState(false);
   const [popupForm, setPopupForm] = useState({ heading: "", sub: "" });
+  const [savingPopup, setSavingPopup] = useState(false);
 
   const handleSavePopupOffer = async () => {
-    if (!popupForm.heading.trim()) return toast.error("Heading text is required");
+    const heading = popupForm.heading.trim();
+    const sub = popupForm.sub.trim();
+    if (!heading) { toast.error("Heading text is required"); return; }
+    setSavingPopup(true);
     try {
       // Fixed 24-hour countdown — store end time in code field
       const end = new Date();
@@ -351,8 +355,8 @@ const AdminDashboard = () => {
         title: "__popup__",
         image: "",
         active: true,
-        description: popupForm.heading.trim(),
-        tag: popupForm.sub.trim(),
+        description: heading,
+        tag: sub,
         code: end.toISOString(),
         discount: 0,
       };
@@ -363,7 +367,11 @@ const AdminDashboard = () => {
       }
       toast.success("Popup saved! Countdown set to 24 hours.");
       setShowPopupForm(false);
-    } catch { toast.error("Failed to save popup"); }
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to save popup");
+    } finally {
+      setSavingPopup(false);
+    }
   };
 
   const openOfferForm = (offer?: Offer) => {
@@ -1071,16 +1079,17 @@ const AdminDashboard = () => {
                           <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Heading *</label>
                           <input
                             value={popupForm.heading}
-                            onChange={e => setPopupForm(f => ({ ...f, heading: e.target.value }))}
+                            onChange={e => { const v = e.target.value; setPopupForm(prev => ({ ...prev, heading: v })); }}
                             placeholder="e.g. Exclusive Offer!"
                             className="w-full h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm font-bold text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30"
                           />
+                          {!popupForm.heading.trim() && <p className="text-[10px] text-red-400 mt-1 font-semibold">Required</p>}
                         </div>
                         <div>
-                          <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Sub-text</label>
+                          <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Sub-text <span className="normal-case font-medium text-[#b0b8c9]">(optional)</span></label>
                           <input
                             value={popupForm.sub}
-                            onChange={e => setPopupForm(f => ({ ...f, sub: e.target.value }))}
+                            onChange={e => { const v = e.target.value; setPopupForm(prev => ({ ...prev, sub: v })); }}
                             placeholder="e.g. Limited time deals on phones & laptops"
                             className="w-full h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30"
                           />
@@ -1118,9 +1127,13 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button variant="ghost" onClick={() => setShowPopupForm(false)} className="flex-1 h-11 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
-                      <Button onClick={handleSavePopupOffer} className="flex-1 h-11 rounded-2xl gradient-purple font-black uppercase text-[10px] text-white shadow-lg">
-                        Save Popup
+                      <Button variant="ghost" onClick={() => setShowPopupForm(false)} disabled={savingPopup} className="flex-1 h-11 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
+                      <Button
+                        onClick={handleSavePopupOffer}
+                        disabled={savingPopup || !popupForm.heading.trim()}
+                        className="flex-1 h-11 rounded-2xl gradient-purple font-black uppercase text-[10px] text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {savingPopup ? <><Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />Saving…</> : "Save Popup"}
                       </Button>
                     </div>
                   </div>
@@ -1130,22 +1143,25 @@ const AdminDashboard = () => {
               {/* ── OFFER BANNERS SECTION ── */}
               {(() => {
                 const bannerCount = offers.filter(o => o.title !== "__popup__").length;
+                const atLimit = bannerCount >= 3;
                 return (
                   <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm">
                     <div>
                       <h3 className="text-xl font-black text-[#1a1f36]">Offer Banners</h3>
                       <p className="text-xs text-[#7a869a]">
-                        Upload banner images — toggle active/inactive
-                        <span className={`ml-2 font-bold ${bannerCount >= 3 ? "text-red-500" : "text-[#1a1f36]"}`}>({bannerCount}/3)</span>
+                        JPG / PNG / WEBP only, max 2MB each
+                        <span className={`ml-2 font-bold ${atLimit ? "text-red-500" : "text-primary"}`}>({bannerCount}/3 used)</span>
                       </p>
+                      {atLimit && <p className="text-[10px] text-red-500 font-bold mt-0.5">Delete a banner below to upload a new one</p>}
                     </div>
-                    <Button
-                      onClick={() => openOfferForm()}
-                      disabled={bannerCount >= 3}
-                      className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      <Plus className="w-4 h-4 mr-2" />Upload Banner
-                    </Button>
+                    {!atLimit && (
+                      <Button
+                        onClick={() => openOfferForm()}
+                        className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />Upload Banner
+                      </Button>
+                    )}
                   </div>
                 );
               })()}
@@ -1514,20 +1530,22 @@ const AdminDashboard = () => {
             </div>
             <div className="p-8 space-y-5">
               <ImageUpload
-                label="Banner Image *"
+                label="Banner Image * (JPG / PNG / WEBP, max 2MB)"
                 value={offerForm.image}
-                onChange={url => setOfferForm({ ...offerForm, image: url })}
+                onChange={url => setOfferForm(prev => ({ ...prev, image: url }))}
+                accept=".jpg,.jpeg,.png,.webp"
+                maxSizeMB={2}
               />
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest">Label (for admin reference)</label>
-                <Input value={offerForm.title} onChange={e => setOfferForm({ ...offerForm, title: e.target.value })} className="rounded-2xl h-12" placeholder="e.g. Summer Sale Banner" />
+                <Input value={offerForm.title} onChange={e => { const v = e.target.value; setOfferForm(prev => ({ ...prev, title: v })); }} className="rounded-2xl h-12" placeholder="e.g. Summer Sale Banner" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest">Offer Tag <span className="text-[#b0b8c9] normal-case font-medium">(short badge shown on banner)</span></label>
                 <div className="relative">
                   <Input
                     value={offerForm.tag}
-                    onChange={e => setOfferForm({ ...offerForm, tag: e.target.value.toUpperCase().slice(0, 20) })}
+                    onChange={e => { const v = e.target.value.toUpperCase().slice(0, 20); setOfferForm(prev => ({ ...prev, tag: v })); }}
                     className="rounded-2xl h-12 pr-16"
                     placeholder="e.g. FLASH SALE"
                   />
@@ -1537,10 +1555,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
               <label className="flex items-center gap-3 cursor-pointer p-4 rounded-2xl bg-[#f8f9fc] border border-[#eaedf3] hover:border-primary/30 transition-colors">
-                <input type="checkbox" checked={offerForm.active} onChange={e => setOfferForm({ ...offerForm, active: e.target.checked })} className="w-5 h-5 accent-primary" />
+                <input type="checkbox" checked={offerForm.active} onChange={e => { const v = e.target.checked; setOfferForm(prev => ({ ...prev, active: v })); }} className="w-5 h-5 accent-primary" />
                 <div>
                   <span className="text-sm font-bold text-[#1a1f36] block">Set as Active</span>
-                  <span className="text-[10px] text-[#7a869a]">Shows as popup to new visitors</span>
+                  <span className="text-[10px] text-[#7a869a]">Show this banner in the Offers section</span>
                 </div>
               </label>
             </div>

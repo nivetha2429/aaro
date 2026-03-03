@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
@@ -9,15 +9,17 @@ interface ImageUploadProps {
     onChange: (url: string) => void;
     label?: string;
     className?: string;
+    accept?: string;
+    maxSizeMB?: number;
 }
 
-export const ImageUpload = ({ value, onChange, label, className = "" }: ImageUploadProps) => {
+export const ImageUpload = ({ value, onChange, label, className = "", accept = "image/*", maxSizeMB = 5 }: ImageUploadProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith("image/")) return toast.error("Please select an image file");
-        if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+        if (file.size > maxSizeMB * 1024 * 1024) return toast.error(`Image must be under ${maxSizeMB}MB`);
 
         setUploading(true);
         try {
@@ -61,7 +63,7 @@ export const ImageUpload = ({ value, onChange, label, className = "" }: ImageUpl
                 <input
                     ref={inputRef}
                     type="file"
-                    accept="image/*"
+                    accept={accept}
                     className="hidden"
                     onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
                 />
@@ -99,7 +101,7 @@ export const ImageUpload = ({ value, onChange, label, className = "" }: ImageUpl
                                 <Upload className="w-6 h-6 text-primary" />
                             </div>
                                 <p className="text-sm font-bold text-[#1a1f36]">Click to upload</p>
-                                <p className="text-[10px] text-[#7a869a]">or drag & drop • PNG, JPG, WEBP • Max 5MB</p></>
+                                <p className="text-[10px] text-[#7a869a]">or drag & drop • Max {maxSizeMB}MB</p></>
                         )}
                     </div>
                 )}
