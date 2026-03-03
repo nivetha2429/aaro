@@ -13,11 +13,14 @@ const ProductCard = ({ product }: { product: Product }) => {
   const { fetchVariants } = useData();
   const { isAdmin } = useAuth();
   const [isAdded, setIsAdded] = useState(false);
-  const [variants, setVariants] = useState<Variant[]>([]);
+  // Use variants already embedded in the product response; fall back to a fetch only when missing
+  const [variants, setVariants] = useState<Variant[]>((product as any).variants || []);
 
   useEffect(() => {
-    fetchVariants(product.id || (product as any)._id).then(setVariants);
-  }, [product.id, fetchVariants]);
+    if (variants.length === 0) {
+      fetchVariants(product.id || (product as any)._id).then(setVariants);
+    }
+  }, [product.id]);
 
   const baseVariant = useMemo(() => {
     if (variants.length === 0) return null;

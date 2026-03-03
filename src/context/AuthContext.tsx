@@ -21,6 +21,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Decode JWT payload and check expiry without a library
+const isJwtExpired = (token: string): boolean => {
+    try {
+        // JWT uses base64url — convert to standard base64 before atob
+        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(base64));
+        return payload.exp * 1000 < Date.now();
+    } catch {
+        return true; // treat malformed tokens as expired
+    }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -28,12 +40,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         try {
-            // Use localStorage so session ends when tab is closed
             const savedToken = localStorage.getItem("aaro_token");
             const savedUser = localStorage.getItem("aaro_user");
-            if (savedToken && savedUser) {
+            if (savedToken && savedUser && !isJwtExpired(savedToken)) {
                 setToken(savedToken);
                 setUser(JSON.parse(savedUser));
+            } else if (savedToken) {
+                // Token exists but is expired — clear it so ProtectedRoute redirects to login
+                localStorage.removeItem("aaro_token");
+                localStorage.removeItem("aaro_user");
             }
         } catch (e) {
             console.error("Failed to restore auth session", e);

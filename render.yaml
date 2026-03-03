@@ -3,12 +3,21 @@ services:
     name: aaro
     env: node
     plan: free
-    buildCommand: npm install && npm run build && cd server && npm install
+    buildCommand: npm ci && npm run build && cd server && npm ci
     startCommand: node server/server.js
+    healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: 20.11.0
+      - key: NODE_ENV
+        value: production
       - key: MONGODB_URI
         sync: false
       - key: JWT_SECRET
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
         sync: false

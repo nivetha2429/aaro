@@ -23,6 +23,7 @@ const productSchema = new mongoose.Schema({
     features: [{ type: String }],
     featured: { type: Boolean, default: false },
     isTrending: { type: Boolean, default: false },
+    tag: { type: String, default: '' },
 }, { timestamps: true });
 
 // Indexes for fast product lookups

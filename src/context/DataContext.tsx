@@ -50,6 +50,17 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const getToken = () => localStorage.getItem("aaro_token");
 
+const isJwtExpired = (token: string): boolean => {
+    try {
+        // JWT uses base64url — convert to standard base64 before atob
+        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+        const payload = JSON.parse(atob(base64));
+        return payload.exp * 1000 < Date.now();
+    } catch {
+        return true;
+    }
+};
+
 const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
@@ -88,12 +99,17 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     }, [logout, navigate]);
 
     const guardedFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
+        // Check token expiry client-side before hitting the network
+        const token = getToken();
+        if (!token || isJwtExpired(token)) {
+            handleUnauthorized();
+            throw new Error("__SESSION_EXPIRED__");
+        }
         const res = await fetch(input, init);
         if (res.status === 401) {
             handleUnauthorized();
             // Throw a special sentinel so callers don't show a second error toast
-            const err = new Error("__SESSION_EXPIRED__");
-            throw err;
+            throw new Error("__SESSION_EXPIRED__");
         }
         return res;
     }, [handleUnauthorized]);

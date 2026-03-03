@@ -366,6 +366,9 @@ const AdminDashboard = () => {
       } else {
         await addOffer(payload);
       }
+      // Clear session flags so the popup auto-shows again on the home page
+      sessionStorage.removeItem("seenOffer");
+      sessionStorage.removeItem("dismissedOffer");
       toast.success(`Popup saved! Countdown set to ${hours} hour${hours !== 1 ? "s" : ""}.`);
       setShowPopupForm(false);
     } catch (e: any) {

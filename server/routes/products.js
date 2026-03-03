@@ -28,10 +28,9 @@ router.get('/', async (req, res) => {
             productsQuery = productsQuery.skip((page - 1) * limit).limit(limit);
         }
 
-        const [products, variants] = await Promise.all([
-            productsQuery,
-            Variant.find(page > 0 ? {} : {}), // fetch all variants for client-side join
-        ]);
+        const products = await productsQuery;
+        const productIds = products.map(p => p._id);
+        const variants = await Variant.find({ productId: { $in: productIds } });
 
         const variantMap = {};
         variants.forEach(v => {
@@ -54,7 +53,7 @@ router.get('/', async (req, res) => {
 // POST /api/products
 router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const { name, brand, category, description, images, specifications, features, videoUrl, modelId, variants, tag } = req.body;
+        const { name, brand, category, description, images, specifications, features, videoUrl, modelId, variants, tag, featured, isTrending } = req.body;
 
         if (modelId) {
             const pModel = await ProductModel.findById(modelId);
@@ -63,20 +62,21 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
             if (pModel.brand !== brand) return res.status(400).json({ message: 'Brand mismatch for the selected model' });
         }
 
-        const product = await new Product({ name, brand, category, description, images, specifications, features, videoUrl, modelId, tag }).save();
+        const product = await new Product({ name, brand, category, description, images, specifications, features, videoUrl, modelId, tag, featured: !!featured, isTrending: !!isTrending }).save();
 
         if (variants?.length) {
             await Variant.insertMany(variants.map(v => ({ ...v, productId: product._id })));
         }
 
-        // Auto-create 3 default reviews
+        // Auto-create 3 default reviews and update product rating
         await Review.insertMany([
             { productId: product._id, name: 'Rahul Sharma', comment: 'Amazing build quality and performance. Worth every penny!', rating: 5 },
             { productId: product._id, name: 'Priya Patel', comment: 'Simply the best in its class. Highly recommended.', rating: 5 },
             { productId: product._id, name: 'Ankit Verma', comment: "Been using it for a week, and I'm impressed with the battery life.", rating: 5 },
         ]);
+        await Product.findByIdAndUpdate(product._id, { reviewCount: 3, rating: 5 });
 
-        res.status(201).json(product);
+        res.status(201).json({ ...product.toObject(), reviewCount: 3, rating: 5 });
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
     }

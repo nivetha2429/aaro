@@ -30,7 +30,14 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
                 return res.status(400).json({ message: 'Maximum of 3 offer banners allowed. Delete one before adding a new one.' });
             }
         }
-        if (req.body.active) await Offer.updateMany({}, { active: false });
+        // Only deactivate the old popup — don't touch banners
+        if (req.body.active) {
+            if (req.body.title === '__popup__') {
+                await Offer.updateMany({ title: '__popup__' }, { active: false });
+            } else {
+                await Offer.updateMany({ title: { $ne: '__popup__' } }, { active: false });
+            }
+        }
         const offer = await new Offer(req.body).save();
         res.status(201).json(offer);
     } catch (err) {
