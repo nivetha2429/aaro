@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, Fragment, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Trash2, Plus, Edit, X, Package, BarChart3, TrendingUp, Smartphone, Laptop, Tag, Link as LinkIcon, AlertCircle, ChevronDown, Check, ShoppingCart, Star, LogOut, LayoutDashboard, Pencil, Users, Menu, Bell, Layers, Search, Filter, RefreshCw, ArrowLeft, Clock, Truck, CheckCircle, Loader2, Upload } from "lucide-react";
+import { Trash2, Plus, Edit, X, Package, BarChart3, TrendingUp, Smartphone, Laptop, Tag, Link as LinkIcon, AlertCircle, ChevronDown, ShoppingCart, Star, LogOut, LayoutDashboard, Pencil, Users, Menu, Bell, Layers, Search, Filter, RefreshCw, ArrowLeft, Clock, Truck, CheckCircle, Loader2, Upload } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import { useAuth } from "@/context/AuthContext";
 import { Product, Category, Offer, ProductModel, Variant, Brand } from "@/data/products";
@@ -338,27 +338,30 @@ const AdminDashboard = () => {
 
   // ── Popup Offer Form State ──
   const [showPopupForm, setShowPopupForm] = useState(false);
-  const [popupTemplate, setPopupTemplate] = useState("T1");
-
-  const POPUP_TEMPLATES = [
-    { id: "T1", label: "Flash Sale", bg: "from-orange-500 to-red-600", emoji: "⚡", sub: "Hot deals, limited time" },
-    { id: "T2", label: "Weekend Deal", bg: "from-violet-600 to-purple-800", emoji: "🎉", sub: "Weekend specials" },
-    { id: "T3", label: "Premium Offer", bg: "from-slate-700 to-slate-900", emoji: "👑", sub: "Exclusive members deal" },
-    { id: "T4", label: "Festival Sale", bg: "from-green-500 to-teal-600", emoji: "🌟", sub: "Festive season savings" },
-  ];
+  const [popupForm, setPopupForm] = useState({ heading: "", sub: "" });
 
   const handleSavePopupOffer = async () => {
+    if (!popupForm.heading.trim()) return toast.error("Heading text is required");
     try {
-      const d = new Date(); d.setDate(d.getDate() + 7);
-      const autoEndDate = d.toISOString().split("T")[0];
+      // Fixed 24-hour countdown — store end time in code field
+      const end = new Date();
+      end.setHours(end.getHours() + 24);
       const existing = offers.find(o => o.title === "__popup__");
-      const payload = { title: "__popup__", image: "", active: true, description: autoEndDate, discount: 0, code: popupTemplate };
+      const payload = {
+        title: "__popup__",
+        image: "",
+        active: true,
+        description: popupForm.heading.trim(),
+        tag: popupForm.sub.trim(),
+        code: end.toISOString(),
+        discount: 0,
+      };
       if (existing) {
         await updateOffer({ ...existing, ...payload });
       } else {
         await addOffer(payload);
       }
-      toast.success("Popup saved!");
+      toast.success("Popup saved! Countdown set to 24 hours.");
       setShowPopupForm(false);
     } catch { toast.error("Failed to save popup"); }
   };
@@ -1011,12 +1014,12 @@ const AdminDashboard = () => {
                 <div className="p-6 border-b border-[#eaedf3] flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-black text-[#1a1f36]">Popup Offer</h3>
-                    <p className="text-xs text-[#7a869a]">Pick a template + set end date — shows as popup with live countdown</p>
+                    <p className="text-xs text-[#7a869a]">Edit heading &amp; sub-text — shows as popup with 24-hour countdown</p>
                   </div>
                   <Button
                     onClick={() => {
                       const existing = offers.find(o => o.title === "__popup__");
-                      setPopupTemplate(existing?.code || "T1");
+                      setPopupForm({ heading: existing?.description || "", sub: existing?.tag || "" });
                       setShowPopupForm(!showPopupForm);
                     }}
                     className="gradient-purple rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest text-white"
@@ -1030,104 +1033,88 @@ const AdminDashboard = () => {
                   <div className="p-6">
                     {(() => {
                       const popup = offers.find(o => o.title === "__popup__");
-                      const tpl = POPUP_TEMPLATES.find(t => t.id === popup?.code) || POPUP_TEMPLATES[0];
                       return popup ? (
                         <div className="flex flex-col sm:flex-row items-center gap-6">
-                          <div className={`w-full sm:w-64 h-28 rounded-2xl bg-gradient-to-br ${tpl.bg} flex flex-col items-center justify-center flex-shrink-0 shadow-md`}>
-                            <span className="text-3xl mb-1">{tpl.emoji}</span>
-                            <p className="text-white font-black text-sm">{tpl.label}</p>
-                            <p className="text-white/70 text-[10px]">{tpl.sub}</p>
+                          <div className="w-full sm:w-64 h-28 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 flex flex-col items-center justify-center flex-shrink-0 shadow-md px-4 text-center">
+                            <p className="text-white font-black text-sm leading-tight">{popup.description || "Popup Heading"}</p>
+                            <p className="text-white/70 text-[10px] mt-1">{popup.tag || "Sub-text here"}</p>
+                            <p className="text-white/50 text-[9px] mt-2 font-bold">⏱ 24-hr countdown</p>
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-2">
                               <span className="text-[10px] bg-green-500 text-white px-2 py-0.5 rounded-full font-bold">LIVE</span>
-                              <span className="text-xs text-[#7a869a] font-bold">Template: {tpl.label}</span>
+                              <span className="text-xs text-[#7a869a] font-bold">Popup active</span>
                             </div>
-                            <p className="text-xs text-[#7a869a]">Countdown ends: <span className="font-bold text-[#1a1f36]">{popup.description}</span></p>
+                            <p className="text-xs text-[#7a869a]">Heading: <span className="font-bold text-[#1a1f36]">{popup.description}</span></p>
+                            {popup.tag && <p className="text-xs text-[#7a869a] mt-0.5">Sub-text: <span className="font-bold text-[#1a1f36]">{popup.tag}</span></p>}
+                            <p className="text-xs text-[#7a869a] mt-0.5">Countdown ends: <span className="font-bold text-[#1a1f36]">{popup.code ? new Date(popup.code).toLocaleString() : "—"}</span></p>
                           </div>
                         </div>
                       ) : (
                         <div className="py-10 text-center bg-[#f8f9fc] rounded-2xl border-2 border-dashed border-[#eaedf3]">
                           <Tag className="w-10 h-10 text-[#eaedf3] mx-auto mb-3" />
                           <p className="text-sm font-bold text-[#7a869a]">No popup set</p>
-                          <p className="text-xs text-[#a3acb9] mt-1">Click "Set Popup" to choose a template</p>
+                          <p className="text-xs text-[#a3acb9] mt-1">Click "Set Popup" to configure the popup offer</p>
                         </div>
                       );
                     })()}
                   </div>
                 )}
 
-                {/* Template picker form */}
+                {/* Text-input popup form */}
                 {showPopupForm && (
                   <div className="p-6 space-y-5 bg-[#f8f9fc] border-t border-[#eaedf3] animate-fade-in">
                     <div className="flex flex-col lg:flex-row gap-6">
-                      {/* Template grid */}
-                      <div className="flex-1">
-                        <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-3 block">Choose Template</label>
-                        <div className="grid grid-cols-2 gap-3">
-                          {POPUP_TEMPLATES.map(tpl => (
-                            <button
-                              key={tpl.id}
-                              onClick={() => setPopupTemplate(tpl.id)}
-                              className={`relative rounded-2xl overflow-hidden border-2 transition-all ${popupTemplate === tpl.id ? "border-primary shadow-lg shadow-primary/20 scale-[1.02]" : "border-transparent hover:border-[#eaedf3]"}`}
-                            >
-                              <div className={`bg-gradient-to-br ${tpl.bg} p-4 flex flex-col items-center text-center`}>
-                                <span className="text-2xl mb-1">{tpl.emoji}</span>
-                                <p className="text-white font-black text-xs">{tpl.label}</p>
-                                <p className="text-white/70 text-[9px] mt-0.5">{tpl.sub}</p>
-                              </div>
-                              {popupTemplate === tpl.id && (
-                                <div className="absolute top-2 right-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow">
-                                  <Check className="w-3 h-3 text-primary" />
-                                </div>
-                              )}
-                            </button>
-                          ))}
+                      {/* Text inputs */}
+                      <div className="flex-1 space-y-4">
+                        <div>
+                          <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Heading *</label>
+                          <input
+                            value={popupForm.heading}
+                            onChange={e => setPopupForm(f => ({ ...f, heading: e.target.value }))}
+                            placeholder="e.g. Exclusive Offer!"
+                            className="w-full h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm font-bold text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          />
                         </div>
+                        <div>
+                          <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Sub-text</label>
+                          <input
+                            value={popupForm.sub}
+                            onChange={e => setPopupForm(f => ({ ...f, sub: e.target.value }))}
+                            placeholder="e.g. Limited time deals on phones & laptops"
+                            className="w-full h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          />
+                        </div>
+                        <p className="text-[10px] text-[#a3acb9] font-semibold">⏱ Countdown auto-sets to 24 hours from now when saved</p>
                       </div>
 
                       {/* Live preview */}
-                      {(() => {
-                        const tpl = POPUP_TEMPLATES.find(t => t.id === popupTemplate) || POPUP_TEMPLATES[0];
-                        return (
-                          <div className="flex-1">
-                            <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-3 block">Preview</label>
-                            <div className={`rounded-2xl bg-gradient-to-br ${tpl.bg} p-5 shadow-xl relative overflow-hidden`}>
-                              {/* blobs */}
-                              <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10" />
-                              <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-white/5" />
-                              {/* pill */}
-                              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/20 border border-white/20 mb-3">
-                                <Tag className="w-2.5 h-2.5 text-white/80" />
-                                <span className="text-[9px] font-black text-white/90 uppercase tracking-widest">{tpl.label}</span>
-                              </div>
-                              {/* emoji + heading */}
-                              <div className="mb-1"><span className="text-3xl">{tpl.emoji}</span></div>
-                              <p className="text-white font-black text-lg mb-1">{tpl.label}!</p>
-                              <p className="text-white/70 text-[10px] mb-4">{tpl.sub}</p>
-                              {/* countdown boxes */}
-                              <div className="flex items-center gap-1.5 mb-1">
-                                <Clock className="w-3 h-3 text-white/60" />
-                                <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                {[{ v: "07", l: "Days" }, { v: "00", l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }].map((b, i) => (
-                                  <Fragment key={i}>
-                                    <div className="flex flex-col items-center gap-0.5">
-                                      <div className="w-9 h-9 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
-                                        <span className="text-sm font-black text-white tabular-nums">{b.v}</span>
-                                      </div>
-                                      <span className="text-[8px] font-bold text-white/60 uppercase">{b.l}</span>
-                                    </div>
-                                    {i < 3 && <span className="text-white/40 font-black text-base pb-3">:</span>}
-                                  </Fragment>
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-[10px] text-[#a3acb9] mt-2 font-semibold">Countdown auto-resets to 7 days when saved</p>
+                      <div className="flex-1">
+                        <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-3 block">Preview</label>
+                        <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 p-5 shadow-xl relative overflow-hidden">
+                          <div className="absolute -top-6 -right-6 w-28 h-28 rounded-full bg-white/10" />
+                          <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-white/5" />
+                          <p className="text-white font-black text-lg mb-1 relative">{popupForm.heading || "Your Heading Here"}</p>
+                          <p className="text-white/70 text-[10px] mb-4 relative">{popupForm.sub || "Sub-text goes here"}</p>
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Clock className="w-3 h-3 text-white/60" />
+                            <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
                           </div>
-                        );
-                      })()}
+                          <div className="flex items-center gap-1.5">
+                            {[{ v: "24", l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }].map((b, i) => (
+                              <Fragment key={i}>
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <div className="w-9 h-9 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
+                                    <span className="text-sm font-black text-white tabular-nums">{b.v}</span>
+                                  </div>
+                                  <span className="text-[8px] font-bold text-white/60 uppercase">{b.l}</span>
+                                </div>
+                                {i < 2 && <span className="text-white/40 font-black text-base pb-3">:</span>}
+                              </Fragment>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex gap-3">
@@ -1141,15 +1128,27 @@ const AdminDashboard = () => {
               </div>
 
               {/* ── OFFER BANNERS SECTION ── */}
-              <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm">
-                <div>
-                  <h3 className="text-xl font-black text-[#1a1f36]">Offer Banners</h3>
-                  <p className="text-xs text-[#7a869a]">Upload banner images — toggle active/inactive</p>
-                </div>
-                <Button onClick={() => openOfferForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest">
-                  <Plus className="w-4 h-4 mr-2" />Upload Banner
-                </Button>
-              </div>
+              {(() => {
+                const bannerCount = offers.filter(o => o.title !== "__popup__").length;
+                return (
+                  <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm">
+                    <div>
+                      <h3 className="text-xl font-black text-[#1a1f36]">Offer Banners</h3>
+                      <p className="text-xs text-[#7a869a]">
+                        Upload banner images — toggle active/inactive
+                        <span className={`ml-2 font-bold ${bannerCount >= 3 ? "text-red-500" : "text-[#1a1f36]"}`}>({bannerCount}/3)</span>
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => openOfferForm()}
+                      disabled={bannerCount >= 3}
+                      className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />Upload Banner
+                    </Button>
+                  </div>
+                );
+              })()}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {offers.filter(o => o.title !== "__popup__").map(offer => (

@@ -23,6 +23,13 @@ router.get('/active', async (req, res) => {
 
 router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
+        // Enforce max 3 non-popup banners
+        if (req.body.title !== '__popup__') {
+            const bannerCount = await Offer.countDocuments({ title: { $ne: '__popup__' } });
+            if (bannerCount >= 3) {
+                return res.status(400).json({ message: 'Maximum of 3 offer banners allowed. Delete one before adding a new one.' });
+            }
+        }
         if (req.body.active) await Offer.updateMany({}, { active: false });
         const offer = await new Offer(req.body).save();
         res.status(201).json(offer);
