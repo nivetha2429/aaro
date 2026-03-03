@@ -361,7 +361,8 @@ const AdminDashboard = () => {
         discount: 0,
       };
       if (existing) {
-        await updateOffer({ ...existing, ...payload });
+        // Pass only id + clean payload — server strips _id/_v but keep client clean too
+        await updateOffer({ id: existing.id, ...payload } as any);
       } else {
         await addOffer(payload);
       }
@@ -1129,17 +1130,23 @@ const AdminDashboard = () => {
                             <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            {[{ v: String(popupForm.hours).padStart(2, "0"), l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }].map((b, i) => (
-                              <Fragment key={i}>
-                                <div className="flex flex-col items-center gap-0.5">
-                                  <div className="w-9 h-9 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
-                                    <span className="text-sm font-black text-white tabular-nums">{b.v}</span>
+                            {(() => {
+                              const h = popupForm.hours;
+                              const boxes = h >= 24
+                                ? [{ v: String(Math.floor(h / 24)).padStart(2, "0"), l: "Days" }, { v: String(h % 24).padStart(2, "0"), l: "Hrs" }, { v: "00", l: "Min" }]
+                                : [{ v: String(h).padStart(2, "0"), l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }];
+                              return boxes.map((b, i) => (
+                                <Fragment key={i}>
+                                  <div className="flex flex-col items-center gap-0.5">
+                                    <div className="w-9 h-9 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
+                                      <span className="text-sm font-black text-white tabular-nums">{b.v}</span>
+                                    </div>
+                                    <span className="text-[8px] font-bold text-white/60 uppercase">{b.l}</span>
                                   </div>
-                                  <span className="text-[8px] font-bold text-white/60 uppercase">{b.l}</span>
-                                </div>
-                                {i < 2 && <span className="text-white/40 font-black text-base pb-3">:</span>}
-                              </Fragment>
-                            ))}
+                                  {i < 2 && <span className="text-white/40 font-black text-base pb-3">:</span>}
+                                </Fragment>
+                              ));
+                            })()}
                           </div>
                         </div>
                       </div>

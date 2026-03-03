@@ -1,15 +1,9 @@
 import { X, Tag, ArrowRight, Clock } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useData } from "@/context/DataContext";
 import { Link } from "react-router-dom";
 
-interface TimeLeft {
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
-// ── Countdown box ─────────────────────────────────────────────────────────────
+// ── Countdown box ──────────────────────────────────────────────────────────────
 const Box = ({ value, label }: { value: number; label: string }) => (
   <div className="flex flex-col items-center gap-1">
     <div className="w-12 h-12 rounded-xl bg-white/20 border border-white/30 backdrop-blur-sm flex items-center justify-center shadow-inner">
@@ -19,50 +13,71 @@ const Box = ({ value, label }: { value: number; label: string }) => (
   </div>
 );
 
+const Colon = () => (
+  <span className="text-white/40 font-black text-xl pb-4 select-none">:</span>
+);
+
+// ── Compute remaining time from end Date ───────────────────────────────────────
+function calcTimeLeft(end: Date) {
+  const diff = end.getTime() - Date.now();
+  if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+  return {
+    days: Math.floor(diff / 86_400_000),
+    hours: Math.floor((diff % 86_400_000) / 3_600_000),
+    minutes: Math.floor((diff % 3_600_000) / 60_000),
+    seconds: Math.floor((diff % 60_000) / 1_000),
+    expired: false,
+  };
+}
+
 export const OfferPopup = () => {
   const { offers } = useData();
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ hours: 24, minutes: 0, seconds: 0 });
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 24, minutes: 0, seconds: 0, expired: false });
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // The popup offer is identified by title === "__popup__" and active === true
+  // popup offer identified by title === "__popup__" and active === true
   const popupOffer = offers.find(o => o.title === "__popup__" && o.active);
-
-  // heading is stored in description, sub-text in tag, countdown end ISO in code
   const heading = popupOffer?.description || "Exclusive Offer!";
   const sub = popupOffer?.tag || "Limited time deals on phones & laptops";
 
-  // ── Countdown timer ───────────────────────────────────────────────────────
+  // ── Countdown timer ────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!popupOffer) return;
+    // Clear any existing interval first
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
 
-    const getEnd = () => {
-      if (popupOffer.code) {
-        const d = new Date(popupOffer.code);
-        if (!isNaN(d.getTime())) return d;
-      }
-      // fallback: 24h from now
-      const d = new Date();
-      d.setHours(d.getHours() + 24);
-      return d;
-    };
+    if (!popupOffer?.code) return;
 
-    const end = getEnd();
+    const end = new Date(popupOffer.code);
+    if (isNaN(end.getTime())) return; // invalid date — bail out
+
     const tick = () => {
-      const diff = end.getTime() - Date.now();
-      if (diff <= 0) { setTimeLeft({ hours: 0, minutes: 0, seconds: 0 }); return; }
-      setTimeLeft({
-        hours: Math.floor(diff / 3600000),
-        minutes: Math.floor((diff % 3600000) / 60000),
-        seconds: Math.floor((diff % 60000) / 1000),
-      });
+      const tl = calcTimeLeft(end);
+      setTimeLeft(tl);
+      if (tl.expired) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      }
     };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [popupOffer?.code]);
 
-  // ── Auto-show logic ───────────────────────────────────────────────────────
+    tick(); // run immediately so there's no 1-second blank
+    intervalRef.current = setInterval(tick, 1000);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [popupOffer?.code]); // re-run only when the end-time string changes
+
+  // ── Auto-show logic ────────────────────────────────────────────────────────
   useEffect(() => {
     if (!popupOffer) return;
     if (!sessionStorage.getItem("seenOffer")) {
@@ -73,16 +88,24 @@ export const OfferPopup = () => {
       return () => clearTimeout(t);
     }
     setMinimized(true);
-  }, [popupOffer]);
+  }, [!!popupOffer]); // only re-run when popup existence changes
 
-  const close = (e?: React.MouseEvent) => { e?.stopPropagation(); setOpen(false); setMinimized(true); };
+  const close = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setOpen(false);
+    setMinimized(true);
+  };
+
   const dismiss = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOpen(false); setMinimized(false);
+    setOpen(false);
+    setMinimized(false);
     sessionStorage.setItem("dismissedOffer", "true");
   };
 
   if (!popupOffer || sessionStorage.getItem("dismissedOffer") === "true") return null;
+
+  const showDays = timeLeft.days > 0;
 
   return (
     <>
@@ -96,7 +119,6 @@ export const OfferPopup = () => {
             className="w-full max-w-lg rounded-[2rem] overflow-hidden shadow-2xl relative animate-scale-in"
             onClick={e => e.stopPropagation()}
           >
-            {/* Fixed purple gradient body */}
             <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 p-8 md:p-10 relative overflow-hidden">
               {/* Decorative blobs */}
               <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/10" />
@@ -124,15 +146,27 @@ export const OfferPopup = () => {
               <div className="mb-8">
                 <div className="flex items-center gap-1.5 mb-3">
                   <Clock className="w-3.5 h-3.5 text-white/60" />
-                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
+                  <span className="text-[10px] font-bold text-white/60 uppercase tracking-widest">
+                    {timeLeft.expired ? "Offer has ended" : "Offer ends in"}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Box value={timeLeft.hours} label="Hrs" />
-                  <span className="text-white/40 font-black text-xl pb-4">:</span>
-                  <Box value={timeLeft.minutes} label="Min" />
-                  <span className="text-white/40 font-black text-xl pb-4">:</span>
-                  <Box value={timeLeft.seconds} label="Sec" />
-                </div>
+                {timeLeft.expired ? (
+                  <p className="text-white/50 text-sm font-bold">This offer has expired.</p>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    {showDays && (
+                      <>
+                        <Box value={timeLeft.days} label="Days" />
+                        <Colon />
+                      </>
+                    )}
+                    <Box value={timeLeft.hours} label="Hrs" />
+                    <Colon />
+                    <Box value={timeLeft.minutes} label="Min" />
+                    <Colon />
+                    <Box value={timeLeft.seconds} label="Sec" />
+                  </div>
+                )}
               </div>
 
               {/* CTA */}
@@ -147,7 +181,10 @@ export const OfferPopup = () => {
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </Link>
-                <button onClick={dismiss} className="text-white/50 hover:text-white/80 text-xs font-bold transition-colors whitespace-nowrap">
+                <button
+                  onClick={dismiss}
+                  className="text-white/50 hover:text-white/80 text-xs font-bold transition-colors whitespace-nowrap"
+                >
                   Don't show
                 </button>
               </div>
@@ -160,11 +197,11 @@ export const OfferPopup = () => {
       {minimized && !open && (
         <button
           onClick={() => { setMinimized(false); setOpen(true); }}
-          className="fixed bottom-6 left-6 z-50 bg-gradient-to-br from-violet-600 to-purple-700 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 hover:scale-105 transition-all animate-fade-in group border border-white/20"
+          className="fixed bottom-6 left-6 z-50 bg-gradient-to-br from-violet-600 to-purple-700 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 hover:scale-105 transition-all animate-fade-in border border-white/20"
         >
           <Tag className="w-4 h-4" />
           <span className="text-xs font-black">Special Offer</span>
-          <span className="flex h-2 w-2 ml-1">
+          <span className="flex h-2 w-2 ml-1 relative">
             <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
           </span>
