@@ -23,7 +23,7 @@ interface DataContextType {
     addCategory: (category: Partial<Category>) => Promise<void>;
     updateCategory: (category: Category) => Promise<void>;
     deleteCategory: (id: string) => Promise<void>;
-    addBrand: (brand: Partial<Brand>) => Promise<void>;
+    addBrand: (brand: Partial<Brand>) => Promise<Brand>;
     updateBrand: (brand: Brand) => Promise<void>;
     deleteBrand: (id: string) => Promise<void>;
     addOffer: (offer: Partial<Offer>) => Promise<void>;
@@ -127,7 +127,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchModels = async () => {
         try {
-            const res = await fetch(`${API_URL}/models`);
+            const res = await fetch(`${API_URL}/products/models`);
             if (res.ok) setModels((await res.json()).map(mapModel));
         } catch (e) {
             console.error("Models fetch failed:", e);
@@ -137,36 +137,39 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const loadAllData = async () => {
             setLoading(true);
-            try {
-                const [productsRes, categoriesRes, offersRes, modelsRes, brandsRes] =
-                    await Promise.all([
-                        fetch(`${API_URL}/products`),
-                        fetch(`${API_URL}/categories`),
-                        fetch(`${API_URL}/offers`),
-                        fetch(`${API_URL}/models`),
-                        fetch(`${API_URL}/brands`),
-                    ]);
+            const results = await Promise.allSettled([
+                fetch(`${API_URL}/products`).then(r => r.ok ? r.json() : Promise.reject(`products ${r.status}`)),
+                fetch(`${API_URL}/categories`).then(r => r.ok ? r.json() : Promise.reject(`categories ${r.status}`)),
+                fetch(`${API_URL}/offers`).then(r => r.ok ? r.json() : Promise.reject(`offers ${r.status}`)),
+                fetch(`${API_URL}/products/models`).then(r => r.ok ? r.json() : Promise.reject(`models ${r.status}`)),
+                fetch(`${API_URL}/brands`).then(r => r.ok ? r.json() : Promise.reject(`brands ${r.status}`)),
+            ]);
 
-                const [productsData, categoriesData, offersData, modelsData, brandsData] =
-                    await Promise.all([
-                        productsRes.json(),
-                        categoriesRes.json(),
-                        offersRes.json(),
-                        modelsRes.json(),
-                        brandsRes.json(),
-                    ]);
+            const [productsResult, categoriesResult, offersResult, modelsResult, brandsResult] = results;
 
-                setProducts(productsData.map(mapProduct));
-                setCategories(categoriesData.map(mapCategory));
-                setBrands(brandsData.map(mapBrand));
-                setOffers(offersData.map(mapOffer));
-                setActiveOffer(offersData.map(mapOffer).find((o: Offer) => o.active) || null);
-                setModels(modelsData.map(mapModel));
-            } catch (e) {
-                console.error("Initial data fetch failed:", e);
-            } finally {
-                setLoading(false);
-            }
+            if (productsResult.status === 'fulfilled' && Array.isArray(productsResult.value))
+                setProducts(productsResult.value.map(mapProduct));
+            else console.error("Products fetch failed:", productsResult.status === 'rejected' ? productsResult.reason : 'not array');
+
+            if (categoriesResult.status === 'fulfilled' && Array.isArray(categoriesResult.value))
+                setCategories(categoriesResult.value.map(mapCategory));
+            else console.error("Categories fetch failed:", categoriesResult.status === 'rejected' ? categoriesResult.reason : 'not array');
+
+            if (offersResult.status === 'fulfilled' && Array.isArray(offersResult.value)) {
+                const offersData = offersResult.value.map(mapOffer);
+                setOffers(offersData);
+                setActiveOffer(offersData.find((o: Offer) => o.active) || null);
+            } else console.error("Offers fetch failed:", offersResult.status === 'rejected' ? offersResult.reason : 'not array');
+
+            if (modelsResult.status === 'fulfilled' && Array.isArray(modelsResult.value))
+                setModels(modelsResult.value.map(mapModel));
+            else console.error("Models fetch failed:", modelsResult.status === 'rejected' ? modelsResult.reason : 'not array');
+
+            if (brandsResult.status === 'fulfilled' && Array.isArray(brandsResult.value))
+                setBrands(brandsResult.value.map(mapBrand));
+            else console.error("Brands fetch failed:", brandsResult.status === 'rejected' ? brandsResult.reason : 'not array');
+
+            setLoading(false);
         };
         loadAllData();
     }, []);
@@ -230,14 +233,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     // ── Brands ──
-    const addBrand = async (brand: Partial<Brand>) => {
+    const addBrand = async (brand: Partial<Brand>): Promise<Brand> => {
         const res = await fetch(`${API_URL}/brands`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(brand),
         });
         if (!res.ok) throw new Error((await res.json()).message);
+        const created = await res.json();
         await fetchBrands();
+        return mapBrand(created);
     };
 
     const updateBrand = async (brand: Brand) => {
@@ -251,10 +256,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteBrand = async (id: string) => {
-        await fetch(`${API_URL}/brands/${id}`, {
+        const res = await fetch(`${API_URL}/brands/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
+        if (!res.ok) throw new Error((await res.json()).message || "Delete failed");
         await fetchBrands();
     };
 
@@ -280,18 +286,12 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteOffer = async (id: string) => {
-        try {
-            const token = localStorage.getItem("aaro_token");
-            await fetch(`${API_URL}/offers/${id}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setOffers((prev) => prev.filter((o) => o.id !== id)); // Assuming 'id' is the correct property
-            // toast.success("Offer deleted"); // Assuming toast is available
-        } catch (err: any) {
-            console.error(err.message || "Failed to delete offer"); // Log error instead of toast
-            // toast.error(err.message || "Failed to delete offer");
-        }
+        const res = await fetch(`${API_URL}/offers/${id}`, {
+            method: "DELETE",
+            headers: authHeaders(),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        await fetchOffers();
     };
 
     // ── Reviews ──
@@ -326,7 +326,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     // ── Models ──
     const fetchModelsByCategory = async (category: string) => {
         try {
-            const res = await fetch(`${API_URL}/models?category=${category}`);
+            const res = await fetch(`${API_URL}/products/models?category=${category}`);
             if (!res.ok) throw new Error("Failed to fetch models");
             return (await res.json()).map(mapModel);
         } catch (err) {
@@ -338,7 +338,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     // ── Variants ──
     const fetchVariants = async (productId: string): Promise<Variant[]> => {
         try {
-            const res = await fetch(`${API_URL}/variants/${productId}`);
+            const res = await fetch(`${API_URL}/products/variants/${productId}`);
             if (res.ok) return (await res.json()).map(mapVariant);
         } catch (e) {
             console.error("Variants fetch failed:", e);
@@ -347,7 +347,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addVariant = async (variant: Partial<Variant>) => {
-        const res = await fetch(`${API_URL}/variants`, {
+        const res = await fetch(`${API_URL}/products/variants`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(variant),
@@ -356,7 +356,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateVariant = async (variant: Variant) => {
-        const res = await fetch(`${API_URL}/variants/${variant.id}`, {
+        const res = await fetch(`${API_URL}/products/variants/${variant.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(variant),
@@ -365,7 +365,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteVariant = async (id: string) => {
-        const res = await fetch(`${API_URL}/variants/${id}`, {
+        const res = await fetch(`${API_URL}/products/variants/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });

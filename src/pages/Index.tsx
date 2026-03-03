@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, Star, ArrowRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import BrandLogo from "@/components/BrandLogo";
 
 import { OfferPopup } from "@/components/OfferPopup";
 import { useData } from "@/context/DataContext";
@@ -148,17 +149,11 @@ const Index = () => {
 
                     {/* Logo Container - White Square */}
                     <div className="relative z-10 w-16 h-16 sm:w-20 sm:h-20 mb-4 flex items-center justify-center bg-white shadow-sm rounded-2xl group-hover/brand:scale-110 transition-transform duration-500 border border-primary/5">
-                      {brandEntry?.image ? (
-                        <img
-                          src={brandEntry.image}
-                          alt={brandName}
-                          className="w-10 h-10 md:w-14 md:h-14 object-contain filter group-hover/brand:brightness-110"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center">
-                          <span className="text-xl font-black text-primary/30 tracking-tighter leading-none">{brandName.charAt(0)}</span>
-                        </div>
-                      )}
+                      <BrandLogo
+                        src={brandEntry?.image}
+                        name={brandName}
+                        imgClassName="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 object-contain filter group-hover/brand:brightness-110"
+                      />
                     </div>
 
                     {/* Brand Name - Muted Gradient Look */}

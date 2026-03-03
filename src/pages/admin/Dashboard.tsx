@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, Fragment } from "react";
+import { useState, useEffect, useMemo, Fragment, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Trash2, Plus, Edit, X, Package, BarChart3, TrendingUp, Smartphone, Laptop, Tag, Link as LinkIcon, AlertCircle, ChevronDown, Check, ShoppingCart, Star, LogOut, LayoutDashboard, Pencil, Users, Menu, Bell, Layers, Search, Filter, RefreshCw, ArrowLeft, Clock, Truck, CheckCircle, Loader2, Wand2, Globe } from "lucide-react";
+import { Trash2, Plus, Edit, X, Package, BarChart3, TrendingUp, Smartphone, Laptop, Tag, Link as LinkIcon, AlertCircle, ChevronDown, Check, ShoppingCart, Star, LogOut, LayoutDashboard, Pencil, Users, Menu, Bell, Layers, Search, Filter, RefreshCw, ArrowLeft, Clock, Truck, CheckCircle, Loader2, Upload } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import { useAuth } from "@/context/AuthContext";
 import { Product, Category, Offer, ProductModel, Variant, Brand } from "@/data/products";
@@ -55,37 +55,75 @@ const getBrandDomain = (name: string) => {
 };
 
 // ─── BRAND CARD ───
-const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; categoryName: string; onEdit: () => void; onDelete: () => void }) => {
-  const [fetching, setFetching] = useState(false);
+const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; categoryName: string; onEdit: () => void; onDelete: () => Promise<void> }) => {
+  const [busy, setBusy] = useState(false);
   const [imgSrc, setImgSrc] = useState(brand.image || "");
+  const [imgError, setImgError] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleAutoFetch = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFetching(true);
+  useEffect(() => {
+    if (brand.image) { setImgSrc(brand.image); setImgError(false); }
+  }, [brand.image]);
+
+  // Upload logo manually from local file
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return toast.error("Please select an image file");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    e.target.value = "";
+    setBusy(true);
     try {
       const token = localStorage.getItem("aaro_token");
-      const res = await fetch(`${API_URL}/brands/${brand._id || brand.id}/fetch-logo`, {
+      const formData = new FormData();
+      formData.append("image", file);
+      const uploadRes = await fetch(`${API_URL}/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
+        body: formData,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setImgSrc(data.url);
-      toast.success(`Logo fetched for ${brand.name}!`);
+      if (!uploadRes.ok) throw new Error((await uploadRes.json()).message);
+      const { url } = await uploadRes.json();
+      const updateRes = await fetch(`${API_URL}/brands/${brand.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ image: url }),
+      });
+      if (!updateRes.ok) throw new Error("Failed to save logo");
+      setImgSrc(url);
+      setImgError(false);
+      toast.success(`Logo uploaded for ${brand.name}!`);
     } catch (err: any) {
-      toast.error(err.message || "Logo not found");
+      toast.error(err.message || "Upload failed");
     } finally {
-      setFetching(false);
+      setBusy(false);
     }
   };
 
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm(`Delete brand "${brand.name}"?`)) return;
+    setBusy(true);
+    try {
+      await onDelete();
+      toast.success(`${brand.name} deleted`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete brand");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const showLogo = imgSrc && !imgError;
+
   return (
     <Card className="border-none shadow-sm rounded-3xl p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden">
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadFile} />
       <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary/50 flex items-center justify-center mb-3 overflow-hidden border border-border relative">
-        {imgSrc
-          ? <img src={imgSrc} alt={brand.name} className="w-full h-full object-contain p-2" />
-          : fetching
-            ? <Loader2 className="w-6 h-6 text-primary animate-spin" />
+        {busy
+          ? <Loader2 className="w-6 h-6 text-primary animate-spin" />
+          : showLogo
+            ? <img src={imgSrc} alt={brand.name} className="w-full h-full object-contain p-2" onError={() => setImgError(true)} />
             : <Tag className="w-6 h-6 text-muted-foreground" />
         }
       </div>
@@ -94,19 +132,12 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
 
       {/* Action buttons */}
       <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-white via-white to-transparent translate-y-full group-hover:translate-y-0 transition-transform flex justify-center gap-1.5">
-        {!imgSrc && (
-          <Button
-            variant="outline" size="icon"
-            onClick={handleAutoFetch}
-            disabled={fetching}
-            title="Auto-fetch logo"
-            className="w-8 h-8 rounded-lg bg-primary/5 border-primary/20 text-primary hover:bg-primary hover:text-white"
-          >
-            {fetching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-          </Button>
-        )}
-        <Button variant="outline" size="icon" onClick={onEdit} className="w-8 h-8 rounded-lg bg-white"><Pencil className="w-3 h-3" /></Button>
-        <Button variant="ghost" size="icon" onClick={onDelete} className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive bg-white"><Trash2 className="w-3 h-3" /></Button>
+        <Button variant="outline" size="icon" onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }} disabled={busy} title="Upload logo from device"
+          className="w-8 h-8 rounded-lg bg-white border-border hover:bg-primary/5">
+          <Upload className="w-3 h-3" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={e => { e.stopPropagation(); onEdit(); }} className="w-8 h-8 rounded-lg bg-white"><Pencil className="w-3 h-3" /></Button>
+        <Button variant="ghost" size="icon" onClick={handleDelete} disabled={busy} className="h-8 w-8 rounded-lg hover:bg-destructive/10 hover:text-destructive bg-white"><Trash2 className="w-3 h-3" /></Button>
       </div>
     </Card>
   );
@@ -278,8 +309,23 @@ const AdminDashboard = () => {
         await updateBrand({ ...editingBrand, ...brandForm });
         toast.success("Brand updated!");
       } else {
-        await addBrand({ name: brandForm.name.trim(), slug: `${brandForm.name.trim().toLowerCase().replace(/\s+/g, '-')}-${brandForm.category}`, category: brandForm.category, description: "", image: brandForm.image, productCount: 0 });
-        toast.success(`Brand "${brandForm.name}" added!`);
+        const created = await addBrand({ name: brandForm.name.trim(), slug: `${brandForm.name.trim().toLowerCase().replace(/\s+/g, '-')}-${brandForm.category}`, category: brandForm.category, description: "", image: brandForm.image, productCount: 0 });
+        // Auto-fetch logo from internet if none was uploaded
+        if (!brandForm.image && created?.id) {
+          toast.loading(`Fetching logo for ${brandForm.name}...`, { id: "logo-fetch" });
+          try {
+            const token = localStorage.getItem("aaro_token");
+            await fetch(`${API_URL}/brands/${created.id}/fetch-logo`, {
+              method: "POST",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            toast.success(`Brand "${brandForm.name}" added with logo!`, { id: "logo-fetch" });
+          } catch {
+            toast.success(`Brand "${brandForm.name}" added!`, { id: "logo-fetch" });
+          }
+        } else {
+          toast.success(`Brand "${brandForm.name}" added!`);
+        }
       }
       setShowBrandForm(false);
     } catch { toast.error("Failed to save brand"); }
@@ -616,7 +662,10 @@ const AdminDashboard = () => {
                             {isExpanded && (
                               <div className="px-3 pb-4 space-y-2 bg-[#fafbfd]">
                                 <div className="flex items-center justify-between mb-2">
-                                  <p className="text-[10px] font-black text-[#a3acb9] uppercase tracking-widest">{p.brand}</p>
+                                  <div className="flex items-center gap-1.5">
+                                    {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-5 h-5 object-contain rounded shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
+                                    <p className="text-[10px] font-black text-[#a3acb9] uppercase tracking-widest">{p.brand}</p>
+                                  </div>
                                   <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="icon" onClick={() => handleOpenProductModal(p)} className="h-7 w-7 rounded-xl hover:bg-primary/10 hover:text-primary"><Pencil className="w-3 h-3" /></Button>
                                     <Button variant="ghost" size="icon" onClick={() => deleteProduct(pid)} className="h-7 w-7 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3 h-3" /></Button>
@@ -678,7 +727,12 @@ const AdminDashboard = () => {
                                             <span className="font-bold text-[#1a1f36] text-xs sm:text-sm line-clamp-2 max-w-[120px] sm:max-w-[160px]">{p.name}</span>
                                           </div>
                                         </td>
-                                        <td rowSpan={rows.length} className="px-3 sm:px-6 align-middle text-[#7a869a] text-xs font-semibold border-r border-[#f0f2f7]">{p.brand}</td>
+                                        <td rowSpan={rows.length} className="px-3 sm:px-6 align-middle border-r border-[#f0f2f7]">
+                                          <div className="flex items-center gap-2">
+                                            {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-6 h-6 object-contain rounded shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
+                                            <span className="text-[#7a869a] text-xs font-semibold">{p.brand}</span>
+                                          </div>
+                                        </td>
                                       </>
                                     )}
                                     <td className="px-3 sm:px-5 py-2 text-xs font-bold text-[#8a92a6]">{v?.ram || <span className="text-[#d0d5dd]">—</span>}</td>
@@ -767,11 +821,9 @@ const AdminDashboard = () => {
               <div>
                 <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-4">
                   <div><h3 className="text-xl font-black text-[#1a1f36]">Brands</h3><p className="text-xs text-[#7a869a]">Manage featured product brands</p></div>
-                  <div className="flex items-center gap-2">
-                    <Button onClick={() => openBrandForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 px-6 font-black uppercase text-[10px] tracking-widest transition-transform hover:scale-105">
-                      <Plus className="w-4 h-4 mr-2" />New Brand
-                    </Button>
-                  </div>
+                  <Button onClick={() => openBrandForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 px-6 font-black uppercase text-[10px] tracking-widest transition-transform hover:scale-105">
+                    <Plus className="w-4 h-4 mr-2" />New Brand
+                  </Button>
                 </div>
                 <div className="space-y-8">
                   {categories.map(c => {
@@ -790,18 +842,6 @@ const AdminDashboard = () => {
                       </div>
                     );
                   })}
-                  {brands.filter(b => !categories.some(c => (c.slug || c.name.toLowerCase()) === b.category)).length > 0 && (
-                    <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest text-[#7a869a] mb-4 flex items-center gap-2">
-                        Other Brands
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {brands.filter(b => !categories.some(c => (c.slug || c.name.toLowerCase()) === b.category)).map(b => (
-                          <BrandCard key={b.id} brand={b} categoryName="" onEdit={() => openBrandForm(b)} onDelete={() => deleteBrand(b.id)} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </TabsContent>

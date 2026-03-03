@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Smartphone, Laptop, ArrowUpRight, Package } from "lucide-react";
 import { useData } from "@/context/DataContext";
+import BrandLogo from "@/components/BrandLogo";
 
 const Brands = () => {
   const { products, brands: brandsData, loading } = useData();
@@ -63,18 +64,15 @@ const Brands = () => {
             {/* Hover tint */}
             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
 
-            <div className="relative z-10 p-5 flex flex-col items-center text-center gap-3">
+            <div className="relative z-10 p-4 sm:p-5 flex flex-col items-center text-center gap-3">
               {/* Brand Logo or Initial */}
-              <div className="w-16 h-16 rounded-2xl bg-secondary/40 border border-border flex items-center justify-center overflow-hidden">
-                {brand.image ? (
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    className="w-12 h-12 object-contain transition-all duration-300"
-                  />
-                ) : (
-                  <span className="text-2xl font-black text-foreground/40 tracking-tight">{brand.initial}</span>
-                )}
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-border shadow-sm flex items-center justify-center overflow-hidden">
+                <BrandLogo
+                  src={brand.image}
+                  name={brand.name}
+                  imgClassName="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 object-contain transition-all duration-300"
+                  fallbackClassName="text-2xl font-black text-foreground/40 tracking-tight"
+                />
               </div>
 
               {/* Brand Name */}

@@ -8,12 +8,12 @@ const Register = () => {
     const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login, isAuthenticated } = useAuth();
-    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    const { login, isAuthenticated, loading: authLoading } = useAuth();
+    const API_URL = import.meta.env.VITE_API_URL || "/api";
 
     useEffect(() => {
-        if (isAuthenticated) navigate("/", { replace: true });
-    }, [isAuthenticated, navigate]);
+        if (!authLoading && isAuthenticated) navigate("/", { replace: true });
+    }, [isAuthenticated, authLoading, navigate]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();

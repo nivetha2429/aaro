@@ -4,9 +4,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
 import fs from 'fs';
 
 import authRouter from './routes/auth.js';
@@ -31,11 +32,27 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const IS_PROD = process.env.NODE_ENV === 'production';
+
+// ── Compression (gzip) ──
+app.use(compression());
 
 // ── Security Headers ──
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"], // Tailwind CSS requires inline styles
+            imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+            fontSrc: ["'self'", 'https:'],
+            connectSrc: ["'self'", 'https:'],
+            mediaSrc: ["'self'", 'https:', 'blob:'],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: IS_PROD ? [] : null,
+        },
+    },
 }));
 
 // ── CORS ──
@@ -43,73 +60,100 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
     : ['https://aaro-8w5a.onrender.com'];
 
-if (process.env.NODE_ENV !== 'production') {
+if (!IS_PROD) {
     allowedOrigins.push('http://localhost:8000', 'http://localhost:5173', 'http://localhost:3000');
 }
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
+        if (!origin || allowedOrigins.includes(origin) || (!IS_PROD && isLocal)) {
+            return callback(null, true);
+        }
         callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
 }));
 
 // ── Request Logging ──
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(morgan(IS_PROD ? 'combined' : 'dev'));
 
-// ── Body Parsing ──
-app.use(express.json({ limit: '10mb' }));
+// ── Body Parsing (500kb limit prevents JSON body DoS) ──
+app.use(express.json({ limit: '500kb' }));
+app.use(express.urlencoded({ extended: true, limit: '500kb' }));
 
-// ── Static: Uploads (local fallback) ──
+// ── Global API Rate Limiter (100 req / 15 min per IP) ──
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: { message: 'Too many requests, please try again later' },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (_req) => !IS_PROD, // only enforce in production
+});
+app.use('/api', globalLimiter);
+
+// ── Health Check (Render needs this) ──
+app.get('/health', (_req, res) => {
+    const dbState = mongoose.connection.readyState;
+    // 1 = connected, 2 = connecting
+    if (dbState === 1 || dbState === 2) {
+        return res.status(200).json({ status: 'ok', db: 'connected' });
+    }
+    res.status(503).json({ status: 'degraded', db: 'disconnected' });
+});
+
+// ── Static: Uploads ──
 const uploadsPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
 app.use('/uploads', express.static(uploadsPath));
 
-// ── Static: React Frontend ──
-const distPath = path.join(__dirname, '..', 'dist');
-app.use(express.static(distPath));
-
-// ── API Routes ──
-app.use('/api/auth',       authRouter);
-app.use('/api/products',   productRouter);
+// ── API Routes (must come before static/SPA catch-all) ──
+app.use('/api/auth', authRouter);
+app.use('/api/products', productRouter);
 app.use('/api/categories', categoryRouter);
-app.use('/api/brands',     brandRouter);
-app.use('/api/reviews',    reviewRouter);
-app.use('/api/offers',     offerRouter);
-app.use('/api/orders',     orderRouter);
-app.use('/api/upload',     createUploadRouter(uploadsPath));
+app.use('/api/brands', brandRouter);
+app.use('/api/reviews', reviewRouter);
+app.use('/api/offers', offerRouter);
+app.use('/api/orders', orderRouter);
+app.use('/api/upload', createUploadRouter(uploadsPath));
 
-// ── SPA Catch-all ──
-app.get(/^(?!\/api|\/uploads).*$/, (_req, res) => {
-    res.sendFile(path.join(distPath, 'index.html'));
+// ── Static: React Frontend & SPA Catch-all ──
+const distPath = path.join(__dirname, '..', 'dist');
+const indexHtml = path.join(distPath, 'index.html');
+app.use(express.static(distPath));
+app.use((_req, res, next) => {
+    // API / uploads / health are handled above — skip them
+    if (_req.path.startsWith('/api') || _req.path.startsWith('/uploads') || _req.path === '/health') {
+        return next();
+    }
+    // Always send index.html so React Router handles the URL on the client
+    res.sendFile(indexHtml, (err) => {
+        if (err) next(err); // fall to global error handler (404 / ENOENT in dev without build)
+    });
 });
 
 // ── Global Error Handler ──
 app.use((err, _req, res, _next) => {
-    console.error(`[${new Date().toISOString()}] Unhandled error: ${err.message}`);
-    res.status(err.status || 500).json({ message: 'Internal server error' });
+    const status = err.status || err.statusCode || 500;
+    console.error(`[${new Date().toISOString()}] ${status} ${err.message}`);
+    res.status(status).json({ message: IS_PROD ? 'Internal server error' : err.message });
 });
 
 // ── Database Connection ──
 const connectDB = async () => {
     const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+        console.error('✗ MONGODB_URI is not set in .env — cannot start server');
+        process.exit(1);
+    }
     try {
-        if (mongoUri) {
-            await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 5000 });
-            console.log('✓ Connected to MongoDB');
-        } else {
-            throw new Error('MONGODB_URI not set');
-        }
+        await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 30000 });
+        console.log('✓ Connected to MongoDB Atlas');
     } catch (err) {
-        console.warn(`MongoDB failed (${err.message}). Using in-memory fallback...`);
-        try {
-            const memServer = await MongoMemoryServer.create({ binary: { version: '6.0.0' } });
-            await mongoose.connect(memServer.getUri());
-            console.log('✓ Connected to MongoDB Memory Server');
-        } catch (memErr) {
-            console.error('✗ All DB connections failed:', memErr.message);
-        }
+        console.error(`✗ MongoDB connection failed: ${err.message}`);
+        console.error('  Check that MONGODB_URI in server/.env is correct and your IP is whitelisted in Atlas.');
+        process.exit(1);
     }
 };
 

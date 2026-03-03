@@ -6,14 +6,14 @@ import { useAuth } from "@/context/AuthContext";
 
 const Cart = () => {
   const { items, updateQuantity, removeFromCart, totalPrice, totalItems } = useCart();
-  const { isAdmin } = useAuth();
+  const { isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAdmin) {
-      navigate("/");
+    if (!loading && isAdmin) {
+      navigate("/", { replace: true });
     }
-  }, [isAdmin, navigate]);
+  }, [isAdmin, loading, navigate]);
 
   if (items.length === 0) {
     return (

@@ -6,7 +6,7 @@ import { WHATSAPP_NUMBER } from "@/data/products";
 import { MessageCircle, CheckCircle, Package, Home } from "lucide-react";
 import { toast } from "sonner";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const OrderForm = () => {
   const { items, totalPrice, clearCart } = useCart();

@@ -1,9 +1,30 @@
 import { Router } from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
 import Brand from '../models/Brand.js';
 import { authMiddleware, isAdmin } from '../middleware/authMiddleware.js';
 import { mongoError } from '../lib/validate.js';
 
 const router = Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const UPLOADS_PATH = path.join(__dirname, '..', 'uploads');
+
+// Simple Icons CDN slugs — SVG format, vector quality at any size
+const SIMPLE_ICONS = {
+    apple: 'apple', samsung: 'samsung', oneplus: 'oneplus',
+    google: 'google', googlepixel: 'google', xiaomi: 'xiaomi',
+    redmi: 'xiaomi', oppo: 'oppo', vivo: 'vivo',
+    motorola: 'motorola', nokia: 'nokia', iqoo: 'iqoo',
+    infinix: 'infinix', dell: 'dell', hp: 'hp',
+    asus: 'asus', lenovo: 'lenovo', lenova: 'lenovo',
+    acer: 'acer', msi: 'msi', razer: 'razer',
+    sony: 'sony', lg: 'lg', huawei: 'huawei',
+    jbl: 'jbl', bose: 'bose', logitech: 'logitech',
+    iphone: 'apple', xiaomiredmi: 'xiaomi',
+};
 
 const BRAND_DOMAINS = {
     apple: 'apple.com', samsung: 'samsung.com', iphone: 'apple.com',
@@ -20,22 +41,69 @@ const BRAND_DOMAINS = {
     logitech: 'logitech.com', jbl: 'jbl.com', bose: 'bose.com',
 };
 
-async function fetchBrandLogo(brandName) {
-    const key = brandName.toLowerCase().replace(/\s+/g, '');
-    const domain = BRAND_DOMAINS[key] || `${key}.com`;
-    const response = await fetch(`https://logo.clearbit.com/${domain}`, {
-        redirect: 'follow',
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-        signal: AbortSignal.timeout(8000),
-    });
-    if (!response.ok) throw new Error(`Logo not found for ${brandName}`);
-    const contentType = response.headers.get('content-type') || 'image/png';
-    if (!contentType.startsWith('image/')) throw new Error('Response is not an image');
-    const buffer = Buffer.from(await response.arrayBuffer());
-    if (buffer.length > 2 * 1024 * 1024) throw new Error('Logo image exceeds 2MB');
-    return `data:${contentType};base64,${buffer.toString('base64')}`;
+async function tryFetch(url, timeout = 10000) {
+    const res = await fetch(url, { signal: AbortSignal.timeout(timeout) });
+    if (!res.ok) return null;
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('text/html')) return null;
+    const buffer = Buffer.from(await res.arrayBuffer());
+    if (buffer.length < 100) return null;
+    return { buffer, contentType };
 }
 
+// Download HD logo: Simple Icons SVG → Clearbit 256px → Clearbit → Google Favicons
+async function downloadAndSaveLogo(brandName) {
+    const key = brandName.toLowerCase().replace(/\s+/g, '');
+    await fs.mkdir(UPLOADS_PATH, { recursive: true });
+
+    // 1. Try Simple Icons SVG (vector — perfect at any size)
+    const siSlug = SIMPLE_ICONS[key];
+    if (siSlug) {
+        try {
+            const result = await tryFetch(`https://cdn.simpleicons.org/${siSlug}`);
+            if (result) {
+                const filename = `brand-${key}.svg`;
+                await fs.writeFile(path.join(UPLOADS_PATH, filename), result.buffer);
+                return `/uploads/${filename}`;
+            }
+        } catch { /* fall through */ }
+    }
+
+    // 2. Try Clearbit at 256px high-res PNG
+    const domain = BRAND_DOMAINS[key] || `${key}.com`;
+    try {
+        const result = await tryFetch(`https://logo.clearbit.com/${domain}?size=256`);
+        if (result) {
+            const filename = `brand-${key}-256.png`;
+            await fs.writeFile(path.join(UPLOADS_PATH, filename), result.buffer);
+            return `/uploads/${filename}`;
+        }
+    } catch { /* fall through */ }
+
+    // 3. Try Clearbit standard
+    try {
+        const result = await tryFetch(`https://logo.clearbit.com/${domain}`);
+        if (result) {
+            const filename = `brand-${key}-${Date.now()}.png`;
+            await fs.writeFile(path.join(UPLOADS_PATH, filename), result.buffer);
+            return `/uploads/${filename}`;
+        }
+    } catch { /* fall through */ }
+
+    // 4. Google Favicons at 128px
+    try {
+        const result = await tryFetch(`https://www.google.com/s2/favicons?domain=${domain}&sz=128`);
+        if (result) {
+            const filename = `brand-${key}-fav.png`;
+            await fs.writeFile(path.join(UPLOADS_PATH, filename), result.buffer);
+            return `/uploads/${filename}`;
+        }
+    } catch { /* fall through */ }
+
+    return null;
+}
+
+// GET /api/brands
 router.get('/', async (req, res) => {
     try {
         res.json(await Brand.find());
@@ -44,45 +112,41 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/fetch-logo', authMiddleware, isAdmin, async (req, res) => {
-    const { brandName } = req.body;
-    if (!brandName?.trim()) return res.status(400).json({ message: 'Brand name required' });
-    try {
-        res.json({ url: await fetchBrandLogo(brandName.trim()) });
-    } catch (err) {
-        res.status(404).json({ message: err.message || 'Logo not found' });
-    }
-});
-
+// POST /api/brands/fetch-all-logos — download & save logos for every brand
 // Must come before /:id to avoid route conflict
 router.post('/fetch-all-logos', authMiddleware, isAdmin, async (req, res) => {
-    const allBrands = await Brand.find({});
-    const results = { success: [], failed: [] };
-    for (const brand of allBrands) {
-        try {
-            brand.image = await fetchBrandLogo(brand.name);
-            await brand.save();
-            results.success.push(brand.name);
-        } catch (err) {
-            results.failed.push({ name: brand.name, reason: err.message });
+    try {
+        const allBrands = await Brand.find({});
+        const success = [], failed = [];
+
+        for (const brand of allBrands) {
+            const localPath = await downloadAndSaveLogo(brand.name);
+            if (localPath) {
+                brand.image = localPath;
+                await brand.save();
+                success.push(brand.name);
+            } else {
+                failed.push(brand.name);
+            }
         }
+
+        res.json({ success, failed, total: allBrands.length });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-    res.json({ ...results, total: allBrands.length });
 });
 
+// POST /api/brands
 router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const brandData = { ...req.body };
-        if (!brandData.image && brandData.name) {
-            try { brandData.image = await fetchBrandLogo(brandData.name); } catch { /* skip */ }
-        }
-        const brand = await new Brand(brandData).save();
+        const brand = await new Brand(req.body).save();
         res.status(201).json(brand);
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
     }
 });
 
+// PUT /api/brands/:id
 router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -92,18 +156,24 @@ router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
+// POST /api/brands/:id/fetch-logo — download & save logo for one brand
 router.post('/:id/fetch-logo', authMiddleware, isAdmin, async (req, res) => {
     try {
         const brand = await Brand.findById(req.params.id);
         if (!brand) return res.status(404).json({ message: 'Brand not found' });
-        brand.image = await fetchBrandLogo(brand.name);
+
+        const localPath = await downloadAndSaveLogo(brand.name);
+        if (!localPath) return res.status(404).json({ message: `Could not fetch logo for ${brand.name}` });
+
+        brand.image = localPath;
         await brand.save();
         res.json({ url: brand.image, brand });
     } catch (err) {
-        res.status(404).json({ message: err.message || 'Logo not found' });
+        res.status(500).json({ message: err.message || 'Logo fetch failed' });
     }
 });
 
+// DELETE /api/brands/:id
 router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         await Brand.findByIdAndDelete(req.params.id);
