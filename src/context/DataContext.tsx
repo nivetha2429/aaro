@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 import {
     Product,
     Review,
@@ -64,6 +67,8 @@ const normalizeImageUrl = (url: string): string => {
 };
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
@@ -72,6 +77,22 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [models, setModels] = useState<ProductModel[]>([]);
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // ── Global 401 handler: auto-logout on expired/invalid token ──────────────
+    const handleUnauthorized = useCallback(() => {
+        logout();
+        toast.error("Session expired. Please log in again.");
+        navigate("/login", { replace: true });
+    }, [logout, navigate]);
+
+    const guardedFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
+        const res = await fetch(input, init);
+        if (res.status === 401) {
+            handleUnauthorized();
+            throw new Error("Session expired");
+        }
+        return res;
+    }, [handleUnauthorized]);
 
     const mapProduct = (p: any): Product => ({
         ...p,
@@ -176,7 +197,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // ── Products ──
     const addProduct = async (product: Partial<Product>) => {
-        const res = await fetch(`${API_URL}/products`, {
+        const res = await guardedFetch(`${API_URL}/products`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(product),
@@ -186,7 +207,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateProduct = async (product: Product) => {
-        const res = await fetch(`${API_URL}/products/${product.id}`, {
+        const res = await guardedFetch(`${API_URL}/products/${product.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(product),
@@ -196,7 +217,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteProduct = async (id: string) => {
-        await fetch(`${API_URL}/products/${id}`, {
+        await guardedFetch(`${API_URL}/products/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -205,7 +226,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // ── Categories ──
     const addCategory = async (category: Partial<Category>) => {
-        const res = await fetch(`${API_URL}/categories`, {
+        const res = await guardedFetch(`${API_URL}/categories`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(category),
@@ -215,7 +236,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateCategory = async (category: Category) => {
-        const res = await fetch(`${API_URL}/categories/${category.id}`, {
+        const res = await guardedFetch(`${API_URL}/categories/${category.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(category),
@@ -225,7 +246,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteCategory = async (id: string) => {
-        await fetch(`${API_URL}/categories/${id}`, {
+        await guardedFetch(`${API_URL}/categories/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -234,7 +255,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // ── Brands ──
     const addBrand = async (brand: Partial<Brand>): Promise<Brand> => {
-        const res = await fetch(`${API_URL}/brands`, {
+        const res = await guardedFetch(`${API_URL}/brands`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(brand),
@@ -246,7 +267,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateBrand = async (brand: Brand) => {
-        const res = await fetch(`${API_URL}/brands/${brand.id}`, {
+        const res = await guardedFetch(`${API_URL}/brands/${brand.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(brand),
@@ -256,7 +277,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteBrand = async (id: string) => {
-        const res = await fetch(`${API_URL}/brands/${id}`, {
+        const res = await guardedFetch(`${API_URL}/brands/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -266,7 +287,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // ── Offers ──
     const addOffer = async (offer: Partial<Offer>) => {
-        const res = await fetch(`${API_URL}/offers`, {
+        const res = await guardedFetch(`${API_URL}/offers`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(offer),
@@ -276,7 +297,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateOffer = async (offer: Offer) => {
-        const res = await fetch(`${API_URL}/offers/${offer.id}`, {
+        const res = await guardedFetch(`${API_URL}/offers/${offer.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(offer),
@@ -286,7 +307,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteOffer = async (id: string) => {
-        const res = await fetch(`${API_URL}/offers/${id}`, {
+        const res = await guardedFetch(`${API_URL}/offers/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -306,17 +327,17 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addReview = async (review: Partial<Review>) => {
-        const res = await fetch(`${API_URL}/reviews`, {
+        const res = await guardedFetch(`${API_URL}/reviews`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(review),
         });
         if (!res.ok) throw new Error((await res.json()).message);
-        await fetchProducts(); // refresh rating/count
+        await fetchProducts();
     };
 
     const deleteReview = async (id: string) => {
-        await fetch(`${API_URL}/reviews/${id}`, {
+        await guardedFetch(`${API_URL}/reviews/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -347,7 +368,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addVariant = async (variant: Partial<Variant>) => {
-        const res = await fetch(`${API_URL}/products/variants`, {
+        const res = await guardedFetch(`${API_URL}/products/variants`, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify(variant),
@@ -356,7 +377,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const updateVariant = async (variant: Variant) => {
-        const res = await fetch(`${API_URL}/products/variants/${variant.id}`, {
+        const res = await guardedFetch(`${API_URL}/products/variants/${variant.id}`, {
             method: "PUT",
             headers: authHeaders(),
             body: JSON.stringify(variant),
@@ -365,7 +386,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteVariant = async (id: string) => {
-        const res = await fetch(`${API_URL}/products/variants/${id}`, {
+        const res = await guardedFetch(`${API_URL}/products/variants/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
@@ -374,7 +395,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchMyOrders = async () => {
         try {
-            const res = await fetch(`${API_URL}/orders`, {
+            const res = await guardedFetch(`${API_URL}/orders`, {
                 headers: authHeaders(),
             });
             return await res.json();
