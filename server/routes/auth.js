@@ -17,7 +17,7 @@ const authLimiter = rateLimit({
 });
 
 const sign = (user) =>
-    jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
 const safeUser = (user) => ({
     id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role,

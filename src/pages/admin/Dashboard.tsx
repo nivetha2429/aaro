@@ -369,7 +369,10 @@ const AdminDashboard = () => {
       toast.success(`Popup saved! Countdown set to ${hours} hour${hours !== 1 ? "s" : ""}.`);
       setShowPopupForm(false);
     } catch (e: any) {
-      toast.error(e?.message || "Failed to save popup");
+      // __SESSION_EXPIRED__ is handled globally (toast + redirect already done)
+      if (e?.message !== "__SESSION_EXPIRED__") {
+        toast.error(e?.message || "Failed to save popup");
+      }
     } finally {
       setSavingPopup(false);
     }
@@ -397,7 +400,9 @@ const AdminDashboard = () => {
         toast.success("Offer created!");
       }
       setShowOfferForm(false);
-    } catch { toast.error("Failed to save offer"); }
+    } catch (e: any) {
+      if (e?.message !== "__SESSION_EXPIRED__") toast.error("Failed to save offer");
+    }
   };
 
   const totalSales = 0; // Simplified for now since products are multi-variant

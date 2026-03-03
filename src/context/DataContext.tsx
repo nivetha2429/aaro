@@ -80,16 +80,20 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     // ── Global 401 handler: auto-logout on expired/invalid token ──────────────
     const handleUnauthorized = useCallback(() => {
+        // Clear auth first, then navigate so ProtectedRoute doesn't race
         logout();
-        toast.error("Session expired. Please log in again.");
-        navigate("/login", { replace: true });
+        toast.error("Session expired. Please log in again.", { duration: 4000 });
+        // Small delay so the toast renders before the page unmounts
+        setTimeout(() => navigate("/login", { replace: true }), 300);
     }, [logout, navigate]);
 
     const guardedFetch = useCallback(async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
         const res = await fetch(input, init);
         if (res.status === 401) {
             handleUnauthorized();
-            throw new Error("Session expired");
+            // Throw a special sentinel so callers don't show a second error toast
+            const err = new Error("__SESSION_EXPIRED__");
+            throw err;
         }
         return res;
     }, [handleUnauthorized]);
