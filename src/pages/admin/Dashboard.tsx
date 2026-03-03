@@ -338,18 +338,18 @@ const AdminDashboard = () => {
 
   // ── Popup Offer Form State ──
   const [showPopupForm, setShowPopupForm] = useState(false);
-  const [popupForm, setPopupForm] = useState({ heading: "", sub: "" });
+  const [popupForm, setPopupForm] = useState({ heading: "", sub: "", hours: 24 });
   const [savingPopup, setSavingPopup] = useState(false);
 
   const handleSavePopupOffer = async () => {
     const heading = popupForm.heading.trim();
     const sub = popupForm.sub.trim();
+    const hours = Math.max(1, Math.min(720, Number(popupForm.hours) || 24));
     if (!heading) { toast.error("Heading text is required"); return; }
     setSavingPopup(true);
     try {
-      // Fixed 24-hour countdown — store end time in code field
       const end = new Date();
-      end.setHours(end.getHours() + 24);
+      end.setHours(end.getHours() + hours);
       const existing = offers.find(o => o.title === "__popup__");
       const payload = {
         title: "__popup__",
@@ -365,7 +365,7 @@ const AdminDashboard = () => {
       } else {
         await addOffer(payload);
       }
-      toast.success("Popup saved! Countdown set to 24 hours.");
+      toast.success(`Popup saved! Countdown set to ${hours} hour${hours !== 1 ? "s" : ""}.`);
       setShowPopupForm(false);
     } catch (e: any) {
       toast.error(e?.message || "Failed to save popup");
@@ -1022,12 +1022,18 @@ const AdminDashboard = () => {
                 <div className="p-6 border-b border-[#eaedf3] flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-black text-[#1a1f36]">Popup Offer</h3>
-                    <p className="text-xs text-[#7a869a]">Edit heading &amp; sub-text — shows as popup with 24-hour countdown</p>
+                    <p className="text-xs text-[#7a869a]">Edit heading, sub-text &amp; countdown duration</p>
                   </div>
                   <Button
                     onClick={() => {
                       const existing = offers.find(o => o.title === "__popup__");
-                      setPopupForm({ heading: existing?.description || "", sub: existing?.tag || "" });
+                      // Restore saved hours from stored countdown end time
+                      let savedHours = 24;
+                      if (existing?.code) {
+                        const diff = new Date(existing.code).getTime() - Date.now();
+                        if (diff > 0) savedHours = Math.round(diff / 3600000);
+                      }
+                      setPopupForm({ heading: existing?.description || "", sub: existing?.tag || "", hours: savedHours });
                       setShowPopupForm(!showPopupForm);
                     }}
                     className="gradient-purple rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest text-white"
@@ -1094,7 +1100,20 @@ const AdminDashboard = () => {
                             className="w-full h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30"
                           />
                         </div>
-                        <p className="text-[10px] text-[#a3acb9] font-semibold">⏱ Countdown auto-sets to 24 hours from now when saved</p>
+                        <div>
+                          <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest mb-2 block">Countdown Duration <span className="normal-case font-medium text-[#b0b8c9]">(hours)</span></label>
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="number"
+                              min={1}
+                              max={720}
+                              value={popupForm.hours}
+                              onChange={e => { const v = Math.max(1, Math.min(720, Number(e.target.value) || 24)); setPopupForm(prev => ({ ...prev, hours: v })); }}
+                              className="w-28 h-11 px-4 rounded-2xl border border-[#eaedf3] bg-white text-sm font-bold text-[#1a1f36] focus:outline-none focus:ring-2 focus:ring-primary/30 text-center"
+                            />
+                            <span className="text-xs text-[#7a869a] font-semibold">hours from now  •  max 720 (30 days)</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Live preview */}
@@ -1110,7 +1129,7 @@ const AdminDashboard = () => {
                             <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Offer ends in</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            {[{ v: "24", l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }].map((b, i) => (
+                            {[{ v: String(popupForm.hours).padStart(2, "0"), l: "Hrs" }, { v: "00", l: "Min" }, { v: "00", l: "Sec" }].map((b, i) => (
                               <Fragment key={i}>
                                 <div className="flex flex-col items-center gap-0.5">
                                   <div className="w-9 h-9 rounded-lg bg-white/20 border border-white/30 flex items-center justify-center">
