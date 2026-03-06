@@ -11,7 +11,6 @@ import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import fs from 'fs';
 import pino from 'pino';
-import pinoHttp from 'pino-http';
 
 import authRouter from './routes/auth.js';
 import productRouter from './routes/products.js';
@@ -81,13 +80,24 @@ app.use(cors({
     credentials: true,
 }));
 
-// ── Request Logging (pino-http replaces morgan) ──
-app.use(pinoHttp({ logger, genReqId: () => crypto.randomUUID() }));
+// ── Request Logging ──
+app.use((req, res, next) => {
+    const start = Date.now();
+    req.id = crypto.randomUUID();
+    res.on('finish', () => {
+        logger.info({ reqId: req.id, method: req.method, url: req.originalUrl, status: res.statusCode, ms: Date.now() - start });
+    });
+    next();
+});
 
 // ── Body Parsing (500kb limit prevents JSON body DoS) ──
 app.use(express.json({ limit: '500kb' }));
 app.use(express.urlencoded({ extended: true, limit: '500kb' }));
-app.use(mongoSanitize());
+// Sanitize only req.body (req.query/req.params are read-only getters in Express 5)
+app.use((req, _res, next) => {
+    if (req.body) req.body = mongoSanitize.sanitize(req.body);
+    next();
+});
 
 // ── Global API Rate Limiter (100 req / 15 min per IP) ──
 const globalLimiter = rateLimit({
