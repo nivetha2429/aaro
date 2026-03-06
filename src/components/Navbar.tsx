@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
@@ -13,7 +14,9 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(-1);
   const { totalItems } = useCart();
+  const { totalWishlistItems } = useWishlist();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { products } = useData();
   const navigate = useNavigate();
@@ -21,14 +24,48 @@ const Navbar = () => {
   // Compute live search results
   const searchResults = products.filter(p =>
     searchQuery.length > 1 && p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ).slice(0, 5);
+  ).slice(0, 6);
+
+  // Reset active index when results change
+  useEffect(() => { setActiveIndex(-1); }, [searchQuery]);
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchQuery.trim() !== "") {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < searchResults.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : searchResults.length - 1));
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && searchResults[activeIndex]) {
+        navigate(`/product/${searchResults[activeIndex].id}`);
+        setSearchQuery("");
+        setIsSearchOpen(false);
+      } else if (searchQuery.trim()) {
+        setIsSearchOpen(false);
+        navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+        setSearchQuery("");
+      }
+    } else if (e.key === "Escape") {
+      setSearchQuery("");
       setIsSearchOpen(false);
-      navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery(""); // Optional: clear after search, or leave it intact
     }
+  };
+
+  const highlightMatch = (text: string, query: string) => {
+    if (!query || query.length < 2) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return (
+      <>{text.slice(0, idx)}<span className="text-primary font-black">{text.slice(idx, idx + query.length)}</span>{text.slice(idx + query.length)}</>
+    );
+  };
+
+  const getLowestPrice = (product: any) => {
+    const variants = product.variants || [];
+    if (variants.length === 0) return 0;
+    const prices = variants.map((v: any) => v.price).filter((p: number) => p > 0);
+    return prices.length > 0 ? Math.min(...prices) : 0;
   };
 
   useEffect(() => {
@@ -84,6 +121,11 @@ const Navbar = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
           <input
             type="text"
+            role="combobox"
+            aria-label="Search products"
+            aria-expanded={searchQuery.length > 1 && searchResults.length > 0}
+            aria-controls="search-listbox"
+            aria-activedescendant={activeIndex >= 0 ? `search-result-${activeIndex}` : undefined}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleSearch}
@@ -93,14 +135,17 @@ const Navbar = () => {
 
           {/* Desktop Search Dropdown */}
           {searchQuery.length > 1 && searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
+            <div id="search-listbox" role="listbox" className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
               <div className="max-h-[50vh] overflow-y-auto w-full">
-                {searchResults.map((p) => (
+                {searchResults.map((p, i) => (
                   <Link
                     key={p.id}
+                    id={`search-result-${i}`}
+                    role="option"
+                    aria-selected={activeIndex === i}
                     to={`/product/${p.id}`}
                     onClick={() => { setSearchQuery(""); setIsSearchOpen(false); }}
-                    className="flex items-center gap-3 p-3 hover:bg-secondary/50 transition-colors border-b border-primary/5 last:border-0"
+                    className={`flex items-center gap-3 p-3 transition-colors border-b border-primary/5 last:border-0 ${activeIndex === i ? "bg-primary/10" : "hover:bg-secondary/50"}`}
                   >
                     <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border">
                       {p.images && p.images[0] ? (
@@ -110,14 +155,17 @@ const Navbar = () => {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate">{p.name}</p>
+                      <p className="text-sm font-bold text-foreground truncate">{highlightMatch(p.name, searchQuery)}</p>
                       <p className="text-[10px] uppercase font-black tracking-widest text-[#7a869a]">{p.brand}</p>
                     </div>
+                    {getLowestPrice(p) > 0 && (
+                      <span className="text-xs font-black text-primary shrink-0">₹{getLowestPrice(p).toLocaleString()}</span>
+                    )}
                   </Link>
                 ))}
               </div>
               <button
-                onClick={(e) => handleSearch({ key: 'Enter' } as any)}
+                onClick={() => { navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`); setSearchQuery(""); }}
                 className="w-full p-2 text-xs font-black uppercase tracking-wider text-primary hover:bg-primary/5 text-center transition-colors border-t border-primary/10"
               >
                 View all results
@@ -128,12 +176,23 @@ const Navbar = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <button className="md:hidden p-2 text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+          <button aria-label="Open search" className="md:hidden p-2 text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
             <Search className="w-5 h-5" />
           </button>
 
           {!isAdmin && (
-            <Link to="/cart" className="p-2 text-muted-foreground hover:text-primary relative group">
+            <Link to="/wishlist" aria-label={`Wishlist (${totalWishlistItems} items)`} className="p-2 text-muted-foreground hover:text-red-500 relative group">
+              <Heart className={`w-5 h-5 group-hover:scale-110 transition-transform ${totalWishlistItems > 0 ? "fill-red-500 text-red-500" : ""}`} />
+              {totalWishlistItems > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {totalWishlistItems}
+                </span>
+              )}
+            </Link>
+          )}
+
+          {!isAdmin && (
+            <Link to="/cart" aria-label={`Cart (${totalItems} items)`} className="p-2 text-muted-foreground hover:text-primary relative group">
               <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
@@ -156,12 +215,12 @@ const Navbar = () => {
                 {isProfileOpen && (
                   <div className="fixed inset-0 z-50" onClick={() => setIsProfileOpen(false)} />
                 )}
-                <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="relative z-[60] flex items-center gap-2 p-2 rounded-full hover:bg-secondary transition-all">
+                <button onClick={() => setIsProfileOpen(!isProfileOpen)} aria-label="Open profile menu" aria-expanded={isProfileOpen} aria-haspopup="true" className="relative z-[60] flex items-center gap-2 p-2 rounded-full hover:bg-secondary transition-all">
                   <div className="w-8 h-8 rounded-full gradient-purple flex items-center justify-center text-[10px] font-bold text-primary-foreground shadow-sm">
                     {user?.name?.charAt(0).toUpperCase() || "U"}
                   </div>
                 </button>
-                <div className={`absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 transition-all transform z-[60] origin-top-right ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
+                <div role="menu" className={`absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 transition-all transform z-[60] origin-top-right ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
                   <div className="px-4 py-2 border-b border-border mb-1">
                     <p className="text-xs font-bold text-foreground truncate">{user?.name}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
@@ -213,7 +272,7 @@ const Navbar = () => {
               </div>
               <p className="font-black text-xs tracking-widest text-foreground">MENU</p>
             </div>
-            <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full bg-white/50 hover:bg-secondary/80 transition-colors border border-black/5">
+            <button aria-label="Close menu" onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full bg-white/50 hover:bg-secondary/80 transition-colors border border-black/5">
               <X className="w-5 h-5 text-muted-foreground" />
             </button>
           </div>
@@ -301,7 +360,7 @@ const Navbar = () => {
         <div className="p-6 flex flex-col h-full">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black tracking-tight">Search Catalog</h3>
-            <button onClick={() => setIsSearchOpen(false)} className="p-2 rounded-full hover:bg-secondary">
+            <button aria-label="Close search" onClick={() => setIsSearchOpen(false)} className="p-2 rounded-full hover:bg-secondary">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -321,12 +380,12 @@ const Navbar = () => {
             {searchQuery.length > 1 && searchResults.length > 0 && (
               <div className="absolute top-16 left-0 right-0 mt-2 bg-white border border-primary/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
                 <div className="max-h-[50vh] overflow-y-auto w-full">
-                  {searchResults.map((p) => (
+                  {searchResults.map((p, i) => (
                     <Link
                       key={p.id}
                       to={`/product/${p.id}`}
                       onClick={() => { setSearchQuery(""); setIsSearchOpen(false); }}
-                      className="flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors border-b border-primary/5 last:border-0"
+                      className={`flex items-center gap-4 p-4 transition-colors border-b border-primary/5 last:border-0 ${activeIndex === i ? "bg-primary/10" : "hover:bg-secondary/50"}`}
                     >
                       <div className="w-12 h-12 rounded-xl bg-background flex items-center justify-center shrink-0 border border-border shadow-soft">
                         {p.images && p.images[0] ? (
@@ -336,14 +395,17 @@ const Navbar = () => {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-base font-bold text-foreground truncate">{p.name}</p>
+                        <p className="text-base font-bold text-foreground truncate">{highlightMatch(p.name, searchQuery)}</p>
                         <p className="text-[10px] uppercase font-black tracking-widest text-primary/60">{p.brand}</p>
                       </div>
+                      {getLowestPrice(p) > 0 && (
+                        <span className="text-sm font-black text-primary shrink-0">₹{getLowestPrice(p).toLocaleString()}</span>
+                      )}
                     </Link>
                   ))}
                 </div>
                 <button
-                  onClick={(e) => handleSearch({ key: 'Enter' } as any)}
+                  onClick={() => { navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`); setSearchQuery(""); setIsSearchOpen(false); }}
                   className="w-full p-4 text-xs font-black uppercase tracking-wider text-primary hover:bg-primary/5 text-center transition-colors bg-secondary/30"
                 >
                   View all results
@@ -355,7 +417,7 @@ const Navbar = () => {
             <p className="text-[10px] uppercase font-black tracking-widest text-[#7a869a] mb-4">Trending Searches</p>
             <div className="flex flex-wrap gap-2">
               {["iPhone 16", "MacBook Air", "Galaxy S24", "Gaming Laptop", "AirPods"].map(tag => (
-                <button key={tag} className="px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all">
+                <button key={tag} onClick={() => { setSearchQuery(tag); }} className="px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all">
                   {tag}
                 </button>
               ))}

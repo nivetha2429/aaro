@@ -4,7 +4,7 @@ import Variant from '../models/Variant.js';
 import Review from '../models/Review.js';
 import ProductModel from '../models/ProductModel.js';
 import { authMiddleware, isAdmin } from '../middleware/authMiddleware.js';
-import { mongoError } from '../lib/validate.js';
+import { mongoError, productSchema, variantStandaloneSchema, productModelSchema, zodError } from '../lib/validate.js';
 
 const router = Router();
 
@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
         if (category) filter.category = category;
         if (brand) filter.brand = brand;
 
-        let productsQuery = Product.find(filter).sort({ createdAt: -1 });
+        let productsQuery = Product.find(filter).sort({ createdAt: -1 }).lean();
 
         let total;
         if (page > 0) {
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 
         const products = await productsQuery;
         const productIds = products.map(p => p._id);
-        const variants = await Variant.find({ productId: { $in: productIds } });
+        const variants = await Variant.find({ productId: { $in: productIds } }).lean();
 
         const variantMap = {};
         variants.forEach(v => {
@@ -39,8 +39,9 @@ router.get('/', async (req, res) => {
             variantMap[key].push(v);
         });
 
-        const result = products.map(p => ({ ...p.toObject(), variants: variantMap[p._id.toString()] || [] }));
+        const result = products.map(p => ({ ...p, variants: variantMap[p._id.toString()] || [] }));
 
+        res.set('Cache-Control', 'public, max-age=60');
         if (page > 0) {
             return res.json({ products: result, total, page, pages: Math.ceil(total / limit) });
         }
@@ -50,10 +51,82 @@ router.get('/', async (req, res) => {
     }
 });
 
+// ── Variants — must be registered BEFORE /:id to avoid route conflict ──
+
+// GET /api/products/variants/:productId
+router.get('/variants/:productId', async (req, res) => {
+    try {
+        const variants = await Variant.find({ productId: req.params.productId }).lean().sort({ price: 1 });
+        res.json(variants);
+    } catch {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.post('/variants', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const parsed = variantStandaloneSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const variant = await new Variant(parsed.data).save();
+        res.status(201).json(variant);
+    } catch (err) {
+        res.status(400).json({ message: mongoError(err) });
+    }
+});
+
+router.put('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const parsed = variantStandaloneSchema.partial().safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const variant = await Variant.findByIdAndUpdate(req.params.id, parsed.data, { new: true, runValidators: true });
+        if (!variant) return res.status(404).json({ message: 'Variant not found' });
+        res.json(variant);
+    } catch (err) {
+        res.status(400).json({ message: mongoError(err) });
+    }
+});
+
+router.delete('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const deleted = await Variant.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Variant not found' });
+        res.json({ message: 'Variant deleted' });
+    } catch {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// ── Product Models — must be registered BEFORE /:id to avoid route conflict ──
+
+router.get('/models', async (req, res) => {
+    try {
+        const { category } = req.query;
+        const models = await ProductModel.find(category ? { category } : {}).lean().sort({ name: 1 });
+        res.json(models);
+    } catch {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.post('/models', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const parsed = productModelSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const model = await new ProductModel(parsed.data).save();
+        res.status(201).json(model);
+    } catch (err) {
+        res.status(400).json({ message: mongoError(err) });
+    }
+});
+
+// ── Single product by ID — must come AFTER all static-segment routes ──
+
 // POST /api/products
 router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const { name, brand, category, description, images, specifications, features, videoUrl, modelId, variants, tag, featured, isTrending } = req.body;
+        const parsed = productSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const { name, brand, category, description, images, specifications, features, videoUrl, modelId, variants, tag, featured, isTrending } = parsed.data;
 
         if (modelId) {
             const pModel = await ProductModel.findById(modelId);
@@ -82,10 +155,23 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
+// GET /api/products/:id
+router.get('/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id).lean();
+        if (!product) return res.status(404).json({ message: 'Product not found' });
+        const variants = await Variant.find({ productId: req.params.id }).lean().sort({ price: 1 });
+        res.set('Cache-Control', 'public, max-age=60');
+        res.json({ ...product, variants });
+    } catch { res.status(500).json({ message: 'Internal server error' }); }
+});
+
 // PUT /api/products/:id
 router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const { variants, ...productData } = req.body;
+        const parsed = productSchema.partial().safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const { variants, ...productData } = parsed.data;
         const updated = await Product.findByIdAndUpdate(req.params.id, productData, { new: true, runValidators: true });
         if (!updated) return res.status(404).json({ message: 'Product not found' });
 
@@ -113,74 +199,15 @@ router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
 // DELETE /api/products/:id
 router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
+        const deleted = await Product.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Product not found' });
         await Promise.all([
-            Product.findByIdAndDelete(req.params.id),
             Review.deleteMany({ productId: req.params.id }),
             Variant.deleteMany({ productId: req.params.id }),
         ]);
         res.json({ message: 'Product deleted' });
     } catch {
         res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// ── Variants ──
-
-// GET /api/products/variants/:productId
-router.get('/variants/:productId', async (req, res) => {
-    try {
-        const variants = await Variant.find({ productId: req.params.productId }).sort({ price: 1 });
-        res.json(variants);
-    } catch {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-router.post('/variants', authMiddleware, isAdmin, async (req, res) => {
-    try {
-        const variant = await new Variant(req.body).save();
-        res.status(201).json(variant);
-    } catch (err) {
-        res.status(400).json({ message: mongoError(err) });
-    }
-});
-
-router.put('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
-    try {
-        const variant = await Variant.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-        res.json(variant);
-    } catch (err) {
-        res.status(400).json({ message: mongoError(err) });
-    }
-});
-
-router.delete('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
-    try {
-        await Variant.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Variant deleted' });
-    } catch {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// ── Product Models ──
-
-router.get('/models', async (req, res) => {
-    try {
-        const { category } = req.query;
-        const models = await ProductModel.find(category ? { category } : {}).sort({ name: 1 });
-        res.json(models);
-    } catch {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-router.post('/models', authMiddleware, isAdmin, async (req, res) => {
-    try {
-        const model = await new ProductModel(req.body).save();
-        res.status(201).json(model);
-    } catch (err) {
-        res.status(400).json({ message: mongoError(err) });
     }
 });
 

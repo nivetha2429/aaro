@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import User from '../models/User.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { registerSchema, loginSchema, profileSchema, zodError } from '../lib/validate.js';
+import { registerSchema, loginSchema, profileSchema, changePasswordSchema, zodError } from '../lib/validate.js';
 
 const router = Router();
 
@@ -17,7 +17,7 @@ const authLimiter = rateLimit({
 });
 
 const sign = (user) =>
-    jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
 const safeUser = (user) => ({
     id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role,
@@ -81,6 +81,21 @@ router.put('/profile', authMiddleware, async (req, res) => {
     } catch {
         res.status(500).json({ message: 'Update failed' });
     }
+});
+
+// PUT /api/auth/password
+router.put('/password', authMiddleware, async (req, res) => {
+    try {
+        const parsed = changePasswordSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const user = await User.findById(req.userId).select('+password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        const isMatch = await bcrypt.compare(parsed.data.currentPassword, user.password);
+        if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
+        user.password = await bcrypt.hash(parsed.data.newPassword, 12);
+        await user.save();
+        res.json({ message: 'Password updated successfully' });
+    } catch { res.status(500).json({ message: 'Password update failed' }); }
 });
 
 export default router;

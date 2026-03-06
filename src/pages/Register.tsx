@@ -1,41 +1,45 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { UserPlus, Mail, Lock, User, Phone } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { registerSchema, type RegisterFormData } from "@/lib/schemas";
 
 const Register = () => {
-    const [form, setForm] = useState({ name: "", email: "", password: "", phone: "" });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { login, isAuthenticated, loading: authLoading } = useAuth();
     const API_URL = import.meta.env.VITE_API_URL || "/api";
 
+    const { register: reg, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+    });
+
     useEffect(() => {
         if (!authLoading && isAuthenticated) navigate("/", { replace: true });
     }, [isAuthenticated, authLoading, navigate]);
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!form.name || !form.email || !form.password || !form.phone) return toast.error("Please fill in all required fields including phone number");
-
+    const onSubmit = async (data: RegisterFormData) => {
         setLoading(true);
         try {
             const response = await fetch(`${API_URL}/auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
+                body: JSON.stringify(data),
             });
 
-            const data = await response.json();
+            const result = await response.json();
             if (response.ok) {
-                login(data.token, data.user);
+                login(result.token, result.user);
                 toast.success("Account created successfully!");
                 navigate("/");
             } else {
-                toast.error(data.message || "Registration failed");
+                toast.error(result.message || "Registration failed");
             }
-        } catch (err) {
+        } catch {
             toast.error("Connection failed. Is the server running?");
         } finally {
             setLoading(false);
@@ -44,6 +48,7 @@ const Register = () => {
 
     return (
         <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 pb-24 md:pb-12 animate-fade-in">
+            <PageMeta title="Register" description="Create your Aaro Systems account and start shopping." />
             <div className="bg-card rounded-2xl p-8 shadow-soft w-full max-w-sm border border-border">
                 <div className="w-14 h-14 rounded-xl gradient-dark mx-auto flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20">
                     <UserPlus className="w-7 h-7 text-white" />
@@ -51,47 +56,62 @@ const Register = () => {
                 <h2 className="text-2xl font-bold text-foreground text-center mb-2">Create Account</h2>
                 <p className="text-muted-foreground text-center text-sm mb-8">Join AARO Systems today</p>
 
-                <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                            type="text"
-                            placeholder="Full Name"
-                            value={form.name}
-                            onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                        />
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <div>
+                        <div className="relative">
+                            <label htmlFor="register-name" className="sr-only">Full Name</label>
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                id="register-name"
+                                type="text"
+                                placeholder="Full Name"
+                                {...reg("name")}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                            />
+                        </div>
+                        {errors.name && <p className="text-xs text-destructive mt-1 ml-1">{errors.name.message}</p>}
                     </div>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                            type="email"
-                            placeholder="Email address"
-                            value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                        />
+                    <div>
+                        <div className="relative">
+                            <label htmlFor="register-email" className="sr-only">Email address</label>
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                id="register-email"
+                                type="email"
+                                placeholder="Email address"
+                                {...reg("email")}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                            />
+                        </div>
+                        {errors.email && <p className="text-xs text-destructive mt-1 ml-1">{errors.email.message}</p>}
                     </div>
-                    <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                            type="tel"
-                            placeholder="Phone Number"
-                            required
-                            value={form.phone}
-                            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                        />
+                    <div>
+                        <div className="relative">
+                            <label htmlFor="register-phone" className="sr-only">Phone Number</label>
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                id="register-phone"
+                                type="tel"
+                                placeholder="Phone Number"
+                                {...reg("phone")}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                            />
+                        </div>
+                        {errors.phone && <p className="text-xs text-destructive mt-1 ml-1">{errors.phone.message}</p>}
                     </div>
-                    <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <input
-                            type="password"
-                            placeholder="Create Password"
-                            value={form.password}
-                            onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                        />
+                    <div>
+                        <div className="relative">
+                            <label htmlFor="register-password" className="sr-only">Password</label>
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                            <input
+                                id="register-password"
+                                type="password"
+                                placeholder="Create Password (min 6 chars)"
+                                {...reg("password")}
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                            />
+                        </div>
+                        {errors.password && <p className="text-xs text-destructive mt-1 ml-1">{errors.password.message}</p>}
                     </div>
                     <button
                         type="submit"

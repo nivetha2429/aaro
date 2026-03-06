@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import Brand from '../models/Brand.js';
 import { authMiddleware, isAdmin } from '../middleware/authMiddleware.js';
-import { mongoError } from '../lib/validate.js';
+import { mongoError, brandSchema, zodError } from '../lib/validate.js';
 
 const router = Router();
 
@@ -106,7 +106,8 @@ async function downloadAndSaveLogo(brandName) {
 // GET /api/brands
 router.get('/', async (req, res) => {
     try {
-        res.json(await Brand.find());
+        res.set('Cache-Control', 'public, max-age=300');
+        res.json(await Brand.find().lean());
     } catch {
         res.status(500).json({ message: 'Internal server error' });
     }
@@ -139,7 +140,9 @@ router.post('/fetch-all-logos', authMiddleware, isAdmin, async (req, res) => {
 // POST /api/brands
 router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const brand = await new Brand(req.body).save();
+        const parsed = brandSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const brand = await new Brand(parsed.data).save();
         res.status(201).json(brand);
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
@@ -149,7 +152,10 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
 // PUT /api/brands/:id
 router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const brand = await Brand.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const parsed = brandSchema.partial().safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        const brand = await Brand.findByIdAndUpdate(req.params.id, parsed.data, { new: true });
+        if (!brand) return res.status(404).json({ message: 'Brand not found' });
         res.json(brand);
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
@@ -176,7 +182,8 @@ router.post('/:id/fetch-logo', authMiddleware, isAdmin, async (req, res) => {
 // DELETE /api/brands/:id
 router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
-        await Brand.findByIdAndDelete(req.params.id);
+        const deleted = await Brand.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Brand not found' });
         res.json({ message: 'Brand deleted' });
     } catch {
         res.status(500).json({ message: 'Internal server error' });

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -22,10 +23,13 @@ export const authMiddleware = (req, res, next) => {
     }
 };
 
-// Role is read from the JWT payload — no extra DB call
-export const isAdmin = (req, res, next) => {
-    if (req.userRole === "admin") {
-        return next();
+// Re-check role from DB — revoked admins are blocked even with a valid token
+export const isAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId).select("role").lean();
+        if (user?.role === "admin") return next();
+        return res.status(403).json({ message: "Forbidden - Admin access required" });
+    } catch {
+        return res.status(500).json({ message: "Authorization check failed" });
     }
-    return res.status(403).json({ message: "Forbidden - Admin access required" });
 };

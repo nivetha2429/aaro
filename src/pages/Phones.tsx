@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Search, SlidersHorizontal, Check, Smartphone } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 
 const Phones = () => {
@@ -28,6 +29,7 @@ const Phones = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+      <PageMeta title="Smartphones" description="Browse our collection of premium smartphones from top brands. Find the latest models at the best prices." />
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10 border-b border-primary/10 pb-6">
         <div>
           <h1 className="text-glow mb-1">Phones</h1>

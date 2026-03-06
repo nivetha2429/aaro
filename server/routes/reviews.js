@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import Review from '../models/Review.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
@@ -9,7 +10,7 @@ const router = Router();
 
 router.get('/:productId', async (req, res) => {
     try {
-        const reviews = await Review.find({ productId: req.params.productId }).sort({ createdAt: -1 });
+        const reviews = await Review.find({ productId: req.params.productId }).lean().sort({ createdAt: -1 });
         res.json(reviews);
     } catch {
         res.status(500).json({ message: 'Internal server error' });
@@ -28,12 +29,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
         const review = await Review.create({ productId, userId: req.userId, name: user.name, comment, rating });
 
-        // Recalculate product rating
-        const allReviews = await Review.find({ productId });
-        const avg = allReviews.reduce((a, r) => a + r.rating, 0) / allReviews.length;
+        // Recalculate product rating using $avg aggregation
+        const [agg] = await Review.aggregate([
+            { $match: { productId: new mongoose.Types.ObjectId(productId) } },
+            { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } }
+        ]);
         await Product.findByIdAndUpdate(productId, {
-            reviewCount: allReviews.length,
-            rating: Math.round(avg * 10) / 10,
+            reviewCount: agg?.count || 1,
+            rating: Math.round((agg?.avg || rating) * 10) / 10,
         });
 
         res.status(201).json(review);
@@ -47,11 +50,13 @@ router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
         const review = await Review.findByIdAndDelete(req.params.id);
         if (!review) return res.status(404).json({ message: 'Review not found' });
 
-        const remaining = await Review.find({ productId: review.productId });
-        const avg = remaining.length ? remaining.reduce((a, r) => a + r.rating, 0) / remaining.length : 0;
+        const [agg] = await Review.aggregate([
+            { $match: { productId: new mongoose.Types.ObjectId(review.productId) } },
+            { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } }
+        ]);
         await Product.findByIdAndUpdate(review.productId, {
-            reviewCount: remaining.length,
-            rating: Math.round(avg * 10) / 10,
+            reviewCount: agg?.count || 0,
+            rating: Math.round((agg?.avg || 0) * 10) / 10,
         });
 
         res.json({ message: 'Review deleted' });

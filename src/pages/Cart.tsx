@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Minus, Plus, Trash2, ShoppingCart } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -28,6 +29,7 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+      <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
       <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-foreground mb-8 tracking-tight">Your Cart <span className="text-primary/50 text-base sm:text-xl font-bold">({totalItems} items)</span></h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -50,18 +52,18 @@ const Cart = () => {
 
                 <div className="flex flex-wrap items-center justify-center sm:justify-between gap-4">
                   <div className="flex items-center gap-1 bg-secondary/50 p-1 rounded-xl border border-border/50">
-                    <button onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
+                    <button aria-label={`Decrease quantity of ${item.product.name}`} onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-10 text-center font-black text-sm">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
+                    <button aria-label={`Increase quantity of ${item.product.name}`} onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.ram, item.storage, item.color)} className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white text-muted-foreground hover:text-primary transition-all">
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
 
                   <div className="flex items-center gap-6">
                     <span className="font-black text-xl text-primary">₹{(item.price * item.quantity).toLocaleString()}</span>
-                    <button onClick={() => removeFromCart(item.product.id, item.ram, item.storage, item.color)} className="w-10 h-10 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-xl transition-colors" title="Remove Item">
+                    <button aria-label={`Remove ${item.product.name} from cart`} onClick={() => removeFromCart(item.product.id, item.ram, item.storage, item.color)} className="w-10 h-10 flex items-center justify-center text-red-500 hover:bg-red-50 rounded-xl transition-colors" title="Remove Item">
                       <Trash2 className="w-5 h-5" />
                     </button>
                   </div>

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Tag, Sparkles, Clock, ArrowRight, Zap } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 import summerSaleImg from "@/assets/summer-sale-bg.png";
 
@@ -8,6 +9,7 @@ const Offers = () => {
 
   return (
     <div className="min-h-screen bg-animated pb-24 md:pb-0">
+      <PageMeta title="Offers & Deals" description="Grab the latest deals and discounts on smartphones, laptops, and accessories at Aaro Systems." />
       {/* Hero Section */}
       <section className="relative h-[300px] md:h-[400px] overflow-hidden rounded-b-[3rem] shadow-2xl">
         <img

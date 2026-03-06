@@ -112,6 +112,9 @@ export const OfferPopup = () => {
       {/* ── Main popup ── */}
       {open && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="offer-heading"
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in"
           onClick={close}
         >
@@ -126,6 +129,7 @@ export const OfferPopup = () => {
 
               {/* Close */}
               <button
+                aria-label="Close offer"
                 onClick={close}
                 className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/20 hover:bg-black/30 text-white transition-all"
               >
@@ -139,7 +143,7 @@ export const OfferPopup = () => {
               </div>
 
               {/* Heading + sub */}
-              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-2">{heading}</h2>
+              <h2 id="offer-heading" className="text-3xl md:text-4xl font-black text-white leading-tight mb-2">{heading}</h2>
               <p className="text-white/70 text-sm mb-8 max-w-xs">{sub}</p>
 
               {/* Countdown */}
@@ -196,6 +200,7 @@ export const OfferPopup = () => {
       {/* ── Minimized pill ── */}
       {minimized && !open && (
         <button
+          aria-label="Open special offer"
           onClick={() => { setMinimized(false); setOpen(true); }}
           className="fixed bottom-6 left-6 z-50 bg-gradient-to-br from-violet-600 to-purple-700 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 hover:scale-105 transition-all animate-fade-in border border-white/20"
         >

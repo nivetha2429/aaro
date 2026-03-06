@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Search, SlidersHorizontal, Check, Laptop } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 
 const Laptops = () => {
@@ -28,6 +29,7 @@ const Laptops = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+      <PageMeta title="Laptops" description="Explore premium laptops for work, gaming, and creativity. Top brands at competitive prices with free shipping." />
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10 border-b border-primary/10 pb-6">
         <div>
           <h1 className="text-glow mb-1">Laptops</h1>

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Smartphone, Laptop, ArrowUpRight, Package } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 import BrandLogo from "@/components/BrandLogo";
 
@@ -96,6 +97,7 @@ const Brands = () => {
 
   return (
     <div className="container mx-auto px-4 py-10 pb-24 md:pb-10 max-w-7xl">
+      <PageMeta title="Brands" description="Browse all brands available at Aaro Systems. Premium tech from trusted manufacturers." />
       {/* Header */}
       <div className="mb-12 text-center animate-slide-up">
         <h1 className="text-4xl md:text-6xl font-black animate-shimmer mb-4 tracking-tighter">

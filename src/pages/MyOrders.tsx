@@ -82,6 +82,7 @@ const MyOrders = () => {
                                                     <img
                                                         src={item.product.images[0]}
                                                         alt={item.product.name}
+                                                        loading="lazy"
                                                         className="w-full h-full object-contain p-1"
                                                         onError={(e) => {
                                                             e.currentTarget.style.display = "none";

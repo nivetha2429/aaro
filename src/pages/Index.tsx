@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, Star, ArrowRight } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import BrandLogo from "@/components/BrandLogo";
-
+import PageMeta from "@/components/PageMeta";
 import { OfferPopup } from "@/components/OfferPopup";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
 import heroBanner from "@/assets/hero-banner.jpg";
-import smartphoneBanner from "@/assets/banners/smartphone.png";
-import laptopBanner from "@/assets/banners/laptop.png";
-import accessoriesBanner from "@/assets/banners/accessories.png";
+import smartphoneBanner from "@/assets/banners/smartphone.jpg";
+import laptopBanner from "@/assets/banners/laptop.jpg";
+import accessoriesBanner from "@/assets/banners/accessories.jpg";
 
 const categories = [
   { name: "Phones", icon: Smartphone, link: "/shop?category=phone" },
@@ -31,6 +31,7 @@ const Index = () => {
 
   return (
     <>
+      <PageMeta title="Aaro Systems" description="Discover the latest in premium smartphones, laptops, and electronics at Aaro Systems. Best prices, free shipping, and 1-year warranty." />
       <OfferPopup />
       {/* Hero */}
       <section className="relative overflow-hidden rounded-2xl mx-2 lg:mx-4 mt-4 shadow-soft">

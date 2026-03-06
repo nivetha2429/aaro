@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { WHATSAPP_NUMBER } from "@/data/products";
 import { MessageCircle, CheckCircle, Package, Home } from "lucide-react";
 import { toast } from "sonner";
+import { orderFormSchema, type OrderFormData } from "@/lib/schemas";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -12,30 +15,35 @@ const OrderForm = () => {
   const { items, totalPrice, clearCart } = useCart();
   const { user, token, isAuthenticated } = useAuth();
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    name: user?.name || "",
-    phone: user?.phone || "",
-    email: user?.email || "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
-  });
   const [loading, setLoading] = useState(false);
+
+  const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<OrderFormData>({
+    resolver: zodResolver(orderFormSchema),
+    defaultValues: {
+      name: user?.name || "",
+      phone: user?.phone || "",
+      email: user?.email || "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
+    },
+  });
+
+  const formValues = watch();
 
   useEffect(() => {
     if (user) {
-      setForm((prev) => ({
+      reset((prev) => ({
         ...prev,
         name: user.name || prev.name,
         phone: user.phone || prev.phone,
         email: user.email || prev.email,
       }));
     }
-  }, [user]);
+  }, [user, reset]);
 
   const buildWhatsAppMessage = () => {
-    // Helper to ensure image URLs are absolute for WhatsApp
     const BASE_URL = API_URL.replace(/\/api$/, "");
     const getImageUrl = (url: string) => {
       if (!url) return "";
@@ -62,9 +70,9 @@ const OrderForm = () => {
       `🛒 *New Order — AARO*`,
       ``,
       `👤 *Customer Details:*`,
-      `  • Name: ${form.name}`,
-      `  • Phone: ${form.phone}`,
-      form.email ? `  • Email: ${form.email}` : null,
+      `  • Name: ${formValues.name}`,
+      `  • Phone: ${formValues.phone}`,
+      formValues.email ? `  • Email: ${formValues.email}` : null,
       ``,
       `📦 *Order Items:*`,
       productLines,
@@ -75,8 +83,8 @@ const OrderForm = () => {
       `🚚 Shipping: FREE`,
       ``,
       `📍 *Delivery Address:*`,
-      `  ${form.address}`,
-      `  ${form.city}, ${form.state} — ${form.pincode}`,
+      `  ${formValues.address}`,
+      `  ${formValues.city}, ${formValues.state} — ${formValues.pincode}`,
       ``,
       `Please confirm the order and share the delivery timeline. Thank you!`,
     ]
@@ -84,22 +92,12 @@ const OrderForm = () => {
       .join("\n");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const { name, phone, address, city, state, pincode } = form;
-    if (!name || !phone || !address || !city || !state || !pincode) {
-      return toast.error("Please fill in all required fields");
-    }
-    if (!/^\d{6}$/.test(pincode)) {
-      return toast.error("Enter a valid 6-digit pincode");
-    }
-
+  const onSubmit = async (data: OrderFormData) => {
     if (!isAuthenticated) return toast.error("Please login to place an order");
 
     setLoading(true);
     try {
-      const fullAddress = `${address}, ${city}, ${state} - ${pincode}`;
+      const fullAddress = `${data.address}, ${data.city}, ${data.state} - ${data.pincode}`;
       const response = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
@@ -117,12 +115,11 @@ const OrderForm = () => {
         setSubmitted(true);
         clearCart();
         toast.success("Order placed! Opening WhatsApp...");
-        // Auto-open WhatsApp with full order details
         const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
         setTimeout(() => window.open(waUrl, "_blank", "noopener,noreferrer"), 600);
       } else {
-        const data = await response.json();
-        toast.error(data.message || "Failed to place order");
+        const result = await response.json();
+        toast.error(result.message || "Failed to place order");
       }
     } catch {
       toast.error("Network error. Is the server running?");
@@ -191,20 +188,7 @@ const OrderForm = () => {
     );
   }
 
-  const field = (label: string, key: keyof typeof form, type = "text", placeholder = "") => (
-    <div key={key}>
-      <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">
-        {label}
-      </label>
-      <input
-        type={type}
-        value={form[key]}
-        placeholder={placeholder}
-        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-        className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
-      />
-    </div>
-  );
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium";
 
   return (
     <div className="container mx-auto px-4 py-8 pb-24 md:pb-8 max-w-lg animate-fade-in">
@@ -213,14 +197,26 @@ const OrderForm = () => {
         Fill in your details — your order will be sent to WhatsApp automatically.
       </p>
 
-      <form onSubmit={handleSubmit} className="bg-card border border-border rounded-3xl p-6 shadow-soft space-y-5">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border rounded-3xl p-6 shadow-soft space-y-5">
         {/* Contact */}
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Contact</p>
           <div className="space-y-4">
-            {field("Full Name *", "name")}
-            {field("Phone Number *", "phone", "tel", "10-digit mobile number")}
-            {field("Email (Optional)", "email", "email", "you@example.com")}
+            <div>
+              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">Full Name *</label>
+              <input {...register("name")} className={inputClass} />
+              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+            </div>
+            <div>
+              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">Phone Number *</label>
+              <input type="tel" placeholder="10-digit mobile number" {...register("phone")} className={inputClass} />
+              {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
+            </div>
+            <div>
+              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">Email (Optional)</label>
+              <input type="email" placeholder="you@example.com" {...register("email")} className={inputClass} />
+              {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+            </div>
           </div>
         </div>
 
@@ -231,24 +227,34 @@ const OrderForm = () => {
           <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Delivery Address</p>
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">
-                Full Address *
-              </label>
+              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">Full Address *</label>
               <textarea
-                value={form.address}
                 placeholder="House no., Street, Area, Landmark..."
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
+                {...register("address")}
                 rows={3}
                 className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none transition-all font-medium"
               />
+              {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {field("City *", "city", "text", "e.g. Chennai")}
-              {field("State *", "state", "text", "e.g. Tamil Nadu")}
+              <div>
+                <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">City *</label>
+                <input placeholder="e.g. Chennai" {...register("city")} className={inputClass} />
+                {errors.city && <p className="text-xs text-destructive mt-1">{errors.city.message}</p>}
+              </div>
+              <div>
+                <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">State *</label>
+                <input placeholder="e.g. Tamil Nadu" {...register("state")} className={inputClass} />
+                {errors.state && <p className="text-xs text-destructive mt-1">{errors.state.message}</p>}
+              </div>
             </div>
 
-            {field("Pincode *", "pincode", "text", "6-digit pincode")}
+            <div>
+              <label className="text-xs font-black text-muted-foreground uppercase mb-1.5 block tracking-wider">Pincode *</label>
+              <input placeholder="6-digit pincode" {...register("pincode")} className={inputClass} />
+              {errors.pincode && <p className="text-xs text-destructive mt-1">{errors.pincode.message}</p>}
+            </div>
           </div>
         </div>
 

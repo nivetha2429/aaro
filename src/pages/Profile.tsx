@@ -3,36 +3,33 @@ import { useAuth } from "@/context/AuthContext";
 import { User, Mail, Phone, Package, ShoppingBag, Edit2, Check, X, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileSchema, type ProfileFormData } from "@/lib/schemas";
 
 const Profile = () => {
     const { user, token, updateUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        name: user?.name || "",
-        email: user?.email || "",
-        phone: user?.phone || ""
+
+    const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<ProfileFormData>({
+        resolver: zodResolver(profileSchema),
+        defaultValues: { name: user?.name || "", email: user?.email || "", phone: user?.phone || "" },
     });
+
+    const formValues = watch();
 
     const API_URL = import.meta.env.VITE_API_URL || "/api";
 
     useEffect(() => {
         if (user) {
-            setFormData({
-                name: user.name,
-                email: user.email,
-                phone: user.phone || ""
-            });
+            reset({ name: user.name, email: user.email, phone: user.phone || "" });
         }
-    }, [user]);
+    }, [user, reset]);
 
     if (!user) return null;
 
-    const handleSave = async () => {
-        if (!formData.name || !formData.email || !formData.phone) {
-            return toast.error("Please fill in all fields");
-        }
-
+    const onSubmit = async (formData: ProfileFormData) => {
         setLoading(true);
         try {
             const response = await fetch(`${API_URL}/auth/profile`, {
@@ -61,9 +58,9 @@ const Profile = () => {
     };
 
     const details = [
-        { label: "Full Name", value: formData.name, key: "name", icon: User, type: "text" },
-        { label: "Email Address", value: formData.email, key: "email", icon: Mail, type: "email" },
-        { label: "Phone Number", value: formData.phone, key: "phone", icon: Phone, type: "tel" },
+        { label: "Full Name", key: "name" as const, icon: User, type: "text" },
+        { label: "Email Address", key: "email" as const, icon: Mail, type: "email" },
+        { label: "Phone Number", key: "phone" as const, icon: Phone, type: "tel" },
     ];
 
     return (
@@ -109,7 +106,8 @@ const Profile = () => {
                             ) : (
                                 <div className="flex items-center gap-3">
                                     <button
-                                        onClick={handleSave}
+                                        type="submit"
+                                        form="profile-form"
                                         disabled={loading}
                                         className="flex items-center gap-1.5 text-xs font-bold text-green-500 hover:text-green-400 transition-colors disabled:opacity-50"
                                     >
@@ -118,7 +116,7 @@ const Profile = () => {
                                     <button
                                         onClick={() => {
                                             setIsEditing(false);
-                                            setFormData({ name: user.name, email: user.email, phone: user.phone || "" });
+                                            reset({ name: user.name, email: user.email, phone: user.phone || "" });
                                         }}
                                         disabled={loading}
                                         className="flex items-center gap-1.5 text-xs font-bold text-red-500 hover:text-red-400 transition-colors disabled:opacity-50"
@@ -128,7 +126,7 @@ const Profile = () => {
                                 </div>
                             )}
                         </div>
-                        <div className="divide-y divide-border">
+                        <form id="profile-form" onSubmit={handleSubmit(onSubmit)} className="divide-y divide-border">
                             {details.map((item, i) => (
                                 <div key={i} className="px-6 py-5 flex items-center justify-between">
                                     <div className="flex items-center gap-4 w-full">
@@ -136,22 +134,25 @@ const Profile = () => {
                                             <item.icon className="w-5 h-5" />
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</p>
+                                            <label htmlFor={`profile-${item.key}`} className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</label>
                                             {isEditing ? (
-                                                <input
-                                                    type={item.type}
-                                                    value={item.value}
-                                                    onChange={(e) => setFormData({ ...formData, [item.key]: e.target.value })}
-                                                    className="w-full mt-1 bg-secondary/50 border border-border rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-                                                />
+                                                <div>
+                                                    <input
+                                                        id={`profile-${item.key}`}
+                                                        type={item.type}
+                                                        {...register(item.key)}
+                                                        className={`w-full mt-1 bg-secondary/50 border rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all ${errors[item.key] ? "border-destructive" : "border-border"}`}
+                                                    />
+                                                    {errors[item.key] && <p className="text-xs text-destructive mt-1 ml-1">{errors[item.key]?.message}</p>}
+                                                </div>
                                             ) : (
-                                                <p className="text-sm font-semibold text-black">{item.value || "Not provided"}</p>
+                                                <p className="text-sm font-semibold text-black">{formValues[item.key] || "Not provided"}</p>
                                             )}
                                         </div>
                                     </div>
                                 </div>
                             ))}
-                        </div>
+                        </form>
                     </div>
 
                     <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-3">

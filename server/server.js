@@ -4,11 +4,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
 import fs from 'fs';
+import pino from 'pino';
+import pinoHttp from 'pino-http';
 
 import authRouter from './routes/auth.js';
 import productRouter from './routes/products.js';
@@ -23,7 +26,7 @@ dotenv.config();
 
 // ── Validate required env vars at startup ──
 if (!process.env.JWT_SECRET) {
-    console.error('FATAL: JWT_SECRET is not set. Refusing to start.');
+    process.stderr.write('FATAL: JWT_SECRET is not set. Refusing to start.\n');
     process.exit(1);
 }
 
@@ -33,6 +36,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 const IS_PROD = process.env.NODE_ENV === 'production';
+
+// ── Structured Logger ──
+const logger = pino({ level: IS_PROD ? 'info' : 'debug' });
 
 // ── Compression (gzip) ──
 app.use(compression());
@@ -67,7 +73,7 @@ if (!IS_PROD) {
 app.use(cors({
     origin: (origin, callback) => {
         const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-        if (!origin || allowedOrigins.includes(origin) || (!IS_PROD && isLocal)) {
+        if ((!IS_PROD && !origin) || allowedOrigins.includes(origin) || (!IS_PROD && isLocal)) {
             return callback(null, true);
         }
         callback(new Error('Not allowed by CORS'));
@@ -75,12 +81,13 @@ app.use(cors({
     credentials: true,
 }));
 
-// ── Request Logging ──
-app.use(morgan(IS_PROD ? 'combined' : 'dev'));
+// ── Request Logging (pino-http replaces morgan) ──
+app.use(pinoHttp({ logger, genReqId: () => crypto.randomUUID() }));
 
 // ── Body Parsing (500kb limit prevents JSON body DoS) ──
 app.use(express.json({ limit: '500kb' }));
 app.use(express.urlencoded({ extended: true, limit: '500kb' }));
+app.use(mongoSanitize());
 
 // ── Global API Rate Limiter (100 req / 15 min per IP) ──
 const globalLimiter = rateLimit({
@@ -96,10 +103,9 @@ app.use('/api', globalLimiter);
 // ── Health Check (Render needs this) ──
 app.get('/health', (_req, res) => {
     const dbState = mongoose.connection.readyState;
-    // 1 = connected, 2 = connecting
-    if (dbState === 1 || dbState === 2) {
-        return res.status(200).json({ status: 'ok', db: 'connected' });
-    }
+    // 1 = connected, 2 = connecting, 0/3 = disconnected/disconnecting
+    if (dbState === 1) return res.status(200).json({ status: 'ok', db: 'connected' });
+    if (dbState === 2) return res.status(503).json({ status: 'starting', db: 'connecting' });
     res.status(503).json({ status: 'degraded', db: 'disconnected' });
 });
 
@@ -136,7 +142,7 @@ app.use((_req, res, next) => {
 // ── Global Error Handler ──
 app.use((err, _req, res, _next) => {
     const status = err.status || err.statusCode || 500;
-    console.error(`[${new Date().toISOString()}] ${status} ${err.message}`);
+    logger.error({ status, err }, err.message);
     res.status(status).json({ message: IS_PROD ? 'Internal server error' : err.message });
 });
 
@@ -144,21 +150,45 @@ app.use((err, _req, res, _next) => {
 const connectDB = async () => {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
-        console.error('✗ MONGODB_URI is not set in .env — cannot start server');
+        logger.error('MONGODB_URI is not set in .env — cannot start server');
         process.exit(1);
     }
     try {
         await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 30000 });
-        console.log('✓ Connected to MongoDB Atlas');
+        logger.info('Connected to MongoDB Atlas');
     } catch (err) {
-        console.error(`✗ MongoDB connection failed: ${err.message}`);
-        console.error('  Check that MONGODB_URI in server/.env is correct and your IP is whitelisted in Atlas.');
+        logger.error({ err }, `MongoDB connection failed: ${err.message}`);
+        logger.error('Check that MONGODB_URI in server/.env is correct and your IP is whitelisted in Atlas.');
         process.exit(1);
     }
 };
 
 connectDB().then(() => {
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`✓ Server on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    const server = app.listen(PORT, '0.0.0.0', () => {
+        logger.info(`Server on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
     });
+
+    // ── Graceful Shutdown ──
+    const shutdown = (signal) => {
+        logger.info(`${signal} received — shutting down gracefully…`);
+        server.close(() => {
+            mongoose.connection.close().then(() => {
+                logger.info('MongoDB connection closed');
+                process.exit(0);
+            });
+        });
+        setTimeout(() => { logger.error('Forced exit after timeout'); process.exit(1); }, 10000);
+    };
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+});
+
+// ── Crash Safety ──
+process.on('unhandledRejection', (reason) => {
+    logger.error({ reason }, 'unhandledRejection');
+    process.exit(1);
+});
+process.on('uncaughtException', (err) => {
+    logger.error({ err }, 'uncaughtException');
+    process.exit(1);
 });

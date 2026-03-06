@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import { isJwtExpired } from "@/lib/auth";
 import { toast } from "sonner";
 import {
     Product,
@@ -20,6 +21,7 @@ interface DataContextType {
     brands: Brand[];
     models: ProductModel[];
     loading: boolean;
+    error: string | null;
     addProduct: (product: Partial<Product>) => Promise<void>;
     updateProduct: (product: Product) => Promise<void>;
     deleteProduct: (id: string) => Promise<void>;
@@ -50,17 +52,6 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const getToken = () => localStorage.getItem("aaro_token");
 
-const isJwtExpired = (token: string): boolean => {
-    try {
-        // JWT uses base64url — convert to standard base64 before atob
-        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-        const payload = JSON.parse(atob(base64));
-        return payload.exp * 1000 < Date.now();
-    } catch {
-        return true;
-    }
-};
-
 const authHeaders = () => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${getToken()}`,
@@ -88,6 +79,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [models, setModels] = useState<ProductModel[]>([]);
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // ── Global 401 handler: auto-logout on expired/invalid token ──────────────
     const handleUnauthorized = useCallback(() => {
@@ -190,7 +182,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
             if (productsResult.status === 'fulfilled' && Array.isArray(productsResult.value))
                 setProducts(productsResult.value.map(mapProduct));
-            else console.error("Products fetch failed:", productsResult.status === 'rejected' ? productsResult.reason : 'not array');
+            else {
+                const reason = productsResult.status === 'rejected' ? productsResult.reason : 'not array';
+                console.error("Products fetch failed:", reason);
+                setError("Failed to load products. Please try again later.");
+            }
 
             if (categoriesResult.status === 'fulfilled' && Array.isArray(categoriesResult.value))
                 setCategories(categoriesResult.value.map(mapCategory));
@@ -435,6 +431,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 brands,
                 models,
                 loading,
+                error,
                 activeOffer,
                 addProduct,
                 updateProduct,

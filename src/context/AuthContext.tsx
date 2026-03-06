@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { isJwtExpired } from "@/lib/auth";
 
 interface User {
     id: string;
@@ -21,18 +22,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Decode JWT payload and check expiry without a library
-const isJwtExpired = (token: string): boolean => {
-    try {
-        // JWT uses base64url — convert to standard base64 before atob
-        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-        const payload = JSON.parse(atob(base64));
-        return payload.exp * 1000 < Date.now();
-    } catch {
-        return true; // treat malformed tokens as expired
-    }
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
@@ -46,7 +35,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setToken(savedToken);
                 setUser(JSON.parse(savedUser));
             } else if (savedToken) {
-                // Token exists but is expired — clear it so ProtectedRoute redirects to login
                 localStorage.removeItem("aaro_token");
                 localStorage.removeItem("aaro_user");
             }
@@ -59,32 +47,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, []);
 
-    const login = (newToken: string, newUser: User) => {
+    const login = useCallback((newToken: string, newUser: User) => {
         setToken(newToken);
         setUser(newUser);
         localStorage.setItem("aaro_token", newToken);
         localStorage.setItem("aaro_user", JSON.stringify(newUser));
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         setToken(null);
         setUser(null);
         localStorage.removeItem("aaro_token");
         localStorage.removeItem("aaro_user");
         localStorage.removeItem("aaro_admin");
-    };
+        localStorage.removeItem("aaro_cart");
+        localStorage.removeItem("aaro_wishlist");
+        localStorage.removeItem("aaro_recently_viewed");
+    }, []);
 
-    const updateUser = (updatedUser: User) => {
+    const updateUser = useCallback((updatedUser: User) => {
         setUser(updatedUser);
         localStorage.setItem("aaro_user", JSON.stringify(updatedUser));
-    };
+    }, []);
+
+    const value = useMemo(() => ({
+        user, token, loading, login, logout, updateUser,
+        isAuthenticated: !!token,
+        isAdmin: user?.role === "admin",
+    }), [user, token, loading, login, logout, updateUser]);
 
     return (
-        <AuthContext.Provider value={{
-            user, token, loading, login, logout, updateUser,
-            isAuthenticated: !!token,
-            isAdmin: user?.role === "admin",
-        }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Star, ShoppingCart, MessageCircle, ArrowLeft, Check, Tag, Zap, Play } from "lucide-react";
+import { Star, ShoppingCart, MessageCircle, ArrowLeft, Check, Tag, Zap, Play, Clock } from "lucide-react";
+import PageMeta from "@/components/PageMeta";
 import { WHATSAPP_NUMBER } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useData } from "@/context/DataContext";
 import { useAuth } from "@/context/AuthContext";
 import { Review, Variant } from "@/data/products";
+import ProductCard from "@/components/ProductCard";
 import { toast } from "sonner";
 
 // Helper to convert YouTube URL to embed URL
@@ -36,6 +38,32 @@ const ProductDetails = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewForm, setReviewForm] = useState({ comment: "", rating: 5 });
   const [submitting, setSubmitting] = useState(false);
+
+  // Track recently viewed products in localStorage
+  useEffect(() => {
+    if (!product) return;
+    const pid = product.id || (product as any)._id;
+    const KEY = "aaro_recently_viewed";
+    try {
+      const stored: string[] = JSON.parse(localStorage.getItem(KEY) || "[]");
+      const updated = [pid, ...stored.filter(id => id !== pid)].slice(0, 10);
+      localStorage.setItem(KEY, JSON.stringify(updated));
+    } catch { /* ignore */ }
+  }, [product?.id]);
+
+  const recentlyViewed = useMemo(() => {
+    if (!product) return [];
+    const KEY = "aaro_recently_viewed";
+    try {
+      const stored: string[] = JSON.parse(localStorage.getItem(KEY) || "[]");
+      const currentId = product.id || (product as any)._id;
+      return stored
+        .filter(id => id !== currentId)
+        .map(id => products.find(p => p.id === id || p._id === id))
+        .filter(Boolean)
+        .slice(0, 4) as typeof products;
+    } catch { return []; }
+  }, [product?.id, products]);
 
   // Variant State
   const [variants, setVariants] = useState<Variant[]>([]);
@@ -219,6 +247,27 @@ const ProductDetails = () => {
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl pb-16 lg:pb-4">
+      <PageMeta
+        title={product.name}
+        description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}
+        ogImage={product.images?.[0]}
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          brand: { "@type": "Brand", name: product.brand },
+          description: product.description,
+          image: product.images?.[0],
+          aggregateRating: product.reviewCount > 0 ? { "@type": "AggregateRating", ratingValue: product.rating, reviewCount: product.reviewCount } : undefined,
+          offers: variants.length > 0 ? {
+            "@type": "AggregateOffer",
+            priceCurrency: "INR",
+            lowPrice: Math.min(...variants.map(v => v.price)),
+            highPrice: Math.max(...variants.map(v => v.price)),
+            offerCount: variants.length,
+          } : undefined,
+        }}
+      />
       <Link to="/shop" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary mb-6 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>
@@ -229,7 +278,7 @@ const ProductDetails = () => {
           <div className="glass-card rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
             {hasImages ? (
-              <img src={selectedImage || product.images[0]} alt={product.name}
+              <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
                 className="w-full h-full object-contain drop-shadow-3xl transition-all duration-700 group-hover:scale-105" />
             ) : (
               <div className="text-[10rem] transition-transform duration-700 group-hover:scale-110">
@@ -246,9 +295,9 @@ const ProductDetails = () => {
           {hasImages && product.images.length > 1 && (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {product.images.map((img, i) => (
-                <button key={i} onClick={() => setSelectedImage(img)}
+                <button key={i} aria-label={`View image ${i + 1}`} onClick={() => setSelectedImage(img)}
                   className={`aspect-square rounded-2xl overflow-hidden transition-all duration-300 border-2 ${selectedImage === img ? "border-primary shadow-lg scale-95" : "border-white/50 grayscale hover:grayscale-0 hover:border-primary/50"}`}>
-                  <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`view ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
@@ -267,9 +316,9 @@ const ProductDetails = () => {
           </h1>
 
           <div className="flex items-center gap-2 mb-6">
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5" aria-label={`Rating: ${product.rating} out of 5`}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
+                <Star key={i} aria-hidden="true" className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
               ))}
             </div>
             <span className="text-sm font-bold text-muted-foreground">
@@ -461,7 +510,7 @@ const ProductDetails = () => {
                     <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Your Rating</label>
                     <div className="flex gap-1 mt-2">
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <button key={star} type="button" onClick={() => setReviewForm(f => ({ ...f, rating: star }))}>
+                        <button key={star} type="button" aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`} onClick={() => setReviewForm(f => ({ ...f, rating: star }))}>
                           <Star className={`w-6 h-6 transition-colors ${star <= reviewForm.rating ? "fill-accent text-accent" : "text-border hover:text-accent"}`} />
                         </button>
                       ))}
@@ -525,6 +574,36 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Related Products */}
+      {(() => {
+        const related = products
+          .filter(p => p.id !== product.id && (p.category === product.category || p.brand === product.brand))
+          .slice(0, 4);
+        if (related.length === 0) return null;
+        return (
+          <div className="mt-16">
+            <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
+              <Tag className="w-6 h-6 text-primary" /> You May Also Like
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+              {related.map(p => <ProductCard key={p.id} product={p} />)}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Recently Viewed */}
+      {recentlyViewed.length > 0 && (
+        <div className="mt-16">
+          <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
+            <Clock className="w-6 h-6 text-primary" /> Recently Viewed
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
