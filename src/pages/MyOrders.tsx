@@ -49,15 +49,15 @@ const MyOrders = () => {
             <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-foreground">My Orders</h1>
 
             {orders.length === 0 ? (
-                <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                <div className="bg-card border border-border rounded-sm sm:rounded-2xl p-12 text-center">
                     <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground/30" />
                     <p className="text-muted-foreground mb-4 font-medium">You haven't placed any orders yet.</p>
-                    <a href="/shop" className="gradient-purple text-primary-foreground px-6 py-2.5 rounded-xl font-medium">Start Shopping</a>
+                    <a href="/shop" className="gradient-purple text-primary-foreground px-6 py-2.5 rounded-sm sm:rounded-xl font-medium">Start Shopping</a>
                 </div>
             ) : (
                 <div className="space-y-6">
                     {orders.map((order) => (
-                        <div key={order._id} className="bg-card border border-border rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-shadow">
+                        <div key={order._id} className="bg-card border border-border rounded-sm sm:rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-shadow">
                             <div className="p-4 sm:p-6 bg-secondary/30 flex flex-wrap justify-between items-center gap-3">
                                 <div>
                                     <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Order ID</p>
@@ -77,7 +77,7 @@ const MyOrders = () => {
                                     {order.items.map((item: any, idx: number) => (
                                         <div key={idx} className="flex items-center gap-4 border-b border-border/50 pb-3 last:border-0">
                                             {/* Product Image */}
-                                            <div className="w-16 h-16 rounded-xl bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
+                                            <div className="w-16 h-16 rounded-sm sm:rounded-xl bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
                                                 {item.product?.images?.[0] ? (
                                                     <img
                                                         src={item.product.images[0]}

@@ -1,5 +1,5 @@
 import { useNavigate, Link } from "react-router-dom";
-import { ShoppingBag, User, Settings, ArrowRight, Package, Heart, LogOut } from "lucide-react";
+import { ShoppingBag, User, Settings, ArrowRight, Package, LogOut } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ const CustomerDashboard = () => {
 
     const stats = [
         { label: "Total Orders", value: "0", icon: ShoppingBag, color: "bg-blue-500" },
-        { label: "Wishlist Items", value: "0", icon: Heart, color: "bg-pink-500" },
+        { label: "Member Since", value: new Date().getFullYear().toString(), icon: Package, color: "bg-pink-500" },
         { label: "Account Status", value: "Active", icon: User, color: "bg-green-500" },
     ];
 

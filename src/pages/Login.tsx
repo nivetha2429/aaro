@@ -94,6 +94,11 @@ const Login = () => {
                         </div>
                         {errors.password && <p className="text-xs text-destructive mt-1 ml-1">{errors.password.message}</p>}
                     </div>
+                    <div className="text-right">
+                        <Link to="/forgot-password" className="text-xs text-primary font-semibold hover:underline">
+                            Forgot Password?
+                        </Link>
+                    </div>
                     <button
                         type="submit"
                         disabled={loading}

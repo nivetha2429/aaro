@@ -61,7 +61,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem("aaro_user");
         localStorage.removeItem("aaro_admin");
         localStorage.removeItem("aaro_cart");
-        localStorage.removeItem("aaro_wishlist");
         localStorage.removeItem("aaro_recently_viewed");
     }, []);
 

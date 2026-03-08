@@ -39,6 +39,11 @@ const ProductDetails = () => {
   const [reviewForm, setReviewForm] = useState({ comment: "", rating: 5 });
   const [submitting, setSubmitting] = useState(false);
 
+  // Scroll to top when product changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   // Track recently viewed products in localStorage
   useEffect(() => {
     if (!product) return;
@@ -246,7 +251,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl pb-16 lg:pb-4">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 max-w-7xl pb-16 lg:pb-4">
       <PageMeta
         title={product.name}
         description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}
@@ -275,18 +280,18 @@ const ProductDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
         {/* ── Image Gallery ── */}
         <div className="space-y-4 animate-fade-in lg:sticky lg:top-24">
-          <div className="glass-card rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
+          <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
             {hasImages ? (
               <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
                 className="w-full h-full object-contain drop-shadow-3xl transition-all duration-700 group-hover:scale-105" />
             ) : (
-              <div className="text-[10rem] transition-transform duration-700 group-hover:scale-110">
+              <div className="text-6xl sm:text-8xl md:text-[10rem] transition-transform duration-700 group-hover:scale-110">
                 {product.category === "phone" ? "📱" : "💻"}
               </div>
             )}
             {discount > 0 && (
-              <div className="absolute top-6 right-6 gradient-offer text-white px-4 py-2 rounded-2xl font-black text-sm shadow-xl">
+              <div className="absolute top-3 right-3 sm:top-6 sm:right-6 gradient-offer text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm sm:rounded-2xl font-black text-xs sm:text-sm shadow-xl">
                 -{discount}%
               </div>
             )}
@@ -296,7 +301,7 @@ const ProductDetails = () => {
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {product.images.map((img, i) => (
                 <button key={i} aria-label={`View image ${i + 1}`} onClick={() => setSelectedImage(img)}
-                  className={`aspect-square rounded-2xl overflow-hidden transition-all duration-300 border-2 ${selectedImage === img ? "border-primary shadow-lg scale-95" : "border-white/50 grayscale hover:grayscale-0 hover:border-primary/50"}`}>
+                  className={`aspect-square rounded-sm sm:rounded-2xl overflow-hidden transition-all duration-300 border-2 ${selectedImage === img ? "border-primary shadow-lg scale-95" : "border-white/50 grayscale hover:grayscale-0 hover:border-primary/50"}`}>
                   <img src={img} alt={`view ${i + 1}`} loading="lazy" className="w-full h-full object-cover" />
                 </button>
               ))}
@@ -308,7 +313,7 @@ const ProductDetails = () => {
         <div className="animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary mb-4 border border-primary/20">
             <Tag className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-black uppercase tracking-wider">{product.brand} · {product.category === "phone" ? "Smartphone" : "Laptop"}</span>
+            <span className="text-[11px] font-black uppercase tracking-wider">{product.brand} · {product.category === "phone" ? "Smartphone" : "Laptop"}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 leading-tight tracking-tight drop-shadow-sm">
@@ -318,7 +323,7 @@ const ProductDetails = () => {
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center gap-0.5" aria-label={`Rating: ${product.rating} out of 5`}>
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} aria-hidden="true" className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
+                <Star key={i} aria-hidden="true" className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
               ))}
             </div>
             <span className="text-sm font-bold text-muted-foreground">
@@ -345,16 +350,16 @@ const ProductDetails = () => {
           </div>
 
           {/* Amazon-style Variant Selection */}
-          <div className="space-y-6 mb-8 bg-zinc-50/50 p-3 sm:p-6 rounded-[2rem] border border-border">
+          <div className="space-y-6 mb-8 bg-zinc-50/50 p-3 sm:p-6 rounded-sm sm:rounded-[2rem] border border-border">
             {/* RAM Options */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest ml-1">Select RAM</label>
+              <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest ml-1">Select RAM</label>
               <div className="flex flex-wrap gap-2">
                 {uniqueRAMs.map(ram => (
                   <button
                     key={ram}
                     onClick={() => setSelectedRAM(ram)}
-                    className={`px-3 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedRAM === ram
+                    className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedRAM === ram
                       ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                       : "bg-white border-transparent text-foreground hover:border-primary/30"
                       }`}
@@ -367,7 +372,7 @@ const ProductDetails = () => {
 
             {/* Storage Options */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest ml-1">Select Storage</label>
+              <label className="text-[11px] font-black uppercase text-[#7a869a] tracking-widest ml-1">Select Storage</label>
               <div className="flex flex-wrap gap-2">
                 {availableStorages.map(storage => {
                   const isLowStock = variants.filter(v => v.ram === selectedRAM && v.storage === storage).every(v => v.stock === 0);
@@ -376,7 +381,7 @@ const ProductDetails = () => {
                       key={storage}
                       disabled={isLowStock}
                       onClick={() => setSelectedStorage(storage)}
-                      className={`px-3 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedStorage === storage
+                      className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedStorage === storage
                         ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                         : isLowStock
                           ? "bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through"
@@ -392,7 +397,7 @@ const ProductDetails = () => {
 
             {/* Color Options */}
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest ml-1">Select Color</label>
+              <label className="text-[11px] font-black uppercase text-[#7a869a] tracking-widest ml-1">Select Color</label>
               <div className="flex flex-wrap gap-2">
                 {availableColors.map(color => {
                   const isLowStock = variants.find(v => v.ram === selectedRAM && v.storage === selectedStorage && v.color === color)?.stock === 0;
@@ -401,7 +406,7 @@ const ProductDetails = () => {
                       key={color}
                       disabled={isLowStock}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-3 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedColor === color
+                      className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedColor === color
                         ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                         : isLowStock
                           ? "bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through"
@@ -426,7 +431,7 @@ const ProductDetails = () => {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {product.features.map((feat, i) => (
-                  <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+                  <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-sm sm:rounded-xl bg-primary/10 text-primary text-xs font-bold border border-primary/20">
                     <Check className="w-3 h-3" /> {feat}
                   </span>
                 ))}
@@ -436,25 +441,25 @@ const ProductDetails = () => {
 
           {/* Structured Specifications */}
           {specEntries.length > 0 && (
-            <div className="mb-8 rounded-3xl border border-border/50 overflow-hidden">
+            <div className="mb-8 rounded-sm sm:rounded-3xl border border-border/50 overflow-hidden">
               <div className="bg-secondary/30 px-6 py-3 border-b border-border/50">
                 <h3 className="font-black text-xs uppercase tracking-widest text-foreground">Specifications</h3>
               </div>
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
                   <div key={key} className="flex items-center px-6 py-3 hover:bg-secondary/20 transition-colors">
-                    <span className="text-xs font-black uppercase tracking-wider text-muted-foreground w-20 md:w-28 shrink-0">
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground w-20 md:w-28 shrink-0">
                       {SPEC_LABELS[key] || key}
                     </span>
-                    <span className="text-sm font-bold text-foreground">{val}</span>
+                    <span className="text-xs sm:text-sm font-bold text-foreground">{val}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Action Buttons — fixed above MobileNav on mobile (bottom-16), normal flow on xl+ */}
-          <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 mb-8 fixed lg:relative bottom-20 lg:bottom-auto left-0 right-0 p-4 lg:p-0 bg-white/90 lg:bg-transparent backdrop-blur-xl lg:backdrop-blur-none border-t border-primary/10 lg:border-none z-40 shadow-[0_-10px_40px_-15px_rgba(76,29,149,0.15)] lg:shadow-none">
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 mb-8">
             <button onClick={handleAddToCart}
               className={`flex-1 py-4 md:py-5 rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg shadow-xl shadow-primary/10 ${isAdded ? "bg-green-500 text-white shadow-green-500/20" : isAdmin ? "bg-gray-400 text-white cursor-not-allowed" : "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98]"}`}
               disabled={isAdded || isAdmin}>
@@ -466,7 +471,7 @@ const ProductDetails = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-6 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-[11px] font-black text-muted-foreground uppercase tracking-widest">
             <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-primary" /> Free Shipping</div>
             <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-primary" /> 1 Year Warranty</div>
             <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-primary" /> Secure Payment</div>
@@ -480,7 +485,7 @@ const ProductDetails = () => {
           <h2 className="text-xl md:text-2xl font-black text-foreground mb-6 flex items-center gap-3">
             <Play className="w-6 h-6 text-primary" /> Product Video
           </h2>
-          <div className="rounded-3xl overflow-hidden shadow-2xl border border-border/30 aspect-video">
+          <div className="rounded-sm sm:rounded-3xl overflow-hidden shadow-2xl border border-border/30 aspect-video">
             <iframe
               src={videoEmbed}
               title={`${product.name} video`}
@@ -499,54 +504,12 @@ const ProductDetails = () => {
           <span className="text-sm font-normal text-muted-foreground">({reviews.length})</span>
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Review Form */}
-          <div className="md:col-span-1">
-            <div className="glass-card rounded-3xl p-6 border border-white/40">
-              <h3 className="font-black text-sm uppercase tracking-widest mb-4">Write a Review</h3>
-              {user ? (
-                <form onSubmit={handleSubmitReview} className="space-y-4">
-                  <div>
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Your Rating</label>
-                    <div className="flex gap-1 mt-2">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button key={star} type="button" aria-label={`Rate ${star} star${star > 1 ? "s" : ""}`} onClick={() => setReviewForm(f => ({ ...f, rating: star }))}>
-                          <Star className={`w-6 h-6 transition-colors ${star <= reviewForm.rating ? "fill-accent text-accent" : "text-border hover:text-accent"}`} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Comment</label>
-                    <textarea
-                      value={reviewForm.comment}
-                      onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
-                      rows={4}
-                      className="w-full mt-2 px-4 py-3 rounded-2xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                      placeholder="Share your experience..."
-                    />
-                  </div>
-                  <button type="submit" disabled={submitting}
-                    className="w-full gradient-purple text-primary-foreground py-3 rounded-2xl font-black text-sm hover:opacity-90 transition-all disabled:opacity-50">
-                    {submitting ? "Submitting..." : "Submit Review"}
-                  </button>
-                </form>
-              ) : (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground mb-4">Login to write a review</p>
-                  <Link to="/login" className="gradient-purple text-primary-foreground px-6 py-3 rounded-2xl font-black text-sm">Login</Link>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Review List */}
-          <div className="md:col-span-2 space-y-4">
+        <div className="space-y-4">
             {reviews.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">No reviews yet. Be the first!</div>
+              <div className="text-center py-12 text-muted-foreground">No reviews yet.</div>
             ) : (
               reviews.map((review) => (
-                <div key={review.id} className="glass-card rounded-3xl p-6 border border-white/40">
+                <div key={review.id} className="glass-card rounded-sm sm:rounded-3xl p-4 sm:p-6 border border-white/40">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-black text-primary text-sm">
@@ -571,7 +534,6 @@ const ProductDetails = () => {
                 </div>
               ))
             )}
-          </div>
         </div>
       </div>
 
@@ -586,7 +548,7 @@ const ProductDetails = () => {
             <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
               <Tag className="w-6 h-6 text-primary" /> You May Also Like
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
               {related.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
@@ -599,7 +561,7 @@ const ProductDetails = () => {
           <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
             <Clock className="w-6 h-6 text-primary" /> Recently Viewed
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
             {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>

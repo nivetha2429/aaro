@@ -18,26 +18,26 @@ const OverviewTab = ({ onQuickAction }: OverviewTabProps) => {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-3 lg:gap-4">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-2 sm:gap-3">
         {stats.map((s, i) => (
-          <Card key={i} className="border-none shadow-sm rounded-3xl group hover:shadow-xl transition-all duration-300">
-            <CardContent className="p-3 md:p-6 lg:p-6">
-              <div className={`w-10 h-10 md:w-14 md:h-14 shrink-0 rounded-2xl ${s.bg} ${s.color} flex items-center justify-center mb-3 md:mb-5 transition-transform group-hover:scale-110`}>
-                <s.icon className="w-5 h-5 md:w-7 md:h-7" />
+          <Card key={i} className="border-none shadow-sm rounded-lg sm:rounded-2xl group hover:shadow-lg transition-all duration-300">
+            <CardContent className="p-2.5 sm:p-3 md:p-4">
+              <div className={`w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-xl ${s.bg} ${s.color} flex items-center justify-center mb-2 md:mb-3 transition-transform group-hover:scale-110`}>
+                <s.icon className="w-4 h-4 md:w-5 md:h-5" />
               </div>
-              <p className="text-[10px] md:text-xs font-black text-[#a3acb9] uppercase tracking-widest mb-0.5 md:mb-1">{s.label}</p>
-              <h4 className="text-lg md:text-3xl lg:text-2xl font-black text-[#1a1f36]">{s.val}</h4>
+              <p className="text-[9px] md:text-[11px] font-bold text-[#a3acb9] uppercase tracking-wider mb-0.5">{s.label}</p>
+              <h4 className="text-base md:text-xl font-black text-[#1a1f36]">{s.val}</h4>
             </CardContent>
           </Card>
         ))}
       </div>
-      <Card className="border-none shadow-sm rounded-3xl p-4 sm:p-6">
-        <CardTitle className="mb-3 sm:mb-4 font-black text-[#1a1f36] text-base sm:text-lg">Quick Actions</CardTitle>
-        <div className="flex flex-wrap gap-3">
-          <Button onClick={() => onQuickAction("products", "add")} className="gradient-dark text-white rounded-xl font-black text-xs"><Plus className="w-4 h-4 mr-2" />Add Product</Button>
-          <Button onClick={() => onQuickAction("categories", "add-category")} className="gradient-purple text-white rounded-xl font-black text-xs"><Plus className="w-4 h-4 mr-2" />Add Category</Button>
-          <Button onClick={() => onQuickAction("offers", "add-offer")} variant="outline" className="rounded-xl font-black text-xs"><Plus className="w-4 h-4 mr-2" />New Offer</Button>
+      <Card className="border-none shadow-sm rounded-lg sm:rounded-2xl p-2.5 sm:p-4">
+        <CardTitle className="mb-2 sm:mb-3 font-bold text-[#1a1f36] text-sm sm:text-base">Quick Actions</CardTitle>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => onQuickAction("products", "add")} className="gradient-dark text-white rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Product</Button>
+          <Button onClick={() => onQuickAction("categories", "add-category")} className="gradient-purple text-white rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Category</Button>
+          <Button onClick={() => onQuickAction("offers", "add-offer")} variant="outline" className="rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />New Offer</Button>
         </div>
       </Card>
     </div>

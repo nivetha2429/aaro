@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import User from '../models/User.js';
 import { authMiddleware } from '../middleware/authMiddleware.js';
-import { registerSchema, loginSchema, profileSchema, changePasswordSchema, zodError } from '../lib/validate.js';
+import { registerSchema, loginSchema, profileSchema, changePasswordSchema, forgotPasswordSchema, zodError } from '../lib/validate.js';
 
 const router = Router();
 
@@ -80,6 +80,28 @@ router.put('/profile', authMiddleware, async (req, res) => {
         res.json({ user: safeUser(user) });
     } catch {
         res.status(500).json({ message: 'Update failed' });
+    }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', authLimiter, async (req, res) => {
+    try {
+        const parsed = forgotPasswordSchema.safeParse(req.body);
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+
+        const { email, phone, newPassword } = parsed.data;
+        const user = await User.findOne({ email });
+
+        if (!user || user.phone !== phone) {
+            return res.status(400).json({ message: 'No account found with this email and phone combination' });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 12);
+        await user.save();
+
+        res.json({ message: 'Password reset successfully. Please login with your new password.' });
+    } catch {
+        res.status(500).json({ message: 'Password reset failed' });
     }
 });
 

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Heart } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/context/WishlistContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
@@ -16,7 +15,6 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const { totalItems } = useCart();
-  const { totalWishlistItems } = useWishlist();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { products } = useData();
   const navigate = useNavigate();
@@ -95,13 +93,13 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500">
-      <div className="container mx-auto px-2 sm:px-4 py-3 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <div className="flex items-center gap-2 group shrink-0">
           <img
             src={logo}
             alt="AARO Systems Logo"
-            className="h-16 md:h-18 lg:h-20 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.src = "https://placehold.co/200x60/7c3aed/ffffff?text=AARO+SYSTEMS";
             }}
@@ -156,7 +154,7 @@ const Navbar = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-foreground truncate">{highlightMatch(p.name, searchQuery)}</p>
-                      <p className="text-[10px] uppercase font-black tracking-widest text-[#7a869a]">{p.brand}</p>
+                      <p className="text-[11px] uppercase font-black tracking-widest text-[#7a869a]">{p.brand}</p>
                     </div>
                     {getLowestPrice(p) > 0 && (
                       <span className="text-xs font-black text-primary shrink-0">₹{getLowestPrice(p).toLocaleString()}</span>
@@ -179,17 +177,6 @@ const Navbar = () => {
           <button aria-label="Open search" className="md:hidden p-2 text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
             <Search className="w-5 h-5" />
           </button>
-
-          {!isAdmin && (
-            <Link to="/wishlist" aria-label={`Wishlist (${totalWishlistItems} items)`} className="p-2 text-muted-foreground hover:text-red-500 relative group">
-              <Heart className={`w-5 h-5 group-hover:scale-110 transition-transform ${totalWishlistItems > 0 ? "fill-red-500 text-red-500" : ""}`} />
-              {totalWishlistItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {totalWishlistItems}
-                </span>
-              )}
-            </Link>
-          )}
 
           {!isAdmin && (
             <Link to="/cart" aria-label={`Cart (${totalItems} items)`} className="p-2 text-muted-foreground hover:text-primary relative group">
@@ -223,7 +210,7 @@ const Navbar = () => {
                 <div role="menu" className={`absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 transition-all transform z-[60] origin-top-right ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
                   <div className="px-4 py-2 border-b border-border mb-1">
                     <p className="text-xs font-bold text-foreground truncate">{user?.name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
                   </div>
 
                   {isAdmin && (
@@ -279,7 +266,7 @@ const Navbar = () => {
 
           <nav className="flex-1 overflow-y-auto p-6 space-y-8">
             <div className="space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Navigation</p>
+              <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Navigation</p>
               {[
                 { label: "Home", path: "/", icon: Home },
                 { label: "Phones", path: "/phones", icon: Smartphone },
@@ -307,7 +294,7 @@ const Navbar = () => {
             <div className="h-px bg-border/50 mx-2" />
 
             <div className="space-y-2">
-              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Account Services</p>
+              <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Account Services</p>
               {isAuthenticated ? (
                 <div className="space-y-2">
                   <div className="p-4 bg-secondary/50 rounded-2xl mb-4 flex items-center gap-3 border border-border">
@@ -414,7 +401,7 @@ const Navbar = () => {
             )}
           </div>
           <div className="mt-8 flex-1 overflow-y-auto">
-            <p className="text-[10px] uppercase font-black tracking-widest text-[#7a869a] mb-4">Trending Searches</p>
+            <p className="text-[11px] uppercase font-black tracking-widest text-[#7a869a] mb-4">Trending Searches</p>
             <div className="flex flex-wrap gap-2">
               {["iPhone 16", "MacBook Air", "Galaxy S24", "Gaming Laptop", "AirPods"].map(tag => (
                 <button key={tag} onClick={() => { setSearchQuery(tag); }} className="px-4 py-2 rounded-full border border-border text-sm font-bold hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all">

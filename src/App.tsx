@@ -1,11 +1,10 @@
-import { lazy, Suspense, Component } from "react";
+import { lazy, Suspense, Component, useEffect } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
-import { WishlistProvider } from "@/context/WishlistContext";
 import { DataProvider } from "@/context/DataContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -26,13 +25,13 @@ const OrderForm = lazy(() => import("./pages/OrderForm"));
 const Offers = lazy(() => import("./pages/Offers"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const MyOrders = lazy(() => import("./pages/MyOrders"));
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
 const Brands = lazy(() => import("./pages/Brands"));
 const Elite = lazy(() => import("./pages/Elite"));
-const Wishlist = lazy(() => import("./pages/Wishlist"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Global error boundary — prevents white-screen crashes
@@ -95,12 +94,21 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
   return <>{children}</>;
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 const AppContents = () => {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith("/admin");
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 flex justify-center selection:bg-primary/20">
+      <ScrollToTop />
       <div className="w-full max-w-[1400px] bg-background shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
         <Toaster richColors position="bottom-right" />
         {!isAdminPath && <Navbar />}
@@ -117,6 +125,7 @@ const AppContents = () => {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 {/* Customer Routes */}
                 <Route path="/dashboard" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
@@ -124,7 +133,6 @@ const AppContents = () => {
                 <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/offers" element={<Offers />} />
                 <Route path="/elite" element={<Elite />} />
 
@@ -152,11 +160,9 @@ const App = () => (
         <BrowserRouter>
           <DataProvider>
             <CartProvider>
-              <WishlistProvider>
                 <ErrorBoundary>
                   <AppContents />
                 </ErrorBoundary>
-              </WishlistProvider>
             </CartProvider>
           </DataProvider>
         </BrowserRouter>

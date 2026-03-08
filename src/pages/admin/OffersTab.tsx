@@ -105,11 +105,11 @@ const OffersTab = ({ pendingAction, onActionHandled }: OffersTabProps) => {
     <>
       <div className="space-y-6">
         {/* POPUP OFFER SECTION */}
-        <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-[#eaedf3] flex items-center justify-between">
+        <div className="bg-white rounded-lg sm:rounded-3xl shadow-sm overflow-hidden">
+          <div className="p-3 sm:p-6 border-b border-[#eaedf3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
             <div>
-              <h3 className="text-xl font-black text-[#1a1f36]">Popup Offer</h3>
-              <p className="text-xs text-[#7a869a]">Edit heading, sub-text &amp; countdown duration</p>
+              <h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Popup Offer</h3>
+              <p className="text-[10px] sm:text-xs text-[#7a869a]">Edit heading, sub-text &amp; countdown duration</p>
             </div>
             <Button
               onClick={() => {
@@ -235,35 +235,35 @@ const OffersTab = ({ pendingAction, onActionHandled }: OffersTabProps) => {
         </div>
 
         {/* OFFER BANNERS SECTION */}
-        <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-4 rounded-lg sm:rounded-2xl shadow-sm">
           <div>
-            <h3 className="text-xl font-black text-[#1a1f36]">Offer Banners</h3>
-            <p className="text-xs text-[#7a869a]">
+            <h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Offer Banners</h3>
+            <p className="text-[10px] sm:text-xs text-[#7a869a]">
               JPG / PNG / WEBP only, max 2MB each
               <span className={`ml-2 font-bold ${atLimit ? "text-red-500" : "text-primary"}`}>({bannerCount}/3 used)</span>
             </p>
             {atLimit && <p className="text-[10px] text-red-500 font-bold mt-0.5">Delete a banner below to upload a new one</p>}
           </div>
           {!atLimit && (
-            <Button onClick={() => openOfferForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-11 px-6 font-black uppercase text-[10px] tracking-widest">
+            <Button onClick={() => openOfferForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 sm:h-11 px-4 sm:px-6 font-black uppercase text-[9px] sm:text-[10px] tracking-widest w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />Upload Banner
             </Button>
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
           {bannerOffers.map(offer => (
-            <Card key={offer.id} className={`border-none shadow-sm rounded-3xl overflow-hidden transition-all hover:shadow-lg ${offer.active ? "ring-2 ring-primary/30" : ""}`}>
-              <div className="w-full h-36 bg-[#f8f9fc] border-b border-[#eaedf3] overflow-hidden relative">
-                {offer.image ? <img src={offer.image} alt={offer.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Tag className="w-8 h-8 text-[#eaedf3]" /></div>}
-                {offer.active && <div className="absolute top-3 right-3 bg-green-500 text-white text-[9px] font-black px-2 py-1 rounded-full">ACTIVE</div>}
-                {offer.tag && <div className="absolute bottom-3 left-3 bg-primary text-white text-[9px] font-black px-2.5 py-1 rounded-full tracking-wider">{offer.tag}</div>}
+            <Card key={offer.id} className={`border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden transition-all hover:shadow-lg ${offer.active ? "ring-2 ring-primary/30" : ""}`}>
+              <div className="w-full h-28 sm:h-36 bg-[#f8f9fc] border-b border-[#eaedf3] overflow-hidden relative">
+                {offer.image ? <img src={offer.image} alt={offer.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><Tag className="w-6 h-6 sm:w-8 sm:h-8 text-[#eaedf3]" /></div>}
+                {offer.active && <div className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500 text-white text-[8px] sm:text-[9px] font-black px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">ACTIVE</div>}
+                {offer.tag && <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-primary text-white text-[8px] sm:text-[9px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full tracking-wider">{offer.tag}</div>}
               </div>
-              <div className="p-4">
-                <p className="font-black text-[#1a1f36] text-sm mb-3 truncate">{offer.title || "Untitled Banner"}</p>
+              <div className="p-2.5 sm:p-4">
+                <p className="font-black text-[#1a1f36] text-[11px] sm:text-sm mb-2 sm:mb-3 truncate">{offer.title || "Untitled Banner"}</p>
                 <div className="flex items-center justify-end gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => openOfferForm(offer)} className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary"><Pencil className="w-3.5 h-3.5" /></Button>
-                  <Button variant="ghost" size="icon" onClick={() => deleteOffer(offer.id)} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => openOfferForm(offer)} className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl hover:bg-primary/10 hover:text-primary"><Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" /></Button>
+                  <Button variant="ghost" size="icon" onClick={() => deleteOffer(offer.id)} className="h-7 w-7 sm:h-8 sm:w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /></Button>
                 </div>
               </div>
             </Card>
@@ -281,15 +281,15 @@ const OffersTab = ({ pendingAction, onActionHandled }: OffersTabProps) => {
       {/* OFFER MODAL */}
       {showOfferForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/70 backdrop-blur-md animate-fade-in">
-          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-8 border-b border-[#eaedf3] flex justify-between items-center">
+          <div className="bg-white w-full max-w-sm rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-4 sm:p-8 border-b border-[#eaedf3] flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-black text-[#1a1f36]">{editingOffer ? "Edit Banner" : "Upload Banner"}</h3>
+                <h3 className="text-base font-bold text-[#1a1f36]">{editingOffer ? "Edit Banner" : "Upload Banner"}</h3>
                 <p className="text-xs text-[#a3acb9] mt-1">Upload an offer banner image</p>
               </div>
               <Button variant="ghost" size="icon" onClick={() => setShowOfferForm(false)} className="rounded-full h-10 w-10"><X className="w-5 h-5" /></Button>
             </div>
-            <div className="p-8 space-y-5">
+            <div className="p-4 sm:p-8 space-y-4 sm:space-y-5">
               <ImageUpload label="Banner Image * (JPG / PNG / WEBP, max 2MB)" value={offerForm.image}
                 onChange={url => setOfferForm(prev => ({ ...prev, image: url }))} accept=".jpg,.jpeg,.png,.webp" maxSizeMB={2} />
               <div className="space-y-2">
@@ -312,8 +312,8 @@ const OffersTab = ({ pendingAction, onActionHandled }: OffersTabProps) => {
                 </div>
               </label>
             </div>
-            <div className="p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-4">
-              <Button variant="ghost" onClick={() => setShowOfferForm(false)} className="flex-1 h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
+            <div className="p-4 sm:p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-3 sm:gap-4">
+              <Button variant="ghost" onClick={() => setShowOfferForm(false)} className="flex-1 h-11 sm:h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
               <Button onClick={handleSaveOffer} className="flex-1 h-12 rounded-2xl gradient-purple font-black uppercase text-[10px] text-white shadow-lg">
                 {editingOffer ? "Update" : "Upload"}
               </Button>

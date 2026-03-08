@@ -18,34 +18,34 @@ const FeaturedTab = () => {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm">
-          <div><h3 className="text-xl font-black text-[#1a1f36]">Featured Products</h3><p className="text-xs text-[#7a869a]">Manage frontpage featured products</p></div>
-          <Button onClick={() => setShowModal(true)} className="gradient-dark rounded-2xl h-12 px-8 font-black uppercase text-[10px] tracking-widest text-white shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-4 rounded-lg sm:rounded-2xl shadow-sm">
+          <div><h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Featured Products</h3><p className="text-[10px] sm:text-xs text-[#7a869a]">Manage frontpage featured products</p></div>
+          <Button onClick={() => setShowModal(true)} className="gradient-dark rounded-2xl h-8 sm:h-9 px-3 sm:px-5 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider text-white shadow-lg w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />Add Featured
           </Button>
         </div>
 
-        <Card className="border-none shadow-sm rounded-3xl p-6 bg-transparent">
+        <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl p-3 sm:p-6 bg-transparent">
           <div className="flex items-center justify-between mb-6">
-            <h4 className="font-black text-primary flex items-center gap-2 text-lg"><Star className="w-5 h-5 fill-primary" /> Currently Featured</h4>
+            <h4 className="font-bold text-primary flex items-center gap-2 text-sm"><Star className="w-5 h-5 fill-primary" /> Currently Featured</h4>
             <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">{featured.length} Items</Badge>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
             {featured.map(p => (
-              <div key={p.id} className="flex flex-col p-4 rounded-3xl bg-white shadow-sm hover:shadow-md transition-all border border-[#eaedf3] group relative overflow-hidden">
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+              <div key={p.id} className="flex flex-col p-2 sm:p-4 rounded-lg sm:rounded-3xl bg-white shadow-sm hover:shadow-md transition-all border border-[#eaedf3] group relative overflow-hidden">
+                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                   <Button onClick={() => updateProduct({ ...p, featured: false })} variant="default" size="icon"
-                    className="h-8 w-8 bg-destructive hover:bg-destructive/90 text-white shadow-lg rounded-xl">
-                    <Trash2 className="w-4 h-4" />
+                    className="h-7 w-7 sm:h-8 sm:w-8 bg-destructive hover:bg-destructive/90 text-white shadow-lg rounded-xl">
+                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </div>
-                <div className="w-16 h-16 mx-auto rounded-2xl bg-[#f8f9fc] border border-[#eaedf3] flex items-center justify-center p-2 mt-2 mb-4 shrink-0 overflow-hidden">
-                  {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-6 h-6 text-[#a3acb9]" />}
+                <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-xl sm:rounded-2xl bg-[#f8f9fc] border border-[#eaedf3] flex items-center justify-center p-1 sm:p-2 mt-1 sm:mt-2 mb-2 sm:mb-4 shrink-0 overflow-hidden">
+                  {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-5 h-5 sm:w-6 sm:h-6 text-[#a3acb9]" />}
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-bold text-[#1a1f36] line-clamp-1 mb-1">{p.name}</p>
-                  <Badge variant="outline" className="text-[9px] text-[#7a869a] uppercase font-black">{p.brand}</Badge>
+                  <p className="text-[11px] sm:text-sm font-bold text-[#1a1f36] line-clamp-1 mb-1">{p.name}</p>
+                  <Badge variant="outline" className="text-[8px] sm:text-[9px] text-[#7a869a] uppercase font-black">{p.brand}</Badge>
                 </div>
               </div>
             ))}
@@ -63,10 +63,10 @@ const FeaturedTab = () => {
       {/* ADD FEATURED MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-6 border-b border-[#eaedf3]">
+          <div className="bg-white rounded-2xl sm:rounded-[2rem] shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#eaedf3]">
               <div>
-                <h3 className="text-xl font-black text-[#1a1f36]">Select Product to Feature</h3>
+                <h3 className="text-base font-bold text-[#1a1f36]">Select Product to Feature</h3>
                 <p className="text-xs text-[#7a869a]">Search and choose from all category products</p>
               </div>
               <button onClick={() => setShowModal(false)} className="p-2 text-[#a3acb9] hover:text-primary transition-colors bg-[#f8f9fc] rounded-xl"><X className="w-5 h-5" /></button>

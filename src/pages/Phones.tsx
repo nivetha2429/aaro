@@ -28,7 +28,7 @@ const Phones = () => {
   }, [allPhones, search, selectedBrands]);
 
   return (
-    <div className="container mx-auto px-4 py-8 pb-24 md:pb-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24 md:pb-8">
       <PageMeta title="Smartphones" description="Browse our collection of premium smartphones from top brands. Find the latest models at the best prices." />
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10 border-b border-primary/10 pb-6">
         <div>
@@ -43,13 +43,13 @@ const Phones = () => {
               placeholder="Search phone models..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-full pl-11 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium shadow-soft"
+              className="w-full h-full pl-11 pr-4 rounded-sm sm:rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium shadow-soft"
             />
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden h-full flex items-center justify-center px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/10 transition-all"
+            className="lg:hidden h-full flex items-center justify-center px-4 rounded-sm sm:rounded-xl border border-border bg-card text-primary hover:bg-primary/10 transition-all"
           >
             <SlidersHorizontal className="w-5 h-5" />
           </button>
@@ -59,7 +59,7 @@ const Phones = () => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Brand Filter Sidebar */}
         <aside className={`${showFilters ? "block" : "hidden"} lg:block w-full lg:w-64 shrink-0`}>
-          <div className="glass-card rounded-[2rem] p-6 lg:sticky lg:top-24 border border-white/40 shadow-xl shadow-primary/5">
+          <div className="glass-card rounded-sm sm:rounded-[2rem] p-4 sm:p-6 lg:sticky lg:top-24 border border-white/40 shadow-xl shadow-primary/5">
             <h3 className="text-xs font-black uppercase tracking-widest text-foreground border-b border-primary/10 pb-3 mb-6">Filter by Brand</h3>
             <div className="grid grid-cols-1 gap-3">
               {brands.map((brand) => (
@@ -80,7 +80,7 @@ const Phones = () => {
             {(selectedBrands.length > 0) && (
               <button
                 onClick={() => setSelectedBrands([])}
-                className="mt-8 text-[10px] font-black uppercase tracking-widest text-primary hover:underline w-full text-center"
+                className="mt-8 text-[11px] font-black uppercase tracking-widest text-primary hover:underline w-full text-center"
               >
                 Clear Selection
               </button>
@@ -91,13 +91,13 @@ const Phones = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {filteredPhones.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
               {filteredPhones.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           ) : (
-            <div className="py-12 md:py-24 glass-card rounded-[2.5rem] flex flex-col items-center justify-center text-center px-6 sm:px-10 border border-dashed border-primary/20 bg-primary/5">
+            <div className="py-12 md:py-24 glass-card rounded-sm sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center px-6 sm:px-10 border border-dashed border-primary/20 bg-primary/5">
               <div className="w-14 h-14 sm:w-20 sm:h-20 bg-background/50 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-inner">
                 <Smartphone className="w-7 h-7 sm:w-10 sm:h-10 text-muted-foreground/50" />
               </div>
@@ -105,7 +105,7 @@ const Phones = () => {
               <p className="text-muted-foreground max-w-xs mb-8">We couldn't find any products matching your specific filters.</p>
               <button
                 onClick={() => { setSearch(""); setSelectedBrands([]); }}
-                className="gradient-purple text-primary-foreground px-8 py-3.5 rounded-2xl font-black hover:opacity-90 transition-all shadow-xl shadow-primary/20"
+                className="gradient-purple text-primary-foreground px-8 py-3.5 rounded-sm sm:rounded-2xl font-black hover:opacity-90 transition-all shadow-xl shadow-primary/20"
               >
                 Reset Filters
               </button>

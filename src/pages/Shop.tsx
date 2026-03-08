@@ -178,7 +178,7 @@ const Shop = () => {
   }, [debouncedSearch, category, selectedBrands, selectedRAM, selectedStorage, priceRange, sortBy, products]);
 
   return (
-    <div className="container mx-auto px-4 py-6 pb-16 md:pb-4">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-16 md:pb-4">
       <PageMeta title="Shop" description="Browse all smartphones and laptops at Aaro Systems. Filter by brand, price, RAM, and storage." />
       <div className="flex items-center gap-4 mb-6">
         <button
@@ -225,7 +225,7 @@ const Shop = () => {
             className="lg:hidden h-full flex items-center justify-center gap-2 px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/5 transition-all"
           >
             <SlidersHorizontal className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Filters</span>
+            <span className="text-[11px] font-black uppercase tracking-widest">Filters</span>
           </button>
         </div>
       </div>
@@ -270,7 +270,7 @@ const Shop = () => {
               <button aria-label="Clear price filter" onClick={() => setPriceRange([minPrice, maxPrice])} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
             </div>
           )}
-          <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); }} className="text-[10px] uppercase font-black tracking-widest text-muted-foreground hover:text-red-500 ml-2 transition-colors">
+          <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); }} className="text-[11px] uppercase font-black tracking-widest text-muted-foreground hover:text-red-500 ml-2 transition-colors">
             Clear All
           </button>
         </div>
@@ -358,7 +358,7 @@ const Shop = () => {
                     <button
                       key={r}
                       onClick={() => toggleRAM(r)}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${selectedRAM.includes(r) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+                      className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all ${selectedRAM.includes(r) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
                     >
                       {r} <span className="opacity-60">({ramCounts[r] || 0})</span>
                     </button>
@@ -376,7 +376,7 @@ const Shop = () => {
                     <button
                       key={s}
                       onClick={() => toggleStorage(s)}
-                      className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${selectedStorage.includes(s) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+                      className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all ${selectedStorage.includes(s) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
                     >
                       {s} <span className="opacity-60">({storageCounts[s] || 0})</span>
                     </button>
@@ -395,7 +395,7 @@ const Shop = () => {
           </p>
 
           {dataLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
                   <div className="aspect-square bg-secondary/50" />
@@ -408,7 +408,7 @@ const Shop = () => {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} onQuickView={() => setQuickViewProduct(p)} />
               ))}

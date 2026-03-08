@@ -74,9 +74,9 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
   const showLogo = imgSrc && !imgError;
 
   return (
-    <Card className="border-none shadow-sm rounded-3xl p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden">
+    <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl p-3 sm:p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden">
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadFile} />
-      <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary/50 flex items-center justify-center mb-3 overflow-hidden border border-border relative">
+      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-xl sm:rounded-2xl bg-secondary/50 flex items-center justify-center mb-2 sm:mb-3 overflow-hidden border border-border relative">
         {busy
           ? <Loader2 className="w-6 h-6 text-primary animate-spin" />
           : showLogo
@@ -84,7 +84,7 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
             : <Tag className="w-6 h-6 text-muted-foreground" />
         }
       </div>
-      <h4 className="text-sm font-black text-[#1a1f36] mb-0.5 truncate">{brand.name}</h4>
+      <h4 className="text-xs sm:text-sm font-black text-[#1a1f36] mb-0.5 truncate">{brand.name}</h4>
       {categoryName && <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-2">{categoryName}</p>}
       <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-white via-white to-transparent translate-y-full group-hover:translate-y-0 transition-transform flex justify-center gap-1.5">
         <Button variant="outline" size="icon" onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }} disabled={busy} title="Upload logo from device"
@@ -183,26 +183,26 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
       <div className="space-y-8">
         {/* Categories Section */}
         <div>
-          <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-4">
-            <div><h3 className="text-xl font-black text-[#1a1f36]">Categories</h3><p className="text-xs text-[#7a869a]">Manage product groups</p></div>
-            <Button onClick={() => openCategoryForm()} className="gradient-purple rounded-2xl h-12 px-8 font-black uppercase text-[10px] tracking-widest text-white hover:scale-105 transition-transform">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-4 rounded-lg sm:rounded-2xl shadow-sm mb-4">
+            <div><h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Categories</h3><p className="text-[10px] sm:text-xs text-[#7a869a]">Manage product groups</p></div>
+            <Button onClick={() => openCategoryForm()} className="gradient-purple rounded-2xl h-8 sm:h-9 px-3 sm:px-5 font-bold uppercase text-[9px] sm:text-[10px] tracking-wider text-white hover:scale-105 transition-transform w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />New Category
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
             {categories.map(c => (
-              <Card key={c.id} className="border-none shadow-sm rounded-3xl p-6 group hover:shadow-xl transition-all duration-300">
-                <div className="w-full h-40 bg-[#f8f9fc] rounded-2xl mb-4 overflow-hidden border border-border flex items-center justify-center relative group-hover:border-primary/20 transition-colors">
-                  {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-contain p-4 transition-transform group-hover:scale-105" /> : <Layers className="w-10 h-10 text-[#eaedf3]" />}
+              <Card key={c.id} className="border-none shadow-sm rounded-lg sm:rounded-3xl p-2.5 sm:p-6 group hover:shadow-xl transition-all duration-300">
+                <div className="w-full h-28 sm:h-40 bg-[#f8f9fc] rounded-xl sm:rounded-2xl mb-3 sm:mb-4 overflow-hidden border border-border flex items-center justify-center relative group-hover:border-primary/20 transition-colors">
+                  {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover rounded-xl sm:rounded-2xl transition-transform group-hover:scale-105" /> : <Layers className="w-8 h-8 sm:w-10 sm:h-10 text-[#eaedf3]" />}
                 </div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Layers className="w-6 h-6" /></div>
-                  <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[10px]">{c.productCount} Items</Badge>
+                <div className="flex justify-between items-start mb-2 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Layers className="w-4 h-4 sm:w-6 sm:h-6" /></div>
+                  <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[8px] sm:text-[10px]">{brands.filter(b => b.category === (c.slug || c.name.toLowerCase())).length} Brands</Badge>
                 </div>
-                <h4 className="text-lg font-black text-[#1a1f36] mb-1">{c.name}</h4>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" onClick={() => openCategoryForm(c)} className="flex-1 rounded-xl h-10 text-[10px] font-bold"><Pencil className="w-3 h-3 mr-1" />Edit</Button>
-                  <Button variant="ghost" size="icon" onClick={() => deleteCategory(c.id)} className="h-10 w-10 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-4 h-4" /></Button>
+                <h4 className="text-xs sm:text-sm font-bold text-[#1a1f36] mb-1">{c.name}</h4>
+                <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-4">
+                  <Button variant="outline" onClick={() => openCategoryForm(c)} className="flex-1 rounded-xl h-8 sm:h-10 text-[9px] sm:text-[10px] font-bold"><Pencil className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />Edit</Button>
+                  <Button variant="ghost" size="icon" onClick={() => deleteCategory(c.id)} className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4" /></Button>
                 </div>
               </Card>
             ))}
@@ -211,9 +211,9 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
 
         {/* Brands Section */}
         <div>
-          <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm mb-4">
-            <div><h3 className="text-xl font-black text-[#1a1f36]">Brands</h3><p className="text-xs text-[#7a869a]">Manage featured product brands</p></div>
-            <Button onClick={() => openBrandForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 px-6 font-black uppercase text-[10px] tracking-widest transition-transform hover:scale-105">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-4 rounded-lg sm:rounded-2xl shadow-sm mb-4">
+            <div><h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Brands</h3><p className="text-[10px] sm:text-xs text-[#7a869a]">Manage featured product brands</p></div>
+            <Button onClick={() => openBrandForm()} className="bg-[#1a1f36] hover:bg-[#2a3047] text-white rounded-2xl h-10 px-4 sm:px-6 font-black uppercase text-[9px] sm:text-[10px] tracking-widest transition-transform hover:scale-105 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />New Brand
             </Button>
           </div>
@@ -224,7 +224,7 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
               return (
                 <div key={c.id}>
                   <h4 className="text-xs font-black uppercase tracking-widest text-[#7a869a] mb-4 flex items-center gap-2">{c.name} Brands</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                     {catBrands.map(b => (
                       <BrandCard key={b.id} brand={b} categoryName={c.name} onEdit={() => openBrandForm(b)} onDelete={() => deleteBrand(b.id)} />
                     ))}
@@ -239,18 +239,18 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
       {/* CATEGORY MODAL */}
       {showCategoryForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/70 backdrop-blur-md animate-fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-8 border-b border-[#eaedf3] flex justify-between items-center">
-              <h3 className="text-xl font-black text-[#1a1f36]">{editingCategory ? "Edit Category" : "New Category"}</h3>
-              <Button variant="ghost" size="icon" onClick={() => setShowCategoryForm(false)} className="rounded-full h-10 w-10"><X className="w-5 h-5" /></Button>
+          <div className="bg-white w-full max-w-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-4 sm:p-8 border-b border-[#eaedf3] flex justify-between items-center">
+              <h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">{editingCategory ? "Edit Category" : "New Category"}</h3>
+              <Button variant="ghost" size="icon" onClick={() => setShowCategoryForm(false)} className="rounded-full h-8 w-8 sm:h-10 sm:w-10"><X className="w-4 h-4 sm:w-5 sm:h-5" /></Button>
             </div>
-            <div className="p-8 space-y-4">
+            <div className="p-4 sm:p-8 space-y-4">
               <div className="space-y-2"><label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest">Name *</label>
                 <Input value={catForm.name} onChange={e => setCatForm({ ...catForm, name: e.target.value })} className="rounded-2xl h-12" placeholder="Category name" /></div>
               <ImageUpload label="Category Image" value={catForm.image} onChange={url => setCatForm({ ...catForm, image: url })} />
             </div>
-            <div className="p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-4">
-              <Button variant="ghost" onClick={() => setShowCategoryForm(false)} className="flex-1 h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
+            <div className="p-4 sm:p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-3 sm:gap-4">
+              <Button variant="ghost" onClick={() => setShowCategoryForm(false)} className="flex-1 h-11 sm:h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
               <Button onClick={handleSaveCategory} className="flex-1 h-12 rounded-2xl gradient-purple font-black uppercase text-[10px] text-white">
                 {editingCategory ? "Update" : "Add Category"}
               </Button>
@@ -262,12 +262,12 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
       {/* BRAND MODAL */}
       {showBrandForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/70 backdrop-blur-md animate-fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-8 border-b border-[#eaedf3] flex justify-between items-center">
-              <h3 className="text-xl font-black text-[#1a1f36]">{editingBrand ? "Edit Brand" : "New Brand"}</h3>
-              <Button variant="ghost" size="icon" onClick={() => setShowBrandForm(false)} className="rounded-full h-10 w-10"><X className="w-5 h-5" /></Button>
+          <div className="bg-white w-full max-w-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-4 sm:p-8 border-b border-[#eaedf3] flex justify-between items-center">
+              <h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">{editingBrand ? "Edit Brand" : "New Brand"}</h3>
+              <Button variant="ghost" size="icon" onClick={() => setShowBrandForm(false)} className="rounded-full h-8 w-8 sm:h-10 sm:w-10"><X className="w-4 h-4 sm:w-5 sm:h-5" /></Button>
             </div>
-            <div className="p-8 space-y-4">
+            <div className="p-4 sm:p-8 space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest">Name *</label>
                 <Input value={brandForm.name} onChange={e => setBrandForm({ ...brandForm, name: e.target.value })} className="rounded-2xl h-12" placeholder="e.g. Apple, Samsung, Dell" />
@@ -285,7 +285,7 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
               </div>
               <ImageUpload label="Brand Logo" value={brandForm.image} onChange={url => setBrandForm({ ...brandForm, image: url })} />
             </div>
-            <div className="p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-4">
+            <div className="p-4 sm:p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-3 sm:gap-4">
               <Button variant="ghost" onClick={() => setShowBrandForm(false)} className="flex-1 h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
               <Button onClick={handleSaveBrand} className="flex-1 h-12 rounded-2xl bg-[#1a1f36] hover:bg-[#2a3047] font-black uppercase text-[10px] text-white transition-colors">
                 {editingBrand ? "Update" : "Add Brand"}

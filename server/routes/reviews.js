@@ -17,7 +17,7 @@ router.get('/:productId', async (req, res) => {
     }
 });
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, isAdmin, async (req, res) => {
     try {
         const parsed = reviewSchema.safeParse({ ...req.body, rating: Number(req.body.rating) });
         if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });

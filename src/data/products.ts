@@ -92,6 +92,18 @@ export interface Offer {
   tag?: string;
 }
 
+export interface Banner {
+  id: string;
+  _id?: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  link: string;
+  position: 'hero' | 'center';
+  order: number;
+  active: boolean;
+}
+
 export interface Customer {
   id: string;
   name: string;
@@ -124,5 +136,5 @@ export const orders: Order[] = [];
 export const reviews: Review[] = [];
 export const offers: Offer[] = [];
 
-export const WHATSAPP_NUMBER = "917010452495";
+export const WHATSAPP_NUMBER = "918668054205";
 export const INSTAGRAM_URL = "https://instagram.com/aaro";

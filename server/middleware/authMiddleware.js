@@ -1,8 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 export const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -13,8 +11,9 @@ export const authMiddleware = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     try {
-        if (!JWT_SECRET) throw new Error("JWT_SECRET not configured");
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const secret = process.env.JWT_SECRET;
+        if (!secret) throw new Error("JWT_SECRET not configured");
+        const decoded = jwt.verify(token, secret);
         req.userId = decoded.id;
         req.userRole = decoded.role;
         next();

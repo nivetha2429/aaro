@@ -11,6 +11,7 @@ import {
     ProductModel,
     Variant,
     Brand,
+    Banner,
 } from "@/data/products";
 
 interface DataContextType {
@@ -20,6 +21,7 @@ interface DataContextType {
     categories: Category[];
     brands: Brand[];
     models: ProductModel[];
+    banners: Banner[];
     loading: boolean;
     error: string | null;
     addProduct: (product: Partial<Product>) => Promise<void>;
@@ -34,6 +36,9 @@ interface DataContextType {
     addOffer: (offer: Partial<Offer>) => Promise<void>;
     updateOffer: (offer: Offer) => Promise<void>;
     deleteOffer: (id: string) => Promise<void>;
+    addBanner: (banner: Partial<Banner>) => Promise<void>;
+    updateBanner: (banner: Banner) => Promise<void>;
+    deleteBanner: (id: string) => Promise<void>;
     addReview: (review: Partial<Review>) => Promise<void>;
     deleteReview: (id: string) => Promise<void>;
     fetchReviews: (productId: string) => Promise<Review[]>;
@@ -75,6 +80,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [categories, setCategories] = useState<Category[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
     const [offers, setOffers] = useState<Offer[]>([]);
+    const [banners, setBanners] = useState<Banner[]>([]);
     const [reviews, setReviews] = useState<Review[]>([]);
     const [models, setModels] = useState<ProductModel[]>([]);
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
@@ -114,6 +120,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const mapCategory = (c: any): Category => ({ ...c, id: c._id || c.id, image: normalizeImageUrl(c.image) });
     const mapBrand = (b: any): Brand => ({ ...b, id: b._id || b.id, image: normalizeImageUrl(b.image) });
     const mapOffer = (o: any): Offer => ({ ...o, id: o._id || o.id, image: normalizeImageUrl(o.image) });
+    const mapBanner = (b: any): Banner => ({ ...b, id: b._id || b.id, image: normalizeImageUrl(b.image) });
     const mapReview = (r: any): Review => ({ ...r, id: r._id || r.id });
     const mapModel = (m: any): ProductModel => ({ ...m, id: m._id || m.id });
     const mapVariant = (v: any): Variant => ({ ...v, id: v._id || v.id });
@@ -142,6 +149,15 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (res.ok) setBrands((await res.json()).map(mapBrand));
         } catch (e) {
             console.error("Brands fetch failed:", e);
+        }
+    };
+
+    const fetchBanners = async () => {
+        try {
+            const res = await fetch(`${API_URL}/banners`);
+            if (res.ok) setBanners((await res.json()).map(mapBanner));
+        } catch (e) {
+            console.error("Banners fetch failed:", e);
         }
     };
 
@@ -176,9 +192,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 fetch(`${API_URL}/offers`).then(r => r.ok ? r.json() : Promise.reject(`offers ${r.status}`)),
                 fetch(`${API_URL}/products/models`).then(r => r.ok ? r.json() : Promise.reject(`models ${r.status}`)),
                 fetch(`${API_URL}/brands`).then(r => r.ok ? r.json() : Promise.reject(`brands ${r.status}`)),
+                fetch(`${API_URL}/banners`).then(r => r.ok ? r.json() : Promise.reject(`banners ${r.status}`)),
             ]);
 
-            const [productsResult, categoriesResult, offersResult, modelsResult, brandsResult] = results;
+            const [productsResult, categoriesResult, offersResult, modelsResult, brandsResult, bannersResult] = results;
 
             if (productsResult.status === 'fulfilled' && Array.isArray(productsResult.value))
                 setProducts(productsResult.value.map(mapProduct));
@@ -205,6 +222,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (brandsResult.status === 'fulfilled' && Array.isArray(brandsResult.value))
                 setBrands(brandsResult.value.map(mapBrand));
             else console.error("Brands fetch failed:", brandsResult.status === 'rejected' ? brandsResult.reason : 'not array');
+
+            if (bannersResult.status === 'fulfilled' && Array.isArray(bannersResult.value))
+                setBanners(bannersResult.value.map(mapBanner));
+            else console.error("Banners fetch failed:", bannersResult.status === 'rejected' ? bannersResult.reason : 'not array');
 
             setLoading(false);
         };
@@ -331,6 +352,36 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await fetchOffers();
     };
 
+    // ── Banners ──
+    const addBanner = async (banner: Partial<Banner>) => {
+        const res = await guardedFetch(`${API_URL}/banners`, {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify(banner),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        await fetchBanners();
+    };
+
+    const updateBanner = async (banner: Banner) => {
+        const res = await guardedFetch(`${API_URL}/banners/${banner.id}`, {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify(banner),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        await fetchBanners();
+    };
+
+    const deleteBanner = async (id: string) => {
+        const res = await guardedFetch(`${API_URL}/banners/${id}`, {
+            method: "DELETE",
+            headers: authHeaders(),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        await fetchBanners();
+    };
+
     // ── Reviews ──
     const fetchReviews = async (productId: string): Promise<Review[]> => {
         try {
@@ -430,6 +481,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 categories,
                 brands,
                 models,
+                banners,
                 loading,
                 error,
                 activeOffer,
@@ -445,6 +497,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 addOffer,
                 updateOffer,
                 deleteOffer,
+                addBanner,
+                updateBanner,
+                deleteBanner,
                 addReview,
                 deleteReview,
                 fetchReviews,

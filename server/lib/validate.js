@@ -26,9 +26,12 @@ export const reviewSchema = z.object({
 
 export const orderSchema = z.object({
     items: z.array(z.object({
-        name: z.string().min(1),
+        product: z.any(),
         quantity: z.number().int().min(1, 'Quantity must be at least 1'),
         price: z.number().positive('Price must be positive'),
+        ram: z.string().optional(),
+        storage: z.string().optional(),
+        color: z.string().optional(),
     })).min(1, 'Order must have at least one item'),
     totalAmount: z.number().positive('Total must be positive'),
     shippingAddress: z.string().min(10, 'Address too short').max(500),
@@ -122,8 +125,24 @@ export const productModelSchema = z.object({
     brand: z.string().min(1).max(100),
 });
 
+export const bannerSchema = z.object({
+    image: z.string().min(1, 'Image URL is required'),
+    title: z.string().max(200).optional().default(''),
+    subtitle: z.string().max(500).optional().default(''),
+    link: z.string().max(500).optional().default('/shop'),
+    position: z.enum(['hero', 'center']).optional().default('hero'),
+    order: z.number().int().min(0).optional().default(0),
+    active: z.boolean().optional().default(true),
+});
+
 export const changePasswordSchema = z.object({
     currentPassword: z.string().min(1, 'Current password required'),
+    newPassword: z.string().min(6, 'New password must be at least 6 characters').max(128),
+});
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
     newPassword: z.string().min(6, 'New password must be at least 6 characters').max(128),
 });
 

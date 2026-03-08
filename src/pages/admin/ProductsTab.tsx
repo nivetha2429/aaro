@@ -160,8 +160,8 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 sm:p-4 lg:p-6 rounded-3xl shadow-sm">
-          <div><h3 className="text-base sm:text-xl font-black text-[#1a1f36]">Inventory</h3><p className="text-xs text-[#7a869a]">{products.length} products total</p></div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-4 rounded-lg sm:rounded-2xl shadow-sm">
+          <div><h3 className="text-sm sm:text-base font-bold text-[#1a1f36]">Inventory</h3><p className="text-[10px] sm:text-xs text-[#7a869a]">{products.length} products total</p></div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a3acb9]" />
@@ -186,7 +186,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#a3acb9] pointer-events-none" />
             </div>
-            <Button onClick={() => handleOpenProductModal()} className="gradient-dark rounded-2xl h-11 px-5 font-black uppercase text-[10px] tracking-widest text-white shadow-lg shrink-0">
+            <Button onClick={() => handleOpenProductModal()} className="gradient-dark rounded-xl h-8 sm:h-9 px-3 sm:px-5 font-bold uppercase text-[10px] tracking-wider text-white shadow-lg shrink-0">
               <Plus className="w-4 h-4 sm:mr-2" /><span className="hidden sm:inline">Add Product</span>
             </Button>
           </div>
@@ -199,7 +199,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
           const totalPages = Math.ceil(catProducts.length / ITEMS_PER_PAGE);
           const paginatedProducts = catProducts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
           return (
-            <Card key={catName} className="border-none shadow-sm rounded-3xl overflow-hidden">
+            <Card key={catName} className="border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden">
               <div className={`px-3 sm:px-6 py-3 border-b flex items-center justify-between ${isPhone ? "bg-blue-50 border-blue-100" : "bg-violet-50 border-violet-100"}`}>
                 <div className="flex items-center gap-2">
                   {isPhone ? <Smartphone className="w-4 h-4 text-blue-500" /> : <Laptop className="w-4 h-4 text-violet-500" />}
@@ -236,8 +236,8 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                         </button>
                       </div>
                       {isExpanded && (
-                        <div className="px-3 pb-4 space-y-2 bg-[#fafbfd]">
-                          <div className="flex items-center justify-between mb-2">
+                        <div className="px-3 pb-4 space-y-2 bg-[#fafbfd] border-t border-[#eaedf3]">
+                          <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-1.5">
                               {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-5 h-5 object-contain rounded shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
                               <p className="text-[10px] font-black text-[#a3acb9] uppercase tracking-widest">{p.brand}</p>
@@ -248,20 +248,30 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                             </div>
                           </div>
                           {variants.length === 0 ? (
-                            <p className="text-xs text-[#a3acb9] italic">No variants added</p>
+                            <p className="text-xs text-[#a3acb9] italic text-center py-2">No variants added</p>
                           ) : (
-                            variants.map((v, vi) => (
-                              <div key={vi} className="flex flex-wrap items-center gap-2 bg-white border border-[#eaedf3] rounded-xl px-3 py-2">
-                                <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg">{v.ram}</span>
-                                <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg">{v.storage}</span>
-                                <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg">{v.color}</span>
-                                <span className="text-xs font-black text-[#1a1f36] ml-auto">₹{v.price?.toLocaleString()}</span>
-                                {(v.stock ?? 0) > 0
-                                  ? <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 border border-green-100 text-[10px] font-black px-2 py-0.5 rounded-lg"><span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{v.stock}</span>
-                                  : <span className="inline-flex items-center gap-1 bg-red-50 text-red-500 border border-red-100 text-[10px] font-black px-2 py-0.5 rounded-lg"><span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />Out</span>
-                                }
+                            <div className="space-y-1.5">
+                              {/* Variant header */}
+                              <div className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 px-3 py-1">
+                                <span className="text-[9px] font-black text-[#a3acb9] uppercase tracking-widest">RAM</span>
+                                <span className="text-[9px] font-black text-[#a3acb9] uppercase tracking-widest">Storage</span>
+                                <span className="text-[9px] font-black text-[#a3acb9] uppercase tracking-widest">Color</span>
+                                <span className="text-[9px] font-black text-[#a3acb9] uppercase tracking-widest text-right">Price</span>
+                                <span className="text-[9px] font-black text-[#a3acb9] uppercase tracking-widest text-right">Stock</span>
                               </div>
-                            ))
+                              {variants.map((v, vi) => (
+                                <div key={vi} className="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-2 items-center bg-white border border-[#eaedf3] rounded-xl px-3 py-2">
+                                  <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg text-center truncate">{v.ram}</span>
+                                  <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg text-center truncate">{v.storage}</span>
+                                  <span className="text-[10px] font-black text-[#7a869a] bg-[#f4f7fa] px-2 py-0.5 rounded-lg text-center truncate">{v.color}</span>
+                                  <span className="text-xs font-black text-[#1a1f36] text-right whitespace-nowrap">₹{v.price?.toLocaleString()}</span>
+                                  {(v.stock ?? 0) > 0
+                                    ? <span className="inline-flex items-center gap-1 bg-green-50 text-green-600 border border-green-100 text-[10px] font-black px-2 py-0.5 rounded-lg justify-end"><span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />{v.stock}</span>
+                                    : <span className="inline-flex items-center gap-1 bg-red-50 text-red-500 border border-red-100 text-[10px] font-black px-2 py-0.5 rounded-lg justify-end"><span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />Out</span>
+                                  }
+                                </div>
+                              ))}
+                            </div>
                           )}
                         </div>
                       )}
@@ -353,17 +363,17 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
       {/* PRODUCT MODAL */}
       {showProductForm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-black/70 backdrop-blur-md animate-fade-in overflow-y-auto">
-          <div className="bg-white w-full max-w-3xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col my-8 max-h-[90vh]">
-            <div className="p-8 border-b border-[#eaedf3] flex justify-between items-center bg-[#fcfdfe] shrink-0">
+          <div className="bg-white w-full max-w-3xl rounded-2xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col my-4 sm:my-8 max-h-[90vh]">
+            <div className="p-4 sm:p-8 border-b border-[#eaedf3] flex justify-between items-center bg-[#fcfdfe] shrink-0">
               <div>
-                <h3 className="text-2xl font-black text-[#1a1f36]">{editingProduct ? "Edit Product" : "Add Product"}</h3>
+                <h3 className="text-base font-bold text-[#1a1f36]">{editingProduct ? "Edit Product" : "Add Product"}</h3>
                 <p className="text-xs text-[#a3acb9] mt-1">Fill all required fields marked with *</p>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setShowProductForm(false)} className="rounded-full h-12 w-12"><X className="w-6 h-6" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => setShowProductForm(false)} className="rounded-full h-10 w-10 sm:h-12 sm:w-12"><X className="w-5 h-5 sm:w-6 sm:h-6" /></Button>
             </div>
-            <div className="p-8 overflow-y-auto flex-1 space-y-6">
+            <div className="p-4 sm:p-8 overflow-y-auto flex-1 space-y-4 sm:space-y-6">
               {/* Cascading Selection */}
-              <div className="bg-primary/5 rounded-[2rem] border border-primary/10 p-6 space-y-6">
+              <div className="bg-primary/5 rounded-xl sm:rounded-[2rem] border border-primary/10 p-3 sm:p-6 space-y-4 sm:space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2 group">
                     <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest ml-1 transition-colors group-focus-within:text-primary">1. Select Category *</label>
@@ -417,7 +427,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
               </div>
 
               {/* Variants */}
-              <div className="bg-white rounded-[2rem] border border-[#eaedf3] p-6 space-y-4 shadow-sm">
+              <div className="bg-white rounded-xl sm:rounded-[2rem] border border-[#eaedf3] p-3 sm:p-6 space-y-4 shadow-sm">
                 <div className="flex justify-between items-center">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1a1f36] flex items-center gap-2"><Layers className="w-4 h-4 text-primary" /> Product Variants</h4>
                   <Button variant="ghost" size="sm" onClick={handleAddVariant} className="rounded-xl font-black text-[9px] uppercase tracking-wider text-primary hover:bg-primary/5"><Plus className="w-3 h-3 mr-1" /> Add Variant</Button>
@@ -454,7 +464,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
 
               {/* Specifications */}
               {(formData.category?.toLowerCase().includes("phone") || formData.category?.toLowerCase().includes("mobile") || formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") || !formData.category) && (
-                <div className="bg-[#fcfdfe] rounded-3xl border border-[#eaedf3] p-6 animate-fade-in">
+                <div className="bg-[#fcfdfe] rounded-xl sm:rounded-3xl border border-[#eaedf3] p-3 sm:p-6 animate-fade-in">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1a1f36] mb-4 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-primary" />
                     {formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") ? "Laptop Configuration" : "Phone Configuration"}
@@ -483,7 +493,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
               {/* Video */}
               <VideoUpload label="Product Video" value={formData.videoUrl || ""} onChange={(url) => setFormData({ ...formData, videoUrl: url })} />
             </div>
-            <div className="p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-4 shrink-0">
+            <div className="p-4 sm:p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-3 sm:gap-4 shrink-0">
               <Button variant="ghost" onClick={() => setShowProductForm(false)} className="flex-1 h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>
               <Button onClick={handleSaveProduct} className="flex-1 h-12 rounded-2xl gradient-dark font-black uppercase text-[10px] text-white shadow-xl">
                 {editingProduct ? "Update Product" : "Add Product"}

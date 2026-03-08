@@ -7,9 +7,6 @@ import ProductCard from "@/components/ProductCard";
 vi.mock("@/context/CartContext", () => ({
   useCart: () => ({ addToCart: vi.fn() }),
 }));
-vi.mock("@/context/WishlistContext", () => ({
-  useWishlist: () => ({ toggleWishlist: vi.fn(), isInWishlist: () => false }),
-}));
 vi.mock("@/context/DataContext", () => ({
   useData: () => ({ fetchVariants: vi.fn().mockResolvedValue([]) }),
 }));
@@ -75,8 +72,4 @@ describe("ProductCard", () => {
     expect(screen.getByText("(120)")).toBeInTheDocument();
   });
 
-  it("has wishlist toggle button with aria-label", () => {
-    renderCard();
-    expect(screen.getByLabelText("Add to wishlist")).toBeInTheDocument();
-  });
 });

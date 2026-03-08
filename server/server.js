@@ -19,6 +19,7 @@ import brandRouter from './routes/brands.js';
 import reviewRouter from './routes/reviews.js';
 import offerRouter from './routes/offers.js';
 import orderRouter from './routes/orders.js';
+import bannerRouter from './routes/banners.js';
 import { createUploadRouter } from './routes/upload.js';
 
 dotenv.config();
@@ -132,6 +133,7 @@ app.use('/api/brands', brandRouter);
 app.use('/api/reviews', reviewRouter);
 app.use('/api/offers', offerRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/banners', bannerRouter);
 app.use('/api/upload', createUploadRouter(uploadsPath));
 
 // ── Static: React Frontend & SPA Catch-all ──

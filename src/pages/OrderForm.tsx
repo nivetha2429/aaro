@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { WHATSAPP_NUMBER } from "@/data/products";
-import { MessageCircle, CheckCircle, Package, Home } from "lucide-react";
+import { MessageCircle, CheckCircle, Package, Home, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { orderFormSchema, type OrderFormData } from "@/lib/schemas";
 
@@ -14,10 +14,10 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 const OrderForm = () => {
   const { items, totalPrice, clearCart } = useCart();
   const { user, token, isAuthenticated } = useAuth();
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(() => sessionStorage.getItem("aaro_order_placed") === "true");
   const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<OrderFormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, watch, reset } = useForm<OrderFormData>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       name: user?.name || "",
@@ -44,26 +44,18 @@ const OrderForm = () => {
   }, [user, reset]);
 
   const buildWhatsAppMessage = () => {
-    const BASE_URL = API_URL.replace(/\/api$/, "");
-    const getImageUrl = (url: string) => {
-      if (!url) return "";
-      if (url.startsWith("http")) return url;
-      return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
-    };
+    const siteUrl = window.location.origin;
 
     const productLines = items
-      .map(
-        (i) =>
-          `  • ${i.product.name} (${i.ram} / ${i.storage} / ${i.color}) × ${i.quantity} = ₹${(i.price * i.quantity).toLocaleString()}`
-      )
-      .join("\n");
-
-    const imageLines = items
-      .map((i, idx) => {
-        const imgUrl = i.product.images?.[0] ? getImageUrl(i.product.images[0]) : null;
-        return imgUrl ? `  ${idx + 1}. ${i.product.name}:\n  ${imgUrl}` : null;
+      .map((i) => {
+        return [
+          `  • *${i.product.name}*`,
+          `    Brand: ${i.product.brand}`,
+          `    ${i.ram} / ${i.storage} / ${i.color}`,
+          `    Qty: ${i.quantity} × ₹${i.price.toLocaleString()} = ₹${(i.price * i.quantity).toLocaleString()}`,
+          `    ${siteUrl}/product/${i.product.id}`,
+        ].join("\n");
       })
-      .filter(Boolean)
       .join("\n\n");
 
     return [
@@ -76,8 +68,6 @@ const OrderForm = () => {
       ``,
       `📦 *Order Items:*`,
       productLines,
-      ``,
-      imageLines ? `🖼️ *Product Images:*\n${imageLines}` : null,
       ``,
       `💰 *Grand Total: ₹${totalPrice.toLocaleString()}*`,
       `🚚 Shipping: FREE`,
@@ -98,6 +88,8 @@ const OrderForm = () => {
     setLoading(true);
     try {
       const fullAddress = `${data.address}, ${data.city}, ${data.state} - ${data.pincode}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(buildWhatsAppMessage())}`;
+
       const response = await fetch(`${API_URL}/orders`, {
         method: "POST",
         headers: {
@@ -112,10 +104,10 @@ const OrderForm = () => {
       });
 
       if (response.ok) {
+        sessionStorage.setItem("aaro_order_placed", "true");
         setSubmitted(true);
         clearCart();
         toast.success("Order placed! Opening WhatsApp...");
-        const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
         setTimeout(() => window.open(waUrl, "_blank", "noopener,noreferrer"), 600);
       } else {
         const result = await response.json();
@@ -136,41 +128,20 @@ const OrderForm = () => {
           <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full scale-150 -z-10" />
         </div>
         <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 tracking-tighter animate-slide-up">Order Placed!</h2>
-        <p className="text-muted-foreground mb-2 text-sm">
+        <p className="text-muted-foreground mb-8 text-sm">
           Your order is confirmed. WhatsApp should have opened automatically.
-        </p>
-        <p className="text-muted-foreground mb-8 text-xs">
-          If WhatsApp didn't open,{" "}
-          <button
-            onClick={() =>
-              window.open(
-                `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`,
-                "_blank",
-                "noopener,noreferrer"
-              )
-            }
-            className="text-primary underline font-bold"
-          >
-            click here to send your order
-          </button>
-          .
         </p>
         <div className="flex flex-col gap-4 max-w-sm mx-auto">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
-              onClick={() =>
-                window.open(
-                  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
-              }
+              onClick={() => window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(buildWhatsAppMessage())}`, "_blank", "noopener,noreferrer")}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition-all whatsapp-pulse click-scale shadow-xl shadow-green-500/20"
             >
               <MessageCircle className="w-5 h-5" /> Open WhatsApp Again
             </button>
             <Link
               to="/my-orders"
+              onClick={() => sessionStorage.removeItem("aaro_order_placed")}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-secondary text-foreground px-8 py-4 rounded-2xl font-black hover:bg-border transition-all click-scale"
             >
               <Package className="w-5 h-5" /> View My Orders
@@ -179,6 +150,7 @@ const OrderForm = () => {
 
           <Link
             to="/"
+            onClick={() => sessionStorage.removeItem("aaro_order_placed")}
             className="inline-flex items-center justify-center gap-3 bg-white/40 backdrop-blur-md border border-primary/20 text-primary px-8 py-4 rounded-2xl font-black hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 click-scale group"
           >
             <Home className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> Back to Home
@@ -191,13 +163,18 @@ const OrderForm = () => {
   const inputClass = "w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium";
 
   return (
-    <div className="container mx-auto px-4 py-8 pb-24 md:pb-8 max-w-lg animate-fade-in">
-      <h1 className="text-3xl font-black text-foreground mb-2 tracking-tight">Delivery Details</h1>
-      <p className="text-sm text-muted-foreground mb-8">
-        Fill in your details — your order will be sent to WhatsApp automatically.
-      </p>
+    <div className="container mx-auto px-4 py-8 pb-32 md:pb-8 max-w-lg animate-fade-in">
+      <div className="flex items-center gap-3 mb-6">
+        <Link to="/" className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
+          <ArrowLeft className="w-4 h-4" />
+        </Link>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Delivery Details</h1>
+          <p className="text-xs text-muted-foreground">Fill in your details — your order will be sent to WhatsApp automatically.</p>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border rounded-3xl p-6 shadow-soft space-y-5">
+      <form onSubmit={handleSubmit(onSubmit, () => toast.error("Please fill all required fields correctly"))} className="bg-card border border-border rounded-3xl p-6 shadow-soft space-y-5">
         {/* Contact */}
         <div>
           <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-3">Contact</p>
@@ -291,7 +268,7 @@ const OrderForm = () => {
           className="w-full bg-[#25D366] text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl shadow-green-500/20 hover:opacity-90 hover:-translate-y-1 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed click-scale whatsapp-pulse"
         >
           <MessageCircle className="w-6 h-6" />
-          {loading ? "Placing Order..." : "Confirm & Send to WhatsApp"}
+          {loading ? "Placing Order..." : "Confirm WhatsApp"}
         </button>
 
         <p className="text-center text-[10px] text-muted-foreground">

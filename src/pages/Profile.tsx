@@ -134,7 +134,7 @@ const Profile = () => {
                                             <item.icon className="w-5 h-5" />
                                         </div>
                                         <div className="flex-1">
-                                            <label htmlFor={`profile-${item.key}`} className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</label>
+                                            <label htmlFor={`profile-${item.key}`} className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">{item.label}</label>
                                             {isEditing ? (
                                                 <div>
                                                     <input
@@ -157,7 +157,7 @@ const Profile = () => {
 
                     <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-start gap-3">
                         <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[10px] font-bold text-primary">!</span>
+                            <span className="text-[11px] font-bold text-primary">!</span>
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed text-black/70">
                             Your account details are used to pre-fill your order information for a faster checkout experience. Keep them updated to ensure smooth deliveries.
