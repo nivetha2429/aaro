@@ -34,11 +34,12 @@ const Index = () => {
   const { products, brands, banners } = useData();
   const featured = products.filter((p) => p.featured);
 
-  // Separate hero banners and center banner from DB
-  const dbHeroBanners = banners.filter(b => b.position === 'hero' && b.active);
-  const centerBanner = banners.find(b => b.position === 'center' && b.active);
+  // Only use DB banners with valid URLs (uploaded/external), not local /src/assets paths
+  const isValidUrl = (url: string) => url && (url.startsWith('http') || url.startsWith('/uploads'));
+  const dbHeroBanners = banners.filter(b => b.position === 'hero' && b.active && isValidUrl(b.image));
+  const centerBanner = banners.find(b => b.position === 'center' && b.active && isValidUrl(b.image));
 
-  // Use DB banners if available, else fallback to defaults
+  // Use DB banners if available with valid images, else fallback to defaults
   const heroBanners = dbHeroBanners.length > 0
     ? dbHeroBanners.map(b => ({ image: b.image, title: b.title, subtitle: b.subtitle, link: b.link }))
     : defaultHeroBanners;
