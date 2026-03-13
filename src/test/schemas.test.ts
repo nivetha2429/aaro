@@ -24,14 +24,20 @@ describe("loginSchema", () => {
 });
 
 describe("registerSchema", () => {
-  const validData = { name: "John", email: "john@example.com", phone: "9876543210", password: "secure123" };
+  const validData = { name: "John", email: "john@gmail.com", phone: "9876543210", password: "secure123" };
 
   it("accepts valid registration data", () => {
     expect(registerSchema.safeParse(validData).success).toBe(true);
   });
 
-  it("rejects short phone number", () => {
+  it("rejects non-gmail email", () => {
+    expect(registerSchema.safeParse({ ...validData, email: "john@yahoo.com" }).success).toBe(false);
+  });
+
+  it("rejects phone not exactly 10 digits", () => {
     expect(registerSchema.safeParse({ ...validData, phone: "123" }).success).toBe(false);
+    expect(registerSchema.safeParse({ ...validData, phone: "12345678901" }).success).toBe(false);
+    expect(registerSchema.safeParse({ ...validData, phone: "98765abc10" }).success).toBe(false);
   });
 
   it("rejects short password", () => {
@@ -45,12 +51,12 @@ describe("registerSchema", () => {
 
 describe("profileSchema", () => {
   it("accepts valid profile data", () => {
-    const result = profileSchema.safeParse({ name: "Jane", email: "jane@example.com", phone: "9876543210" });
+    const result = profileSchema.safeParse({ name: "Jane", email: "jane@gmail.com", phone: "9876543210" });
     expect(result.success).toBe(true);
   });
 
   it("rejects missing name", () => {
-    expect(profileSchema.safeParse({ name: "", email: "jane@example.com", phone: "9876543210" }).success).toBe(false);
+    expect(profileSchema.safeParse({ name: "", email: "jane@gmail.com", phone: "9876543210" }).success).toBe(false);
   });
 });
 
