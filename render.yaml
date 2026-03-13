@@ -4,11 +4,11 @@ services:
     env: node
     plan: free
     buildCommand: npm ci && npm run build && cd server && npm ci
-    startCommand: node server/server.js
+    startCommand: node start.js
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
-        value: 20.11.0
+        value: 22.14.0
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
