@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, MessageSquare } from "lucide-react";
+import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -10,16 +10,16 @@ import CategoriesTab from "./CategoriesTab";
 import FeaturedTab from "./FeaturedTab";
 import OffersTab from "./OffersTab";
 import BannersTab from "./BannersTab";
-import ReviewsTab from "./ReviewsTab";
+import OrdersTab from "./OrdersTab";
 
 const SIDEBAR_ITEMS = [
   { id: "overview", icon: LayoutDashboard, label: "Overview" },
+  { id: "orders", icon: ShoppingBag, label: "Orders" },
   { id: "products", icon: Package, label: "Inventory" },
   { id: "categories", icon: Layers, label: "Categories & Brands" },
   { id: "featured", icon: Star, label: "Featured" },
-  { id: "offers", icon: Tag, label: "Offers" },
+  { id: "offers", icon: Tag, label: "Popup Offer" },
   { id: "banners", icon: Image, label: "Banners" },
-  { id: "reviews", icon: MessageSquare, label: "Reviews" },
 ];
 
 const AdminDashboard = () => {
@@ -123,12 +123,12 @@ const AdminDashboard = () => {
         <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-5 lg:p-6 bg-[#f8f9fc]">
           <div className="space-y-4 animate-fade-in mb-6">
             {activeTab === "overview" && <OverviewTab onQuickAction={handleQuickAction} />}
+            {activeTab === "orders" && <OrdersTab />}
             {activeTab === "products" && <ProductsTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
             {activeTab === "categories" && <CategoriesTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
             {activeTab === "featured" && <FeaturedTab />}
-            {activeTab === "offers" && <OffersTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
+            {activeTab === "offers" && <OffersTab />}
             {activeTab === "banners" && <BannersTab />}
-            {activeTab === "reviews" && <ReviewsTab />}
           </div>
         </div>
       </main>

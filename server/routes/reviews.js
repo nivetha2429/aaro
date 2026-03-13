@@ -45,6 +45,35 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
     }
 });
 
+router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+        if (!comment?.trim()) return res.status(400).json({ message: 'Comment is required' });
+        if (!rating || rating < 1 || rating > 5) return res.status(400).json({ message: 'Rating must be 1-5' });
+
+        const review = await Review.findByIdAndUpdate(
+            req.params.id,
+            { rating: Number(rating), comment: comment.trim() },
+            { new: true }
+        );
+        if (!review) return res.status(404).json({ message: 'Review not found' });
+
+        // Recalculate product rating
+        const [agg] = await Review.aggregate([
+            { $match: { productId: new mongoose.Types.ObjectId(review.productId) } },
+            { $group: { _id: null, avg: { $avg: '$rating' }, count: { $sum: 1 } } }
+        ]);
+        await Product.findByIdAndUpdate(review.productId, {
+            reviewCount: agg?.count || 1,
+            rating: Math.round((agg?.avg || rating) * 10) / 10,
+        });
+
+        res.json(review);
+    } catch {
+        res.status(500).json({ message: 'Failed to update review' });
+    }
+});
+
 router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const review = await Review.findByIdAndDelete(req.params.id);

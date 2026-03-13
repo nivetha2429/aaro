@@ -4,7 +4,6 @@ import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, 
 import ProductCard from "@/components/ProductCard";
 import BrandLogo from "@/components/BrandLogo";
 import PageMeta from "@/components/PageMeta";
-import { OfferPopup } from "@/components/OfferPopup";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
 import heroBanner from "@/assets/hero-banner.jpg";
@@ -15,7 +14,7 @@ import accessoriesBanner from "@/assets/banners/accessories.jpg";
 const categories = [
   { name: "Phones", icon: Smartphone, link: "/shop?category=phone" },
   { name: "Laptops", icon: Laptop, link: "/shop?category=laptop" },
-  { name: "Offers", icon: Tag, link: "/offers" },
+  { name: "Offers", icon: Tag, link: "/shop" },
 ];
 
 const features = [
@@ -28,7 +27,7 @@ const features = [
 const defaultHeroBanners = [
   { image: smartphoneBanner, title: "Latest Smartphones", subtitle: "Premium phones at best prices", link: "/shop?category=phone" },
   { image: laptopBanner, title: "Powerful Laptops", subtitle: "Performance meets portability", link: "/shop?category=laptop" },
-  { image: accessoriesBanner, title: "Top Deals", subtitle: "Exclusive offers on trending tech", link: "/offers" },
+  { image: accessoriesBanner, title: "Top Deals", subtitle: "Exclusive offers on trending tech", link: "/shop" },
 ];
 
 const Index = () => {
@@ -72,16 +71,18 @@ const Index = () => {
   return (
     <>
       <PageMeta title="Aaro Systems" description="Discover the latest in premium smartphones, laptops, and electronics at Aaro Systems. Best prices, free shipping, and 1-year warranty." />
-      <OfferPopup />
 
       {/* Hero Banner Carousel */}
       <section
-        className="relative overflow-hidden rounded-sm sm:rounded-2xl mx-1 sm:mx-2 lg:mx-4 mt-2 sm:mt-4 shadow-soft group/hero"
+        className="container mx-auto px-2 sm:px-4 mt-2 sm:mt-4"
+      >
+      <div
+        className="relative overflow-hidden rounded-sm sm:rounded-2xl shadow-soft group/hero"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* Slides */}
-        <div className="relative w-full h-[250px] sm:h-[300px] md:h-80 lg:h-[400px]">
+        <div className="relative w-full h-[200px] sm:h-[260px] md:h-[320px] lg:h-[400px] xl:h-[460px] 2xl:h-[520px]">
           {heroBanners.map((banner, idx) => (
             <img
               key={idx}
@@ -130,6 +131,7 @@ const Index = () => {
             ))}
           </div>
         )}
+      </div>
       </section>
 
       {/* Features */}
@@ -163,7 +165,7 @@ const Index = () => {
             View all <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
           {featured.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -186,7 +188,7 @@ const Index = () => {
 
       {/* Center Banner (editable from admin) */}
       <section className="container mx-auto px-2 sm:px-4 mt-8 sm:mt-16 lg:mt-24">
-        <Link to={centerBanner?.link || "/offers"} className="group relative h-48 md:h-[400px] rounded-sm sm:rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center text-center">
+        <Link to={centerBanner?.link || "/shop"} className="group relative h-[200px] sm:h-[260px] md:h-[320px] lg:h-[400px] xl:h-[460px] 2xl:h-[520px] rounded-sm sm:rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center text-center">
           <img src={centerBanner?.image || heroBanner} alt={centerBanner?.title || "Premium Gadgets Banner"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/60" />
           <div className="relative z-10 px-6">
@@ -216,7 +218,7 @@ const Index = () => {
               const mobileBrands = allBrands.slice(0, 20);
               return (
                 <>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-11 gap-1.5 sm:gap-2">
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-11 2xl:grid-cols-13 gap-1.5 sm:gap-2">
                     {allBrands.map((brandName, idx) => {
                       const brandEntry = brands.find(b => b.name === brandName);
                       const isHiddenOnMobile = !mobileBrands.includes(brandName);

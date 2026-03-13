@@ -1,7 +1,11 @@
-import { Package, Layers, Tag, TrendingUp, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Package, Layers, Tag, ShoppingBag, Plus } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useData } from "@/context/DataContext";
+import { useAuth } from "@/context/AuthContext";
+
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 interface OverviewTabProps {
   onQuickAction: (tab: string, action?: string) => void;
@@ -9,12 +13,31 @@ interface OverviewTabProps {
 
 const OverviewTab = ({ onQuickAction }: OverviewTabProps) => {
   const { products, categories, offers } = useData();
+  const { token } = useAuth();
+  const [orderCount, setOrderCount] = useState(0);
+
+  useEffect(() => {
+    const fetchOrderCount = async () => {
+      try {
+        const res = await fetch(`${API_URL}/orders/admin?limit=1`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setOrderCount(data.total || 0);
+        }
+      } catch {
+        // silently fail — non-critical
+      }
+    };
+    if (token) fetchOrderCount();
+  }, [token]);
 
   const stats = [
     { label: "Total Products", val: products.length, icon: Package, color: "text-blue-500", bg: "bg-blue-50" },
     { label: "Categories", val: categories.length, icon: Layers, color: "text-purple-500", bg: "bg-purple-50" },
     { label: "Active Offers", val: offers.filter(o => o.active).length, icon: Tag, color: "text-orange-500", bg: "bg-orange-50" },
-    { label: "Catalog Value", val: "₹0", icon: TrendingUp, color: "text-green-500", bg: "bg-green-50" },
+    { label: "Total Orders", val: orderCount, icon: ShoppingBag, color: "text-green-500", bg: "bg-green-50" },
   ];
 
   return (
@@ -35,8 +58,9 @@ const OverviewTab = ({ onQuickAction }: OverviewTabProps) => {
       <Card className="border-none shadow-sm rounded-lg sm:rounded-2xl p-2.5 sm:p-4">
         <CardTitle className="mb-2 sm:mb-3 font-bold text-[#1a1f36] text-sm sm:text-base">Quick Actions</CardTitle>
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => onQuickAction("products", "add")} className="gradient-dark text-white rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Product</Button>
-          <Button onClick={() => onQuickAction("categories", "add-category")} className="gradient-purple text-white rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Category</Button>
+          <Button onClick={() => onQuickAction("orders")} className="gradient-dark text-white rounded-lg font-bold text-[11px] h-8"><ShoppingBag className="w-3.5 h-3.5 mr-1.5" />View Orders</Button>
+          <Button onClick={() => onQuickAction("products", "add")} className="gradient-purple text-white rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Product</Button>
+          <Button onClick={() => onQuickAction("categories", "add-category")} variant="outline" className="rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />Add Category</Button>
           <Button onClick={() => onQuickAction("offers", "add-offer")} variant="outline" className="rounded-lg font-bold text-[11px] h-8"><Plus className="w-3.5 h-3.5 mr-1.5" />New Offer</Button>
         </div>
       </Card>

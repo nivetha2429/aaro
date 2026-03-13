@@ -85,8 +85,9 @@ const MyOrders = () => {
                                                         loading="lazy"
                                                         className="w-full h-full object-contain p-1"
                                                         onError={(e) => {
+                                                            const parent = e.currentTarget.parentElement;
                                                             e.currentTarget.style.display = "none";
-                                                            e.currentTarget.parentElement!.innerHTML = item.product?.category === "phone" ? "📱" : "💻";
+                                                            if (parent) parent.innerHTML = item.product?.category === "phone" ? "📱" : "💻";
                                                         }}
                                                     />
                                                 ) : (

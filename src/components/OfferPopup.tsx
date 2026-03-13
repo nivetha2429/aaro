@@ -37,14 +37,12 @@ export const OfferPopup = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 24, minutes: 0, seconds: 0, expired: false });
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // popup offer identified by title === "__popup__" and active === true
   const popupOffer = offers.find(o => o.title === "__popup__" && o.active);
   const heading = popupOffer?.description || "Exclusive Offer!";
   const sub = popupOffer?.tag || "Limited time deals on phones & laptops";
 
   // ── Countdown timer ────────────────────────────────────────────────────────
   useEffect(() => {
-    // Clear any existing interval first
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -53,7 +51,7 @@ export const OfferPopup = () => {
     if (!popupOffer?.code) return;
 
     const end = new Date(popupOffer.code);
-    if (isNaN(end.getTime())) return; // invalid date — bail out
+    if (isNaN(end.getTime())) return;
 
     const tick = () => {
       const tl = calcTimeLeft(end);
@@ -66,7 +64,7 @@ export const OfferPopup = () => {
       }
     };
 
-    tick(); // run immediately so there's no 1-second blank
+    tick();
     intervalRef.current = setInterval(tick, 1000);
 
     return () => {
@@ -75,7 +73,7 @@ export const OfferPopup = () => {
         intervalRef.current = null;
       }
     };
-  }, [popupOffer?.code]); // re-run only when the end-time string changes
+  }, [popupOffer?.code]);
 
   // ── Auto-show logic ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -88,7 +86,7 @@ export const OfferPopup = () => {
       return () => clearTimeout(t);
     }
     setMinimized(true);
-  }, [!!popupOffer]); // only re-run when popup existence changes
+  }, [!!popupOffer]);
 
   const close = (e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -109,7 +107,7 @@ export const OfferPopup = () => {
 
   return (
     <>
-      {/* ── Main popup ── */}
+      {/* ── Full popup box — top of page ── */}
       {open && (
         <div
           role="dialog"
@@ -197,20 +195,30 @@ export const OfferPopup = () => {
         </div>
       )}
 
-      {/* ── Minimized pill ── */}
+      {/* ── Minimized icon — above WhatsApp button (bottom-right) ── */}
       {minimized && !open && (
-        <button
-          aria-label="Open special offer"
-          onClick={() => { setMinimized(false); setOpen(true); }}
-          className="fixed bottom-6 left-6 z-50 bg-gradient-to-br from-violet-600 to-purple-700 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 hover:scale-105 transition-all animate-fade-in border border-white/20"
-        >
-          <Tag className="w-4 h-4" />
-          <span className="text-xs font-black">Special Offer</span>
-          <span className="flex h-2 w-2 ml-1 relative">
-            <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-white opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
-          </span>
-        </button>
+        <div className="fixed bottom-[7rem] md:bottom-[5.5rem] right-6 z-50 flex flex-col items-center gap-1.5 animate-fade-in">
+          {/* Close/dismiss button */}
+          <button
+            aria-label="Dismiss offer"
+            onClick={dismiss}
+            className="w-5 h-5 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+          >
+            <X className="w-3 h-3" />
+          </button>
+          {/* Offer icon */}
+          <button
+            aria-label="Open special offer"
+            onClick={() => { setMinimized(false); setOpen(true); }}
+            className="relative w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-all border-2 border-white/30"
+          >
+            <Tag className="w-6 h-6" />
+            <span className="absolute flex h-3 w-3 -top-0.5 -right-0.5">
+              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-60" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-400" />
+            </span>
+          </button>
+        </div>
       )}
     </>
   );

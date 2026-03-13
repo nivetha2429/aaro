@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
+import { OfferPopup } from "@/components/OfferPopup";
 
 // Eager-load the home page (critical path)
 import Index from "./pages/Index";
@@ -22,7 +23,6 @@ const Laptops = lazy(() => import("./pages/Laptops"));
 const ProductDetails = lazy(() => import("./pages/ProductDetails"));
 const Cart = lazy(() => import("./pages/Cart"));
 const OrderForm = lazy(() => import("./pages/OrderForm"));
-const Offers = lazy(() => import("./pages/Offers"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -102,14 +102,17 @@ const ScrollToTop = () => {
   return null;
 };
 
+const ICON_PAGES = ["/", "/phones", "/laptops", "/brands"];
+
 const AppContents = () => {
   const location = useLocation();
   const isAdminPath = location.pathname.startsWith("/admin");
+  const showIcons = ICON_PAGES.includes(location.pathname);
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 flex justify-center selection:bg-primary/20">
+    <div className="w-full min-h-screen bg-background selection:bg-primary/20">
       <ScrollToTop />
-      <div className="w-full max-w-[1400px] bg-background shadow-2xl min-h-screen flex flex-col relative overflow-hidden">
+      <div className="w-full bg-background min-h-screen flex flex-col relative">
         <Toaster richColors position="bottom-right" />
         {!isAdminPath && <Navbar />}
         <main className={`flex-1 flex flex-col ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
@@ -133,7 +136,6 @@ const AppContents = () => {
                 <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-                <Route path="/offers" element={<Offers />} />
                 <Route path="/elite" element={<Elite />} />
 
                 {/* Admin Routes */}
@@ -147,8 +149,9 @@ const AppContents = () => {
         </main>
         {!isAdminPath && <Footer />}
         {!isAdminPath && <MobileNav />}
-        {!isAdminPath && <WhatsAppButton />}
+        {showIcons && <WhatsAppButton />}
       </div>
+      {showIcons && <OfferPopup />}
     </div>
   );
 };

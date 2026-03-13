@@ -251,7 +251,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 max-w-7xl pb-16 lg:pb-4">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-16 lg:pb-4">
       <PageMeta
         title={product.name}
         description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}

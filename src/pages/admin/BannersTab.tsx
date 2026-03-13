@@ -73,7 +73,7 @@ const BannersTab = () => {
 
   const BannerCard = ({ banner }: { banner: Banner }) => (
     <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden group hover:shadow-xl transition-all duration-300">
-      <div className="relative h-28 sm:h-40 bg-[#f8f9fc]">
+      <div className="relative h-32 sm:h-44 md:h-48 bg-[#f8f9fc]">
         {banner.image ? (
           <img src={banner.image} alt={banner.title || "Banner"} className="w-full h-full object-cover" />
         ) : (
@@ -190,7 +190,7 @@ const BannersTab = () => {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest">Link</label>
-                <Input value={form.link} onChange={e => setForm({ ...form, link: e.target.value })} className="rounded-2xl h-12" placeholder="/shop or /offers" />
+                <Input value={form.link} onChange={e => setForm({ ...form, link: e.target.value })} className="rounded-2xl h-12" placeholder="/shop or /phones" />
               </div>
               {!editing && (
                 <div className="space-y-2">

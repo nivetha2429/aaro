@@ -11,8 +11,8 @@ const router = Router();
 // GET /api/products — supports optional ?page=&limit= for pagination
 router.get('/', async (req, res) => {
     try {
-        const page = parseInt(req.query.page);
-        const limit = parseInt(req.query.limit) || 50;
+        const page = parseInt(req.query.page) || 0;
+        const limit = Math.max(1, parseInt(req.query.limit) || 50);
         const category = req.query.category;
         const brand = req.query.brand;
 
@@ -202,8 +202,8 @@ router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
         const deleted = await Product.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ message: 'Product not found' });
         await Promise.all([
-            Review.deleteMany({ productId: req.params.id }),
-            Variant.deleteMany({ productId: req.params.id }),
+            Review.deleteMany({ productId: req.params.id }).catch(() => {}),
+            Variant.deleteMany({ productId: req.params.id }).catch(() => {}),
         ]);
         res.json({ message: 'Product deleted' });
     } catch {

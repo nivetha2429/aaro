@@ -95,16 +95,19 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500">
       <div className="container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
-        <div className="flex items-center gap-2 group shrink-0">
+        <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img
             src={logo}
             alt="AARO Systems Logo"
             className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105"
             onError={(e) => {
-              e.currentTarget.src = "https://placehold.co/200x60/7c3aed/ffffff?text=AARO+SYSTEMS";
+              if (!e.currentTarget.dataset.fallback) {
+                e.currentTarget.dataset.fallback = "true";
+                e.currentTarget.src = "https://placehold.co/200x60/7c3aed/ffffff?text=AARO+SYSTEMS";
+              }
             }}
           />
-        </div>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 ml-4 lg:ml-8">
@@ -112,10 +115,9 @@ const Navbar = () => {
           <Link to="/phones" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Phones</Link>
           <Link to="/laptops" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Laptops</Link>
           <Link to="/brands" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Brands</Link>
-          <Link to="/offers" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Offers</Link>
         </nav>
 
-        <div className="flex-1 max-w-xs md:max-w-sm lg:max-w-lg hidden md:flex relative">
+        <div className="flex-1 max-w-xs md:max-w-sm lg:max-w-lg xl:max-w-xl hidden md:flex relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
           <input
             type="text"
@@ -272,7 +274,6 @@ const Navbar = () => {
                 { label: "Phones", path: "/phones", icon: Smartphone },
                 { label: "Laptops", path: "/laptops", icon: Laptop },
                 { label: "Brands", path: "/brands", icon: Tag },
-                { label: "Offers", path: "/offers", icon: Tag }
               ].map((link) => (
                 <Link
                   key={link.path}

@@ -40,6 +40,7 @@ interface DataContextType {
     updateBanner: (banner: Banner) => Promise<void>;
     deleteBanner: (id: string) => Promise<void>;
     addReview: (review: Partial<Review>) => Promise<void>;
+    updateReview: (id: string, data: { rating: number; comment: string }) => Promise<void>;
     deleteReview: (id: string) => Promise<void>;
     fetchReviews: (productId: string) => Promise<Review[]>;
     activeOffer: Offer | null;
@@ -403,6 +404,16 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await fetchProducts();
     };
 
+    const updateReview = async (id: string, data: { rating: number; comment: string }) => {
+        const res = await guardedFetch(`${API_URL}/reviews/${id}`, {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        await fetchProducts();
+    };
+
     const deleteReview = async (id: string) => {
         await guardedFetch(`${API_URL}/reviews/${id}`, {
             method: "DELETE",
@@ -441,6 +452,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify(variant),
         });
         if (!res.ok) throw new Error((await res.json()).message);
+        await fetchProducts();
     };
 
     const updateVariant = async (variant: Variant) => {
@@ -450,6 +462,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             body: JSON.stringify(variant),
         });
         if (!res.ok) throw new Error((await res.json()).message);
+        await fetchProducts();
     };
 
     const deleteVariant = async (id: string) => {
@@ -458,6 +471,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             headers: authHeaders(),
         });
         if (!res.ok) throw new Error((await res.json()).message);
+        await fetchProducts();
     };
 
     const fetchMyOrders = async () => {
@@ -501,6 +515,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 updateBanner,
                 deleteBanner,
                 addReview,
+                updateReview,
                 deleteReview,
                 fetchReviews,
                 fetchModelsByCategory,

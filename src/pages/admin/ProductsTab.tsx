@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, Fragment } from "react";
-import { Trash2, Plus, X, Package, BarChart3, Smartphone, Laptop, ChevronDown, Layers, Search, Pencil, Loader2 } from "lucide-react";
+import { Trash2, Plus, X, Package, BarChart3, Smartphone, Laptop, ChevronDown, Layers, Search, Pencil, Loader2, Star, MessageSquare } from "lucide-react";
 import { useData } from "@/context/DataContext";
-import { Product, Variant } from "@/data/products";
+import { Product, Variant, Review } from "@/data/products";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ interface ProductsTabProps {
 }
 
 const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
-  const { products, categories, brands, offers, addProduct, updateProduct, deleteProduct, fetchModelsByCategory, fetchVariants } = useData();
+  const { products, categories, brands, offers, addProduct, updateProduct, deleteProduct, fetchModelsByCategory, fetchVariants, fetchReviews, addReview, updateReview, deleteReview } = useData();
 
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -48,6 +48,14 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
   const [laptopPage, setLaptopPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
+
+  // Review state
+  const [productReviews, setProductReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [editReviewForm, setEditReviewForm] = useState({ rating: 5, comment: "" });
 
   const toggleExpand = (id: string) => setExpandedProducts(prev => {
     const next = new Set(prev);
@@ -72,11 +80,19 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
     setImagesInput(product?.images?.slice(0, 4) || []);
 
     if (product?._id || (product as any)?.id) {
-      const vars = await fetchVariants(product._id || (product as any).id);
+      const pid = product._id || (product as any).id;
+      const vars = await fetchVariants(pid);
       setCurrentVariants(vars);
+      // Fetch reviews for this product
+      setLoadingReviews(true);
+      const revs = await fetchReviews(pid);
+      setProductReviews(revs);
+      setLoadingReviews(false);
     } else {
       setCurrentVariants([{ ram: "", storage: "", color: "", price: 0, originalPrice: 0, stock: 0, isAvailable: true }]);
+      setProductReviews([]);
     }
+    setReviewForm({ rating: 5, comment: "" });
 
     if (initialData.category) {
       const models = await fetchModelsByCategory(initialData.category);
@@ -337,7 +353,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                               <td className="px-3 sm:px-5 py-2 text-right">
                                 <div className="flex items-center justify-end gap-1">
                                   <Button variant="ghost" size="icon" onClick={() => handleOpenProductModal(p)} className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary"><Pencil className="w-3.5 h-3.5" /></Button>
-                                  <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id)} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></Button>
+                                  <Button variant="ghost" size="icon" onClick={() => deleteProduct(p.id || (p as any)._id)} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3.5 h-3.5" /></Button>
                                 </div>
                               </td>
                             </tr>
@@ -492,6 +508,168 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
 
               {/* Video */}
               <VideoUpload label="Product Video" value={formData.videoUrl || ""} onChange={(url) => setFormData({ ...formData, videoUrl: url })} />
+
+              {/* Reviews & Ratings — only when editing */}
+              {editingProduct && (
+                <div className="bg-white rounded-xl sm:rounded-[2rem] border border-[#eaedf3] p-3 sm:p-6 space-y-4 shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1a1f36] flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-primary" /> Reviews & Ratings
+                      <Badge variant="secondary" className="h-5 px-2 text-[9px] rounded-full bg-primary/10 text-primary border-none">{productReviews.length}</Badge>
+                    </h4>
+                  </div>
+
+                  {/* Existing Reviews */}
+                  {loadingReviews ? (
+                    <div className="py-6 text-center">
+                      <div className="w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                      <p className="text-[10px] text-[#7a869a]">Loading reviews...</p>
+                    </div>
+                  ) : productReviews.length > 0 ? (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {productReviews.map(review => {
+                        const rid = review.id || review._id!;
+                        const isEditing = editingReviewId === rid;
+                        return (
+                          <div key={rid} className="bg-[#f8f9fc] rounded-xl p-3 group">
+                            {isEditing ? (
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                    <span className="text-[10px] font-black text-primary">{review.name?.charAt(0).toUpperCase()}</span>
+                                  </div>
+                                  <span className="text-xs font-bold text-[#1a1f36]">{review.name}</span>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  {[1, 2, 3, 4, 5].map(s => (
+                                    <button key={s} type="button" onClick={() => setEditReviewForm(f => ({ ...f, rating: s }))} className="p-0.5">
+                                      <Star className={`w-4 h-4 ${s <= editReviewForm.rating ? "fill-amber-400 text-amber-400" : "text-[#eaedf3] hover:text-amber-200"}`} />
+                                    </button>
+                                  ))}
+                                  <span className="ml-1 text-[10px] font-bold text-[#7a869a]">{editReviewForm.rating}/5</span>
+                                </div>
+                                <textarea
+                                  value={editReviewForm.comment}
+                                  onChange={e => setEditReviewForm(f => ({ ...f, comment: e.target.value }))}
+                                  rows={2}
+                                  className="w-full rounded-lg border border-[#eaedf3] px-2.5 py-1.5 text-[11px] resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
+                                />
+                                <div className="flex gap-1.5 justify-end">
+                                  <button onClick={() => setEditingReviewId(null)} className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-[#7a869a] hover:bg-white border border-[#eaedf3]">Cancel</button>
+                                  <button
+                                    onClick={async () => {
+                                      if (!editReviewForm.comment.trim()) { toast.error("Comment required"); return; }
+                                      try {
+                                        await updateReview(rid, editReviewForm);
+                                        const pid = editingProduct!._id || (editingProduct as any).id;
+                                        const updated = await fetchReviews(pid);
+                                        setProductReviews(updated);
+                                        setEditingReviewId(null);
+                                        toast.success("Review updated");
+                                      } catch { toast.error("Failed to update review"); }
+                                    }}
+                                    className="px-2.5 py-1 rounded-lg text-[10px] font-bold text-white bg-primary hover:bg-primary/90"
+                                  >
+                                    Save
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start gap-2 flex-1 min-w-0">
+                                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                    <span className="text-[10px] font-black text-primary">{review.name?.charAt(0).toUpperCase()}</span>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className="text-xs font-bold text-[#1a1f36]">{review.name}</span>
+                                      <div className="flex items-center gap-0.5">
+                                        {[1, 2, 3, 4, 5].map(s => (
+                                          <Star key={s} className={`w-2.5 h-2.5 ${s <= review.rating ? "fill-amber-400 text-amber-400" : "text-[#eaedf3]"}`} />
+                                        ))}
+                                      </div>
+                                      {review.createdAt && (
+                                        <span className="text-[9px] text-[#7a869a]">{new Date(review.createdAt).toLocaleDateString()}</span>
+                                      )}
+                                    </div>
+                                    <p className="text-[11px] text-[#4f566b] mt-0.5 line-clamp-2">{review.comment}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                                  <button
+                                    onClick={() => { setEditingReviewId(rid); setEditReviewForm({ rating: review.rating, comment: review.comment }); }}
+                                    className="p-1.5 text-[#a3acb9] hover:text-primary hover:bg-primary/10 rounded-lg"
+                                  >
+                                    <Pencil className="w-3 h-3" />
+                                  </button>
+                                  <button
+                                    onClick={async () => {
+                                      if (!confirm("Delete this review?")) return;
+                                      try {
+                                        await deleteReview(rid);
+                                        const pid = editingProduct!._id || (editingProduct as any).id;
+                                        const updated = await fetchReviews(pid);
+                                        setProductReviews(updated);
+                                        toast.success("Review deleted");
+                                      } catch { toast.error("Failed to delete review"); }
+                                    }}
+                                    className="p-1.5 text-[#a3acb9] hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-[#a3acb9] text-center py-4">No reviews yet for this product.</p>
+                  )}
+
+                  {/* Add Review Form */}
+                  <div className="border-t border-[#eaedf3] pt-4 space-y-3">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-[#7a869a]">Add Review</p>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <button key={s} type="button" onClick={() => setReviewForm(f => ({ ...f, rating: s }))} className="p-0.5 transition-transform hover:scale-110">
+                          <Star className={`w-6 h-6 ${s <= reviewForm.rating ? "fill-amber-400 text-amber-400" : "text-[#eaedf3] hover:text-amber-200"}`} />
+                        </button>
+                      ))}
+                      <span className="ml-2 text-xs font-bold text-[#1a1f36]">{reviewForm.rating}/5</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <textarea
+                        value={reviewForm.comment}
+                        onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
+                        placeholder="Write a review..."
+                        rows={2}
+                        className="flex-1 rounded-xl border border-[#eaedf3] px-3 py-2 text-xs resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                      <Button
+                        onClick={async () => {
+                          if (!reviewForm.comment.trim()) { toast.error("Enter a review comment"); return; }
+                          setSubmittingReview(true);
+                          try {
+                            const pid = editingProduct._id || (editingProduct as any).id;
+                            await addReview({ productId: pid, rating: reviewForm.rating, comment: reviewForm.comment });
+                            const updated = await fetchReviews(pid);
+                            setProductReviews(updated);
+                            setReviewForm({ rating: 5, comment: "" });
+                            toast.success("Review added!");
+                          } catch (err: any) { toast.error(err.message || "Failed to add review"); }
+                          finally { setSubmittingReview(false); }
+                        }}
+                        disabled={submittingReview}
+                        className="gradient-dark rounded-xl h-auto px-4 font-bold text-[10px] text-white self-end"
+                      >
+                        {submittingReview ? "Adding..." : "Add"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="p-4 sm:p-8 bg-[#f8f9fc] border-t border-[#eaedf3] flex gap-3 sm:gap-4 shrink-0">
               <Button variant="ghost" onClick={() => setShowProductForm(false)} className="flex-1 h-12 rounded-2xl font-black uppercase text-[10px]">Cancel</Button>

@@ -91,7 +91,7 @@ const Brands = () => {
   );
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-10 pb-24 md:pb-10 max-w-7xl">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-10 pb-24 md:pb-10">
       <PageMeta title="Brands" description="Browse all brands available at Aaro Systems. Premium tech from trusted manufacturers." />
       {/* Header */}
       <div className="mb-12 text-center animate-slide-up">

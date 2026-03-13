@@ -16,6 +16,7 @@ const OrderForm = () => {
   const { user, token, isAuthenticated } = useAuth();
   const [submitted, setSubmitted] = useState(() => sessionStorage.getItem("aaro_order_placed") === "true");
   const [loading, setLoading] = useState(false);
+  const [savedWaUrl, setSavedWaUrl] = useState(() => sessionStorage.getItem("aaro_wa_url") || "");
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, watch, reset } = useForm<OrderFormData>({
     resolver: zodResolver(orderFormSchema),
@@ -44,8 +45,6 @@ const OrderForm = () => {
   }, [user, reset]);
 
   const buildWhatsAppMessage = () => {
-    const siteUrl = window.location.origin;
-
     const productLines = items
       .map((i) => {
         return [
@@ -53,7 +52,6 @@ const OrderForm = () => {
           `    Brand: ${i.product.brand}`,
           `    ${i.ram} / ${i.storage} / ${i.color}`,
           `    Qty: ${i.quantity} × ₹${i.price.toLocaleString()} = ₹${(i.price * i.quantity).toLocaleString()}`,
-          `    ${siteUrl}/product/${i.product.id}`,
         ].join("\n");
       })
       .join("\n\n");
@@ -105,6 +103,8 @@ const OrderForm = () => {
 
       if (response.ok) {
         sessionStorage.setItem("aaro_order_placed", "true");
+        sessionStorage.setItem("aaro_wa_url", waUrl);
+        setSavedWaUrl(waUrl);
         setSubmitted(true);
         clearCart();
         toast.success("Order placed! Opening WhatsApp...");
@@ -120,41 +120,45 @@ const OrderForm = () => {
     }
   };
 
+  const clearOrderState = () => {
+    sessionStorage.removeItem("aaro_order_placed");
+    sessionStorage.removeItem("aaro_wa_url");
+  };
+
   if (submitted) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center animate-fade-in">
-        <div className="relative inline-block mb-4">
-          <CheckCircle className="w-20 h-20 mx-auto text-green-500 animate-elastic" />
-          <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full scale-150 -z-10" />
-        </div>
-        <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 tracking-tighter animate-slide-up">Order Placed!</h2>
-        <p className="text-muted-foreground mb-8 text-sm">
-          Your order is confirmed. WhatsApp should have opened automatically.
-        </p>
-        <div className="flex flex-col gap-4 max-w-sm mx-auto">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <div className="container mx-auto px-4 py-16 pb-32 md:pb-16 text-center animate-fade-in">
+        <div className="max-w-md mx-auto">
+          <div className="relative inline-block mb-4">
+            <CheckCircle className="w-20 h-20 mx-auto text-green-500 animate-elastic" />
+            <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full scale-150 -z-10" />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black text-foreground mb-4 tracking-tighter animate-slide-up">Order Placed!</h2>
+          <p className="text-muted-foreground mb-8 text-sm">
+            Your order is confirmed. WhatsApp should have opened automatically.
+          </p>
+          <div className="flex flex-col gap-3">
             <button
-              onClick={() => window.open(`https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(buildWhatsAppMessage())}`, "_blank", "noopener,noreferrer")}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-2xl font-black hover:opacity-90 transition-all whatsapp-pulse click-scale shadow-xl shadow-green-500/20"
+              onClick={() => savedWaUrl && window.open(savedWaUrl, "_blank", "noopener,noreferrer")}
+              className="w-full inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-6 py-4 rounded-2xl font-black hover:opacity-90 transition-all whatsapp-pulse click-scale shadow-xl shadow-green-500/20"
             >
               <MessageCircle className="w-5 h-5" /> Open WhatsApp Again
             </button>
             <Link
               to="/my-orders"
-              onClick={() => sessionStorage.removeItem("aaro_order_placed")}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-secondary text-foreground px-8 py-4 rounded-2xl font-black hover:bg-border transition-all click-scale"
+              onClick={clearOrderState}
+              className="w-full inline-flex items-center justify-center gap-3 bg-secondary text-foreground px-6 py-4 rounded-2xl font-black hover:bg-border transition-all click-scale"
             >
               <Package className="w-5 h-5" /> View My Orders
             </Link>
+            <Link
+              to="/"
+              onClick={clearOrderState}
+              className="w-full inline-flex items-center justify-center gap-3 bg-white/40 backdrop-blur-md border border-primary/20 text-primary px-6 py-4 rounded-2xl font-black hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 click-scale group"
+            >
+              <Home className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> Back to Home
+            </Link>
           </div>
-
-          <Link
-            to="/"
-            onClick={() => sessionStorage.removeItem("aaro_order_placed")}
-            className="inline-flex items-center justify-center gap-3 bg-white/40 backdrop-blur-md border border-primary/20 text-primary px-8 py-4 rounded-2xl font-black hover:bg-primary/5 hover:border-primary/40 transition-all duration-300 click-scale group"
-          >
-            <Home className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> Back to Home
-          </Link>
         </div>
       </div>
     );

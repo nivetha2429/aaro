@@ -395,7 +395,7 @@ const Shop = () => {
           </p>
 
           {dataLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
                   <div className="aspect-square bg-secondary/50" />
@@ -408,7 +408,7 @@ const Shop = () => {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} onQuickView={() => setQuickViewProduct(p)} />
               ))}
