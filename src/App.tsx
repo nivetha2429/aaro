@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
-import { DataProvider } from "@/context/DataContext";
+import { DataProvider, useData } from "@/context/DataContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -105,8 +105,13 @@ const ICON_PAGES = ["/", "/phones", "/laptops", "/brands"];
 
 const AppContents = () => {
   const location = useLocation();
+  const { loading: dataLoading } = useData();
   const isAdminPath = location.pathname.startsWith("/admin");
   const showIcons = ICON_PAGES.includes(location.pathname);
+
+  if (dataLoading) {
+    return <AaroLoader fullScreen />;
+  }
 
   return (
     <div className="w-full min-h-screen bg-background selection:bg-primary/20">
