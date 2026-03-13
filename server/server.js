@@ -72,7 +72,7 @@ if (!IS_PROD) {
 app.use(cors({
     origin: (origin, callback) => {
         const isLocal = origin && (origin.includes('localhost') || origin.includes('127.0.0.1'));
-        if ((!IS_PROD && !origin) || allowedOrigins.includes(origin) || (!IS_PROD && isLocal)) {
+        if (!origin || allowedOrigins.includes(origin) || (!IS_PROD && isLocal)) {
             return callback(null, true);
         }
         callback(new Error('Not allowed by CORS'));
