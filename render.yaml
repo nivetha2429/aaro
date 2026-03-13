@@ -3,7 +3,7 @@ services:
     name: aaro
     env: node
     plan: free
-    buildCommand: npm ci && npm run build && cd server && npm ci
+    buildCommand: npm ci && npm run build
     startCommand: node start.js
     healthCheckPath: /health
     envVars:
