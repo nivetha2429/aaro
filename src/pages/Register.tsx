@@ -93,6 +93,9 @@ const Register = () => {
                                 id="register-phone"
                                 type="tel"
                                 placeholder="Phone Number"
+                                maxLength={10}
+                                inputMode="numeric"
+                                onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '').slice(0, 10); }}
                                 {...reg("phone")}
                                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
                             />
