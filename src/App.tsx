@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
 import { OfferPopup } from "@/components/OfferPopup";
+import logo from "@/assets/logo.png";
 
 // Eager-load the home page (critical path)
 import Index from "./pages/Index";
@@ -65,11 +66,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-const PageLoader = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="flex flex-col items-center gap-3">
-      <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-      <p className="text-sm text-muted-foreground font-medium animate-pulse">Loading...</p>
+const AaroLoader = ({ fullScreen = false }: { fullScreen?: boolean }) => (
+  <div className={`${fullScreen ? "min-h-screen" : "min-h-[60vh]"} flex items-center justify-center bg-background`}>
+    <div className="flex flex-col items-center gap-5">
+      <img src={logo} alt="AARO" className="h-16 sm:h-20 w-auto object-contain aaro-loader-logo" />
+      <div className="w-32 h-1 rounded-full bg-primary/10 aaro-loader-bar" />
+      <div className="flex items-center gap-1.5">
+        <div className="w-2 h-2 rounded-full bg-primary aaro-dot-1" />
+        <div className="w-2 h-2 rounded-full bg-primary aaro-dot-2" />
+        <div className="w-2 h-2 rounded-full bg-primary aaro-dot-3" />
+      </div>
     </div>
   </div>
 );
@@ -78,14 +84,7 @@ const ProtectedRoute = ({ children, adminOnly = false }: { children: React.React
   const { isAuthenticated, isAdmin, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted-foreground font-medium animate-pulse">Authenticating...</p>
-        </div>
-      </div>
-    );
+    return <AaroLoader fullScreen />;
   }
 
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -117,7 +116,7 @@ const AppContents = () => {
         {!isAdminPath && <Navbar />}
         <main className={`flex-1 flex flex-col ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
           <div key={location.pathname} className="page-transition flex-1 flex flex-col">
-            <Suspense fallback={<PageLoader />}>
+            <Suspense fallback={<AaroLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/shop" element={<Shop />} />

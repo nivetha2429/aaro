@@ -74,7 +74,25 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Initial loader shown before React hydrates -->
+    <div id="initial-loader" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(-45deg,#f3e8ff,#e9d5ff,#f5f3ff,#f8f0ff);flex-direction:column;gap:20px;">
+      <img src="/logo.png" alt="AARO" style="height:72px;width:auto;animation:aaroLogoP 1.8s ease-in-out infinite;" />
+      <div style="width:120px;height:4px;border-radius:999px;background:rgba(124,58,237,0.1);overflow:hidden;position:relative;">
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.6),transparent);animation:aaroShim 1.4s ease-in-out infinite;"></div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:aaroDot 1.4s ease-in-out infinite;animation-delay:0s;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:aaroDot 1.4s ease-in-out infinite;animation-delay:0.2s;"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#7c3aed;animation:aaroDot 1.4s ease-in-out infinite;animation-delay:0.4s;"></div>
+      </div>
+    </div>
+    <style>
+      @keyframes aaroLogoP{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.08);opacity:1}}
+      @keyframes aaroShim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+      @keyframes aaroDot{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+    </style>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
