@@ -49,7 +49,7 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             scriptSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"], // Tailwind CSS requires inline styles
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
             fontSrc: ["'self'", 'https:'],
             connectSrc: ["'self'", 'https:'],

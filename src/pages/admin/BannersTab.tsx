@@ -9,6 +9,26 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ImageUpload } from "@/components/ImageUpload";
 
+// Vite-imported assets for mapping DB paths that use /src/assets/...
+import heroBanner from "@/assets/hero-banner.jpg";
+import smartphoneBanner from "@/assets/banners/smartphone.jpg";
+import laptopBanner from "@/assets/banners/laptop.jpg";
+import accessoriesBanner from "@/assets/banners/accessories.jpg";
+
+const assetMap: Record<string, string> = {
+  "/src/assets/hero-banner.jpg": heroBanner,
+  "/src/assets/banners/smartphone.jpg": smartphoneBanner,
+  "/src/assets/banners/laptop.jpg": laptopBanner,
+  "/src/assets/banners/accessories.jpg": accessoriesBanner,
+};
+
+/** Resolve banner image: map old /src/assets paths to Vite imports, pass through valid URLs */
+const resolveBannerImage = (img: string): string => {
+  if (!img) return "";
+  if (img.startsWith("http") || img.startsWith("/uploads")) return img;
+  return assetMap[img] || "";
+};
+
 const BannersTab = () => {
   const { banners, addBanner, updateBanner, deleteBanner } = useData();
 
@@ -71,13 +91,18 @@ const BannersTab = () => {
     }
   };
 
-  const BannerCard = ({ banner }: { banner: Banner }) => (
+  const BannerCard = ({ banner }: { banner: Banner }) => {
+    const resolvedImage = resolveBannerImage(banner.image);
+    return (
     <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden group hover:shadow-xl transition-all duration-300">
       <div className="relative h-32 sm:h-44 md:h-48 bg-[#f8f9fc]">
-        {banner.image ? (
-          <img src={banner.image} alt={banner.title || "Banner"} className="w-full h-full object-cover" />
+        {resolvedImage ? (
+          <img src={resolvedImage} alt={banner.title || "Banner"} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center"><Image className="w-8 h-8 sm:w-10 sm:h-10 text-[#eaedf3]" /></div>
+          <div className="w-full h-full flex flex-col items-center justify-center gap-1">
+            <Image className="w-8 h-8 sm:w-10 sm:h-10 text-[#eaedf3]" />
+            {banner.image && <p className="text-[9px] text-[#a3acb9]">Re-upload needed</p>}
+          </div>
         )}
         <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1">
           <Badge
@@ -102,7 +127,7 @@ const BannersTab = () => {
         </div>
       </div>
     </Card>
-  );
+  );};
 
   return (
     <>

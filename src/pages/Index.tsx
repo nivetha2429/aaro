@@ -24,6 +24,20 @@ const features = [
   { icon: Headphones, label: "24/7 Support" },
 ];
 
+// Map /src/assets paths stored in DB to Vite-imported assets
+const assetMap: Record<string, string> = {
+  "/src/assets/hero-banner.jpg": heroBanner,
+  "/src/assets/banners/smartphone.jpg": smartphoneBanner,
+  "/src/assets/banners/laptop.jpg": laptopBanner,
+  "/src/assets/banners/accessories.jpg": accessoriesBanner,
+};
+
+const resolveBannerImage = (img: string): string => {
+  if (!img) return "";
+  if (img.startsWith("http") || img.startsWith("/uploads")) return img;
+  return assetMap[img] || "";
+};
+
 const defaultHeroBanners = [
   { image: smartphoneBanner, title: "Latest Smartphones", subtitle: "Premium phones at best prices", link: "/shop?category=phone" },
   { image: laptopBanner, title: "Powerful Laptops", subtitle: "Performance meets portability", link: "/shop?category=laptop" },
@@ -34,12 +48,15 @@ const Index = () => {
   const { products, brands, banners } = useData();
   const featured = products.filter((p) => p.featured);
 
-  // Only use DB banners with valid URLs (uploaded/external), not local /src/assets paths
-  const isValidUrl = (url: string) => url && (url.startsWith('http') || url.startsWith('/uploads'));
-  const dbHeroBanners = banners.filter(b => b.position === 'hero' && b.active && isValidUrl(b.image));
-  const centerBanner = banners.find(b => b.position === 'center' && b.active && isValidUrl(b.image));
+  // Resolve DB banner images (map /src/assets paths to Vite imports, pass through valid URLs)
+  const dbHeroBanners = banners
+    .filter(b => b.position === 'hero' && b.active)
+    .map(b => ({ ...b, image: resolveBannerImage(b.image) }))
+    .filter(b => b.image);
+  const centerBannerRaw = banners.find(b => b.position === 'center' && b.active);
+  const centerBanner = centerBannerRaw ? { ...centerBannerRaw, image: resolveBannerImage(centerBannerRaw.image) || heroBanner } : null;
 
-  // Use DB banners if available with valid images, else fallback to defaults
+  // Use DB banners if available with resolved images, else fallback to defaults
   const heroBanners = dbHeroBanners.length > 0
     ? dbHeroBanners.map(b => ({ image: b.image, title: b.title, subtitle: b.subtitle, link: b.link }))
     : defaultHeroBanners;
