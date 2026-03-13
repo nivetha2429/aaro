@@ -64,8 +64,8 @@ const Profile = () => {
     ];
 
     return (
-        <div className="container mx-auto px-4 py-12 pb-24 md:pb-12 max-w-4xl animate-fade-in text-black">
-            <div className="flex flex-col lg:flex-row gap-8">
+        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6 max-w-4xl animate-fade-in text-black">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
                 {/* Sidebar/Welcome */}
                 <div className="lg:w-1/3 text-center lg:text-left">
                     <div className="w-24 h-24 rounded-2xl gradient-purple mx-auto lg:mx-0 flex items-center justify-center mb-6 shadow-xl shadow-primary/20 transition-transform hover:scale-105">

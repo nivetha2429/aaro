@@ -28,9 +28,9 @@ const Laptops = () => {
   }, [allLaptops, search, selectedBrands]);
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24 md:pb-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6">
       <PageMeta title="Laptops" description="Explore premium laptops for work, gaming, and creativity. Top brands at competitive prices with free shipping." />
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-10 border-b border-primary/10 pb-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>
           <h1 className="text-glow mb-1">Laptops</h1>
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Premium Computing Range</p>
@@ -56,7 +56,7 @@ const Laptops = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Brand Filter Sidebar */}
         <aside className={`${showFilters ? "block" : "hidden"} lg:block w-full lg:w-64 shrink-0`}>
           <div className="glass-card rounded-sm sm:rounded-[2rem] p-4 sm:p-6 lg:sticky lg:top-24 border border-white/40 shadow-xl shadow-primary/5">

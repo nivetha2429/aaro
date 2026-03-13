@@ -33,7 +33,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 pb-24 md:pb-8">
+    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6">
       <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
 
       {/* Header */}
@@ -47,7 +47,7 @@ const Cart = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-3">
           {items.map((item) => (

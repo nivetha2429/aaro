@@ -30,9 +30,9 @@ const CustomerDashboard = () => {
     ];
 
     return (
-        <div className="container mx-auto px-4 py-8 pb-24 md:pb-8 animate-fade-in">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-12">
-                <div className="flex items-center gap-6">
+        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6 animate-fade-in">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
+                <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">
                         {user.name.charAt(0).toUpperCase()}
                     </div>
@@ -48,7 +48,7 @@ const CustomerDashboard = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
                 {stats.map((stat, i) => (
                     <div key={i} className="glass-card p-6 rounded-[2rem] flex items-center gap-5 border border-white/60 shadow-xl shadow-primary/5">
                         <div className={`w-14 h-14 rounded-2xl ${stat.color} bg-opacity-10 flex items-center justify-center`}>
@@ -62,7 +62,7 @@ const CustomerDashboard = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Quick Links */}
                 <div className="glass-card rounded-[2.5rem] p-4 sm:p-8 border border-white/60 shadow-2xl shadow-primary/10">
                     <h3 className="text-xl font-black text-foreground mb-6 flex items-center gap-3">

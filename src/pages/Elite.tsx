@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Elite = () => {
     return (
-        <div className="container mx-auto px-4 py-12 md:py-24 animate-fade-in">
+        <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12 md:py-24 animate-fade-in">
             {/* Hero Section */}
             <div className="text-center mb-20 max-w-3xl mx-auto">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.3em] mb-6 animate-slide-up">
@@ -18,7 +18,7 @@ const Elite = () => {
             </div>
 
             {/* Perks Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mb-16 sm:mb-24">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-10 sm:mb-16">
                 {[
                     {
                         icon: Zap,

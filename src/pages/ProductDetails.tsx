@@ -145,7 +145,7 @@ const ProductDetails = () => {
 
   if (!product) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
+      <div className="container mx-auto px-2 sm:px-4 py-8 text-center">
         <p className="text-muted-foreground">Product not found.</p>
         <Link to="/shop" className="text-primary hover:underline text-sm mt-2 inline-block">Back to Shop</Link>
       </div>
@@ -277,7 +277,7 @@ const ProductDetails = () => {
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 items-start">
         {/* ── Image Gallery ── */}
         <div className="space-y-4 animate-fade-in lg:sticky lg:top-24">
           <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">

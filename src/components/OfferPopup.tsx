@@ -197,7 +197,7 @@ export const OfferPopup = () => {
 
       {/* ── Minimized icon — above WhatsApp button (bottom-right) ── */}
       {minimized && !open && (
-        <div className="fixed bottom-[7rem] md:bottom-[5.5rem] right-6 z-50 flex flex-col items-center gap-1.5 animate-fade-in">
+        <div className="fixed bottom-[8.5rem] md:bottom-[5rem] right-4 z-50 flex flex-col items-center gap-1.5 animate-fade-in">
           {/* Close/dismiss button */}
           <button
             aria-label="Dismiss offer"
@@ -210,7 +210,7 @@ export const OfferPopup = () => {
           <button
             aria-label="Open special offer"
             onClick={() => { setMinimized(false); setOpen(true); }}
-            className="relative w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-all border-2 border-white/30"
+            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-all border-2 border-white/30"
           >
             <Tag className="w-6 h-6" />
             <span className="absolute flex h-3 w-3 -top-0.5 -right-0.5">
