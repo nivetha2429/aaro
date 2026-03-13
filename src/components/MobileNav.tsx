@@ -1,15 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Smartphone, Laptop, Tag, User } from "lucide-react";
+import { Home, Smartphone, Laptop, Tag, User, Headphones } from "lucide-react";
 
 const MobileNav = () => {
     const location = useLocation();
 
     const NAV_ITEMS = [
         { name: "Home", icon: Home, path: "/" },
-        { name: "Phones", icon: Smartphone, path: "/phones" },
         { name: "Laptops", icon: Laptop, path: "/laptops" },
+        { name: "Phones", icon: Smartphone, path: "/phones" },
+        { name: "Accessory", icon: Headphones, path: "/accessories" },
         { name: "Brands", icon: Tag, path: "/brands" },
-        { name: "Profile", icon: User, path: "/profile" }
     ];
 
     return (

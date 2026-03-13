@@ -87,11 +87,11 @@ const MyOrders = () => {
                                                         onError={(e) => {
                                                             const parent = e.currentTarget.parentElement;
                                                             e.currentTarget.style.display = "none";
-                                                            if (parent) parent.innerHTML = item.product?.category === "phone" ? "📱" : "💻";
+                                                            if (parent) parent.innerHTML = item.product?.category === "phone" ? "📱" : item.product?.category === "accessory" ? "🎧" : "💻";
                                                         }}
                                                     />
                                                 ) : (
-                                                    <span className="text-2xl">{item.product?.category === "phone" ? "📱" : "💻"}</span>
+                                                    <span className="text-2xl">{item.product?.category === "phone" ? "📱" : item.product?.category === "accessory" ? "🎧" : "💻"}</span>
                                                 )}
                                             </div>
                                             {/* Details */}

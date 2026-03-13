@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
     brand: { type: String, required: true },
     modelId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProductModel' },
-    category: { type: String, required: true, enum: ['phone', 'laptop'] },
+    category: { type: String, required: true, enum: ['phone', 'laptop', 'accessory'] },
 
     rating: { type: Number, default: 4.5 },
     reviewCount: { type: Number, default: 0 },

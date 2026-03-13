@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const productModelSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    category: { type: String, required: true, enum: ['phone', 'laptop'] },
+    category: { type: String, required: true, enum: ['phone', 'laptop', 'accessory'] },
     brand: { type: String, required: true },
     specificationsTemplate: {
         display: { type: String, default: '' },

@@ -21,6 +21,7 @@ import Index from "./pages/Index";
 const Shop = lazy(() => import("./pages/Shop"));
 const Phones = lazy(() => import("./pages/Phones"));
 const Laptops = lazy(() => import("./pages/Laptops"));
+const Accessories = lazy(() => import("./pages/Accessories"));
 const ProductDetails = lazy(() => import("./pages/ProductDetails"));
 const Cart = lazy(() => import("./pages/Cart"));
 const OrderForm = lazy(() => import("./pages/OrderForm"));
@@ -101,7 +102,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-const ICON_PAGES = ["/", "/phones", "/laptops", "/brands"];
+const ICON_PAGES = ["/", "/phones", "/laptops", "/accessories", "/brands"];
 
 const AppContents = () => {
   const location = useLocation();
@@ -127,6 +128,7 @@ const AppContents = () => {
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/phones" element={<Phones />} />
                 <Route path="/laptops" element={<Laptops />} />
+                <Route path="/accessories" element={<Accessories />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/brands" element={<Brands />} />
                 <Route path="/cart" element={<Cart />} />

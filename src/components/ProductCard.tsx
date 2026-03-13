@@ -69,7 +69,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
             </>
           ) : (
             <div className="text-4xl sm:text-6xl md:text-8xl drop-shadow-xl transform transition-all group-hover:rotate-6">
-              {product.category === "phone" ? "📱" : "💻"}
+              {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
             </div>
           )}
         </div>

@@ -137,7 +137,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                   className="w-full h-full object-contain p-4 drop-shadow-xl"
                 />
               ) : (
-                <span className="text-7xl">{product.category === "phone" ? "📱" : "💻"}</span>
+                <span className="text-7xl">{product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}</span>
               )}
             </div>
             {product.images && product.images.length > 1 && (

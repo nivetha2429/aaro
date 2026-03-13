@@ -9,7 +9,7 @@ const Footer = () => (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 text-center lg:text-left">
         <div>
           <div className="flex items-center justify-center lg:justify-start gap-2 mb-3 sm:mb-6">
-            <img src={logo} alt="AARO Logo" className="h-10 sm:h-16 w-auto object-contain" />
+            <img src={logo} alt="AARO Logo" className="h-14 sm:h-16 w-auto object-contain" />
           </div>
           <p className="text-muted-foreground text-[11px] sm:text-xs leading-relaxed max-w-xs mx-auto lg:mx-0">Your one-stop shop for premium phones and laptops at unbeatable prices.</p>
         </div>

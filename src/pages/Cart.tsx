@@ -62,7 +62,7 @@ const Cart = () => {
                       className="w-full h-full object-contain p-1"
                     />
                   ) : (
-                    <span className="text-3xl">{item.product.category === "phone" ? "📱" : "💻"}</span>
+                    <span className="text-3xl">{item.product.category === "phone" ? "📱" : item.product.category === "accessory" ? "🎧" : "💻"}</span>
                   )}
                 </div>
               </Link>

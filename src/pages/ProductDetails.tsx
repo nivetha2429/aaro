@@ -287,7 +287,7 @@ const ProductDetails = () => {
                 className="w-full h-full object-contain drop-shadow-3xl transition-all duration-700 group-hover:scale-105" />
             ) : (
               <div className="text-6xl sm:text-8xl md:text-[10rem] transition-transform duration-700 group-hover:scale-110">
-                {product.category === "phone" ? "📱" : "💻"}
+                {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
               </div>
             )}
             {discount > 0 && (

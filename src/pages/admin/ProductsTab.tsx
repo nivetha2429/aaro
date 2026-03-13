@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, Fragment } from "react";
-import { Trash2, Plus, X, Package, BarChart3, Smartphone, Laptop, ChevronDown, Layers, Search, Pencil, Loader2, Star, MessageSquare } from "lucide-react";
+import { Trash2, Plus, X, Package, BarChart3, Smartphone, Laptop, Headphones, ChevronDown, Layers, Search, Pencil, Loader2, Star, MessageSquare } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import { Product, Variant, Review } from "@/data/products";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 const PHONE_SPECS = ["os", "ramSize", "battery", "displaySize", "camera"];
 const LAPTOP_SPECS = ["screenSize", "color", "hardDiskSize", "cpuModel", "ramSize", "os", "specialFeature", "graphicsCard"];
+const ACCESSORY_SPECS = ["color", "battery", "specialFeature"];
 const SPEC_LABEL: Record<string, string> = {
   screenSize: "Screen Size", color: "Colour", hardDiskSize: "Hard Disk Size",
   cpuModel: "CPU Model", ramSize: "RAM Memory Installed Size", os: "Operating System",
@@ -46,6 +47,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
   const [inventorySearch, setInventorySearch] = useState("");
   const [phonePage, setPhonePage] = useState(1);
   const [laptopPage, setLaptopPage] = useState(1);
+  const [accessoryPage, setAccessoryPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
   const [expandedProducts, setExpandedProducts] = useState<Set<string>>(new Set());
 
@@ -184,7 +186,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
               <input
                 type="text"
                 value={inventorySearch}
-                onChange={e => { setInventorySearch(e.target.value); setPhonePage(1); setLaptopPage(1); }}
+                onChange={e => { setInventorySearch(e.target.value); setPhonePage(1); setLaptopPage(1); setAccessoryPage(1); }}
                 placeholder="Search products..."
                 className="h-11 pl-9 pr-4 rounded-2xl border border-[#eaedf3] bg-[#f8f9fc] text-sm font-bold text-[#1a1f36] outline-none focus:ring-2 focus:ring-primary/20 w-full sm:w-52"
               />
@@ -210,17 +212,18 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
 
         {Object.entries(groupedProducts).map(([catName, catProducts]) => {
           const isPhone = catName.toLowerCase().includes("phone") || catName.toLowerCase().includes("mobile");
-          const page = isPhone ? phonePage : laptopPage;
-          const setPage = isPhone ? setPhonePage : setLaptopPage;
+          const isAccessory = catName.toLowerCase().includes("accessory") || catName.toLowerCase().includes("accessories");
+          const page = isPhone ? phonePage : isAccessory ? accessoryPage : laptopPage;
+          const setPage = isPhone ? setPhonePage : isAccessory ? setAccessoryPage : setLaptopPage;
           const totalPages = Math.ceil(catProducts.length / ITEMS_PER_PAGE);
           const paginatedProducts = catProducts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
           return (
             <Card key={catName} className="border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden">
-              <div className={`px-3 sm:px-6 py-3 border-b flex items-center justify-between ${isPhone ? "bg-blue-50 border-blue-100" : "bg-violet-50 border-violet-100"}`}>
+              <div className={`px-3 sm:px-6 py-3 border-b flex items-center justify-between ${isPhone ? "bg-blue-50 border-blue-100" : isAccessory ? "bg-amber-50 border-amber-100" : "bg-violet-50 border-violet-100"}`}>
                 <div className="flex items-center gap-2">
-                  {isPhone ? <Smartphone className="w-4 h-4 text-blue-500" /> : <Laptop className="w-4 h-4 text-violet-500" />}
-                  <span className={`text-xs font-black uppercase tracking-wider ${isPhone ? "text-blue-600" : "text-violet-600"}`}>{catName}</span>
-                  <Badge variant="secondary" className={`h-5 px-2 text-[9px] rounded-full ${isPhone ? "bg-blue-100 text-blue-600 border-none" : "bg-violet-100 text-violet-600 border-none"}`}>{catProducts.length}</Badge>
+                  {isPhone ? <Smartphone className="w-4 h-4 text-blue-500" /> : isAccessory ? <Headphones className="w-4 h-4 text-amber-500" /> : <Laptop className="w-4 h-4 text-violet-500" />}
+                  <span className={`text-xs font-black uppercase tracking-wider ${isPhone ? "text-blue-600" : isAccessory ? "text-amber-600" : "text-violet-600"}`}>{catName}</span>
+                  <Badge variant="secondary" className={`h-5 px-2 text-[9px] rounded-full ${isPhone ? "bg-blue-100 text-blue-600 border-none" : isAccessory ? "bg-amber-100 text-amber-600 border-none" : "bg-violet-100 text-violet-600 border-none"}`}>{catProducts.length}</Badge>
                 </div>
                 {totalPages > 1 && (
                   <div className="flex items-center gap-2 text-xs font-bold text-[#7a869a]">
@@ -479,14 +482,14 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
               </div>
 
               {/* Specifications */}
-              {(formData.category?.toLowerCase().includes("phone") || formData.category?.toLowerCase().includes("mobile") || formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") || !formData.category) && (
+              {(formData.category?.toLowerCase().includes("phone") || formData.category?.toLowerCase().includes("mobile") || formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") || formData.category?.toLowerCase().includes("accessory") || !formData.category) && (
                 <div className="bg-[#fcfdfe] rounded-xl sm:rounded-3xl border border-[#eaedf3] p-3 sm:p-6 animate-fade-in">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-[#1a1f36] mb-4 flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-primary" />
-                    {formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") ? "Laptop Configuration" : "Phone Configuration"}
+                    {formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook") ? "Laptop Configuration" : formData.category?.toLowerCase().includes("accessory") ? "Accessory Configuration" : "Phone Configuration"}
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {((formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook")) ? LAPTOP_SPECS : PHONE_SPECS).map(key => (
+                    {((formData.category?.toLowerCase().includes("laptop") || formData.category?.toLowerCase().includes("pc") || formData.category?.toLowerCase().includes("macbook")) ? LAPTOP_SPECS : formData.category?.toLowerCase().includes("accessory") ? ACCESSORY_SPECS : PHONE_SPECS).map(key => (
                       <div key={key} className="space-y-1.5">
                         <label className="text-[9px] font-black uppercase tracking-widest text-[#7a869a]">{SPEC_LABEL[key]}</label>
                         <Input value={specsData[key] || ""} onChange={e => setSpecsData({ ...specsData, [key]: e.target.value })}

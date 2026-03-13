@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
@@ -99,7 +99,7 @@ const Navbar = () => {
           <img
             src={logo}
             alt="AARO Systems Logo"
-            className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-16 sm:h-18 md:h-20 w-auto object-contain transition-transform group-hover:scale-105"
             onError={(e) => {
               if (!e.currentTarget.dataset.fallback) {
                 e.currentTarget.dataset.fallback = "true";
@@ -112,8 +112,9 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 ml-4 lg:ml-8">
           <Link to="/" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Home</Link>
-          <Link to="/phones" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Phones</Link>
           <Link to="/laptops" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Laptops</Link>
+          <Link to="/phones" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Phones</Link>
+          <Link to="/accessories" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Accessory</Link>
           <Link to="/brands" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Brands</Link>
         </nav>
 
@@ -151,7 +152,7 @@ const Navbar = () => {
                       {p.images && p.images[0] ? (
                         <img src={p.images[0]} alt={p.name} className="w-6 h-6 object-contain" />
                       ) : (
-                        p.category === 'phone' ? '📱' : '💻'
+                        p.category === 'phone' ? '📱' : p.category === 'accessory' ? '🎧' : '💻'
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -271,8 +272,9 @@ const Navbar = () => {
               <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Navigation</p>
               {[
                 { label: "Home", path: "/", icon: Home },
-                { label: "Phones", path: "/phones", icon: Smartphone },
                 { label: "Laptops", path: "/laptops", icon: Laptop },
+                { label: "Phones", path: "/phones", icon: Smartphone },
+                { label: "Accessory", path: "/accessories", icon: Headphones },
                 { label: "Brands", path: "/brands", icon: Tag },
               ].map((link) => (
                 <Link
@@ -379,7 +381,7 @@ const Navbar = () => {
                         {p.images && p.images[0] ? (
                           <img src={p.images[0]} alt={p.name} className="w-8 h-8 object-contain" />
                         ) : (
-                          p.category === 'phone' ? '📱' : '💻'
+                          p.category === 'phone' ? '📱' : p.category === 'accessory' ? '🎧' : '💻'
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
