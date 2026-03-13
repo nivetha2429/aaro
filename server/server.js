@@ -63,7 +63,7 @@ app.use(helmet({
 // ── CORS ──
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['https://aaro-8w5a.onrender.com'];
+    : ['https://aaro-qsgk.onrender.com'];
 
 if (!IS_PROD) {
     allowedOrigins.push('http://localhost:8000', 'http://localhost:5173', 'http://localhost:3000');

@@ -22,4 +22,4 @@ services:
       - key: CLOUDINARY_API_SECRET
         sync: false
       - key: RENDER_EXTERNAL_URL
-        value: https://aaro-8w5a.onrender.com
+        value: https://aaro-qsgk.onrender.com
