@@ -26,8 +26,7 @@ dotenv.config();
 
 // ── Validate required env vars at startup ──
 if (!process.env.JWT_SECRET) {
-    process.stderr.write('FATAL: JWT_SECRET is not set. Refusing to start.\n');
-    process.exit(1);
+    process.stderr.write('WARNING: JWT_SECRET is not set. Auth will not work!\n');
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -158,26 +157,37 @@ app.use((err, _req, res, _next) => {
     res.status(status).json({ message: IS_PROD ? 'Internal server error' : err.message });
 });
 
-// ── Database Connection ──
-const connectDB = async () => {
+// ── Database Connection (with retry) ──
+const connectDB = async (retries = 3) => {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
-        logger.error('MONGODB_URI is not set in .env — cannot start server');
-        process.exit(1);
+        logger.error('MONGODB_URI is not set — server will start but DB calls will fail');
+        return;
     }
-    try {
-        await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 30000 });
-        logger.info('Connected to MongoDB Atlas');
-    } catch (err) {
-        logger.error({ err }, `MongoDB connection failed: ${err.message}`);
-        logger.error('Check that MONGODB_URI in server/.env is correct and your IP is whitelisted in Atlas.');
-        process.exit(1);
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 30000 });
+            logger.info('Connected to MongoDB Atlas');
+            return;
+        } catch (err) {
+            logger.error(`MongoDB connection attempt ${attempt}/${retries} failed: ${err.message}`);
+            if (attempt < retries) {
+                logger.info(`Retrying in 5 seconds…`);
+                await new Promise(r => setTimeout(r, 5000));
+            }
+        }
     }
+    logger.error('All MongoDB connection attempts failed. Server will run but DB calls will fail.');
 };
 
-connectDB().then(() => {
-    const server = app.listen(PORT, '0.0.0.0', () => {
-        logger.info(`Server on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+// ── Start server (bind port first, then connect DB) ──
+const server = app.listen(PORT, '0.0.0.0', () => {
+    logger.info(`Server on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    logger.info(`JWT_SECRET: ${process.env.JWT_SECRET ? 'set' : 'MISSING'}`);
+    logger.info(`MONGODB_URI: ${process.env.MONGODB_URI ? 'set' : 'MISSING'}`);
+
+    // Connect to DB after port is bound (so health check works even during DB connect)
+    connectDB().then(() => {
 
         // ── Keep-alive ping (prevents Render free tier from sleeping) ──
         if (IS_PROD && process.env.RENDER_EXTERNAL_URL) {
@@ -192,22 +202,24 @@ connectDB().then(() => {
             }, PING_INTERVAL);
             logger.info('Keep-alive pinger started (every 14 min)');
         }
+    }).catch(err => {
+        logger.error({ err }, 'DB connection failed after retries');
     });
-
-    // ── Graceful Shutdown ──
-    const shutdown = (signal) => {
-        logger.info(`${signal} received — shutting down gracefully…`);
-        server.close(() => {
-            mongoose.connection.close().then(() => {
-                logger.info('MongoDB connection closed');
-                process.exit(0);
-            });
-        });
-        setTimeout(() => { logger.error('Forced exit after timeout'); process.exit(1); }, 10000);
-    };
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
 });
+
+// ── Graceful Shutdown ──
+const shutdown = (signal) => {
+    logger.info(`${signal} received — shutting down gracefully…`);
+    server.close(() => {
+        mongoose.connection.close().then(() => {
+            logger.info('MongoDB connection closed');
+            process.exit(0);
+        });
+    });
+    setTimeout(() => { logger.error('Forced exit after timeout'); process.exit(1); }, 10000);
+};
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
 
 // ── Crash Safety ──
 process.on('unhandledRejection', (reason) => {
