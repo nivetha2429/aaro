@@ -178,6 +178,20 @@ const connectDB = async () => {
 connectDB().then(() => {
     const server = app.listen(PORT, '0.0.0.0', () => {
         logger.info(`Server on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+
+        // ── Keep-alive ping (prevents Render free tier from sleeping) ──
+        if (IS_PROD && process.env.RENDER_EXTERNAL_URL) {
+            const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
+            setInterval(async () => {
+                try {
+                    const res = await fetch(`${process.env.RENDER_EXTERNAL_URL}/health`);
+                    logger.info(`Keep-alive ping: ${res.status}`);
+                } catch (err) {
+                    logger.warn(`Keep-alive ping failed: ${err.message}`);
+                }
+            }, PING_INTERVAL);
+            logger.info('Keep-alive pinger started (every 14 min)');
+        }
     });
 
     // ── Graceful Shutdown ──
