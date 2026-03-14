@@ -197,7 +197,7 @@ export const OfferPopup = () => {
 
       {/* ── Minimized icon — above WhatsApp button (bottom-right) ── */}
       {minimized && !open && (
-        <div className="fixed bottom-[5.5rem] md:bottom-[6rem] right-4 z-50 flex flex-col items-center gap-2 animate-fade-in">
+        <div className="fixed bottom-[8rem] md:bottom-[6rem] right-4 z-50 flex flex-col items-center gap-2 animate-fade-in">
           {/* Close/dismiss button */}
           <button
             aria-label="Dismiss offer"
