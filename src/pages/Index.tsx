@@ -12,9 +12,9 @@ import laptopBanner from "@/assets/banners/laptop.jpg";
 import accessoriesBanner from "@/assets/banners/accessories.jpg";
 
 const categories = [
-  { name: "Phones", icon: Smartphone, link: "/shop?category=phone" },
-  { name: "Laptops", icon: Laptop, link: "/shop?category=laptop" },
-  { name: "Offers", icon: Tag, link: "/shop" },
+  { name: "Laptops", icon: Laptop, link: "/laptops" },
+  { name: "Phones", icon: Smartphone, link: "/phones" },
+  { name: "Accessory", icon: Headphones, link: "/accessories" },
 ];
 
 const features = [

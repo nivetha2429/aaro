@@ -197,7 +197,7 @@ export const OfferPopup = () => {
 
       {/* ── Minimized icon — above WhatsApp button (bottom-right) ── */}
       {minimized && !open && (
-        <div className="fixed bottom-[8.5rem] md:bottom-[5rem] right-4 z-50 flex flex-col items-center gap-1.5 animate-fade-in">
+        <div className="fixed bottom-[11rem] md:bottom-[6rem] right-4 z-50 flex flex-col items-center gap-2 animate-fade-in">
           {/* Close/dismiss button */}
           <button
             aria-label="Dismiss offer"
@@ -210,12 +210,12 @@ export const OfferPopup = () => {
           <button
             aria-label="Open special offer"
             onClick={() => { setMinimized(false); setOpen(true); }}
-            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-all border-2 border-white/30"
+            className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 text-white shadow-xl flex items-center justify-center hover:scale-110 transition-all border-2 border-white/40 hover:shadow-orange-500/30"
           >
-            <Tag className="w-6 h-6" />
+            <span className="text-xl font-black">%</span>
             <span className="absolute flex h-3 w-3 -top-0.5 -right-0.5">
-              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-amber-400 opacity-60" />
-              <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-400" />
+              <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-white opacity-60" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
             </span>
           </button>
         </div>
