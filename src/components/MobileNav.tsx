@@ -22,12 +22,12 @@ const MobileNav = () => {
                         <Link
                             key={item.name}
                             to={item.path}
-                            className="relative flex flex-col items-center justify-center p-2 group transition-all"
+                            className="flex flex-col items-center justify-center gap-0.5 p-1 group transition-all"
                         >
-                            <div className={`relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full transition-all duration-300 ${isActive ? "bg-primary text-white shadow-lg shadow-primary/30 -translate-y-2" : "text-muted-foreground hover:bg-secondary/80"}`}>
-                                <item.icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                            <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isActive ? "bg-primary text-white shadow-md shadow-primary/30" : "text-muted-foreground"}`}>
+                                <item.icon className={`w-4 h-4 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
                             </div>
-                            <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isActive ? "text-primary translate-y-0 opacity-100" : "text-transparent translate-y-2 opacity-0"} absolute -bottom-1`}>
+                            <span className={`text-[9px] font-bold transition-all duration-300 ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                                 {item.name}
                             </span>
                         </Link>
