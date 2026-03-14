@@ -11,6 +11,7 @@ const Accessories = () => {
 
   const [search, setSearch] = useState("");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [conditionFilter, setConditionFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
 
   const toggleBrand = (brand: string) => {
@@ -23,20 +24,21 @@ const Accessories = () => {
     return allAccessories.filter((p) => {
       const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
       const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(p.brand);
-      return matchesSearch && matchesBrand;
+      const matchesCondition = conditionFilter === "all" || (p.condition || "new") === conditionFilter;
+      return matchesSearch && matchesBrand && matchesCondition;
     });
-  }, [allAccessories, search, selectedBrands]);
+  }, [allAccessories, search, selectedBrands, conditionFilter]);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6">
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta title="Accessories" description="Browse our collection of premium accessories. Find the latest gadgets and add-ons at the best prices." />
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>
           <h1 className="text-glow mb-1">Accessories</h1>
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Premium Gadgets & Add-ons</p>
         </div>
 
-        <div className="flex items-center gap-2 w-full lg:max-w-md h-12">
+        <div className="flex items-center gap-2 w-full md:max-w-xs lg:max-w-md h-12">
           <div className="relative flex-1 h-full">
             <input
               type="text"
@@ -49,18 +51,29 @@ const Accessories = () => {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden h-full flex items-center justify-center px-4 rounded-sm sm:rounded-xl border border-border bg-card text-primary hover:bg-primary/10 transition-all"
+            className="md:hidden h-full flex items-center justify-center px-4 rounded-sm sm:rounded-xl border border-border bg-card text-primary hover:bg-primary/10 transition-all"
           >
             <SlidersHorizontal className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Brand Filter Sidebar */}
-        <aside className={`${showFilters ? "block" : "hidden"} lg:block w-full lg:w-64 shrink-0`}>
-          <div className="glass-card rounded-sm sm:rounded-[2rem] p-4 sm:p-6 lg:sticky lg:top-24 border border-white/40 shadow-xl shadow-primary/5">
-            <h3 className="text-xs font-black uppercase tracking-widest text-foreground border-b border-primary/10 pb-3 mb-6">Filter by Brand</h3>
+        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 shrink-0`}>
+          <div className="glass-card rounded-sm sm:rounded-[2rem] p-4 sm:p-6 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5 space-y-6">
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-widest text-foreground border-b border-primary/10 pb-3 mb-4">Condition</h3>
+              <div className="flex flex-wrap gap-2">
+                {[{ label: "All", value: "all" }, { label: "New", value: "new" }, { label: "Refurbished", value: "refurbished" }].map(c => (
+                  <button key={c.value} onClick={() => setConditionFilter(c.value)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${conditionFilter === c.value ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <h3 className="text-xs font-black uppercase tracking-widest text-foreground border-b border-primary/10 pb-3">Filter by Brand</h3>
             <div className="grid grid-cols-1 gap-3">
               {brands.map((brand) => (
                 <label key={brand} className="flex items-center gap-3 text-sm cursor-pointer group">
@@ -77,9 +90,9 @@ const Accessories = () => {
                 </label>
               ))}
             </div>
-            {(selectedBrands.length > 0) && (
+            {(selectedBrands.length > 0 || conditionFilter !== "all") && (
               <button
-                onClick={() => setSelectedBrands([])}
+                onClick={() => { setSelectedBrands([]); setConditionFilter("all"); }}
                 className="mt-8 text-[11px] font-black uppercase tracking-widest text-primary hover:underline w-full text-center"
               >
                 Clear Selection
@@ -91,7 +104,7 @@ const Accessories = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {filteredAccessories.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
               {filteredAccessories.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
@@ -104,7 +117,7 @@ const Accessories = () => {
               <h2 className="text-xl sm:text-2xl font-black text-foreground mb-2">No Accessories Found</h2>
               <p className="text-muted-foreground max-w-xs mb-8">We couldn't find any products matching your specific filters.</p>
               <button
-                onClick={() => { setSearch(""); setSelectedBrands([]); }}
+                onClick={() => { setSearch(""); setSelectedBrands([]); setConditionFilter("all"); }}
                 className="gradient-purple text-primary-foreground px-8 py-3.5 rounded-sm sm:rounded-2xl font-black hover:opacity-90 transition-all shadow-xl shadow-primary/20"
               >
                 Reset Filters

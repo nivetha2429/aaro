@@ -42,7 +42,7 @@ type SortDir = "asc" | "desc";
 type DateRange = "" | "today" | "week" | "month" | "year";
 
 const OrdersTab = () => {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -68,6 +68,7 @@ const OrdersTab = () => {
       const res = await fetch(`${API_URL}/orders/admin?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (res.status === 401) { toast.error("Session expired"); logout(); return; }
       if (res.ok) {
         const data = await res.json();
         setOrders(data.orders || []);

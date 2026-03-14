@@ -55,12 +55,13 @@ const variantSchema = z.object({
     stock: z.number().int().min(0).default(0),
     sku: z.string().optional(),
     isAvailable: z.boolean().optional(),
+    condition: z.enum(['new', 'refurbished']).default('new'),
 });
 
 export const productSchema = z.object({
     name: z.string().min(1, 'Product name is required').max(200),
     brand: z.string().min(1, 'Brand is required').max(100),
-    category: z.enum(['phone', 'laptop'], { errorMap: () => ({ message: 'Category must be phone or laptop' }) }),
+    category: z.enum(['phone', 'laptop', 'accessory'], { errorMap: () => ({ message: 'Category must be phone, laptop or accessory' }) }),
     description: z.string().min(1, 'Description is required').max(5000),
     images: z.array(z.string().url()).default([]),
     videoUrl: z.string().max(500).default(''),
@@ -78,6 +79,7 @@ export const productSchema = z.object({
     tag: z.string().max(50).default(''),
     featured: z.boolean().default(false),
     isTrending: z.boolean().default(false),
+    condition: z.enum(['new', 'refurbished']).default('new'),
     variants: z.array(variantSchema).optional(),
 });
 
@@ -117,11 +119,12 @@ export const variantStandaloneSchema = z.object({
     originalPrice: z.number().positive(),
     stock: z.number().int().min(0).default(0),
     sku: z.string().optional(),
+    condition: z.enum(['new', 'refurbished']).default('new'),
 });
 
 export const productModelSchema = z.object({
     name: z.string().min(1).max(200),
-    category: z.enum(['phone', 'laptop']),
+    category: z.enum(['phone', 'laptop', 'accessory']),
     brand: z.string().min(1).max(100),
 });
 

@@ -38,6 +38,7 @@ const Shop = () => {
   });
   const [priceInitialized, setPriceInitialized] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [conditionFilter, setConditionFilter] = useState(searchParams.get("condition") || "all");
 
   // Sync filters → URL params
   const syncURL = useCallback(() => {
@@ -50,8 +51,9 @@ const Shop = () => {
     if (selectedStorage.length) params.storage = selectedStorage.join(",");
     if (priceInitialized && priceRange[0] > 0) params.minPrice = String(priceRange[0]);
     if (priceInitialized && priceRange[1] > 0) params.maxPrice = String(priceRange[1]);
+    if (conditionFilter !== "all") params.condition = conditionFilter;
     setSearchParams(params, { replace: true });
-  }, [debouncedSearch, category, selectedBrands, sortBy, selectedRAM, selectedStorage, priceRange, priceInitialized, setSearchParams]);
+  }, [debouncedSearch, category, selectedBrands, sortBy, selectedRAM, selectedStorage, priceRange, priceInitialized, conditionFilter, setSearchParams]);
 
   useEffect(() => { syncURL(); }, [syncURL]);
 
@@ -151,6 +153,7 @@ const Shop = () => {
       if (debouncedSearch && !p.name.toLowerCase().includes(debouncedSearch.toLowerCase())) return false;
       if (category && p.category !== category) return false;
       if (selectedBrands.length > 0 && !selectedBrands.includes(p.brand)) return false;
+      if (conditionFilter !== "all" && (p.condition || "new") !== conditionFilter) return false;
 
       // Variant-based filters: price range, RAM, storage
       const variants = p.variants || [];
@@ -175,10 +178,10 @@ const Shop = () => {
       case "rating": result.sort((a, b) => b.rating - a.rating); break;
     }
     return result;
-  }, [debouncedSearch, category, selectedBrands, selectedRAM, selectedStorage, priceRange, sortBy, products]);
+  }, [debouncedSearch, category, selectedBrands, selectedRAM, selectedStorage, priceRange, sortBy, conditionFilter, products]);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-16 md:pb-4">
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-4">
       <PageMeta title="Shop" description="Browse all smartphones and laptops at Aaro Systems. Filter by brand, price, RAM, and storage." />
       <div className="flex items-center gap-4 mb-6">
         <button
@@ -222,7 +225,7 @@ const Shop = () => {
           </select>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden h-full flex items-center justify-center gap-2 px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/5 transition-all"
+            className="md:hidden h-full min-h-[44px] flex items-center justify-center gap-2 px-4 rounded-xl border border-border bg-card text-primary hover:bg-primary/5 transition-all"
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span className="text-[11px] font-black uppercase tracking-widest">Filters</span>
@@ -242,7 +245,7 @@ const Shop = () => {
           )}
           {category && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-primary/20 text-xs font-bold text-foreground shadow-sm">
-              Category: {category === "phone" ? "Phones" : "Laptops"}
+              Category: {category === "phone" ? "Phones" : category === "accessory" ? "Accessories" : "Laptops"}
               <button aria-label="Clear category filter" onClick={() => handleCategoryChange("")} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
             </div>
           )}
@@ -270,20 +273,33 @@ const Shop = () => {
               <button aria-label="Clear price filter" onClick={() => setPriceRange([minPrice, maxPrice])} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
             </div>
           )}
-          <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); }} className="text-[11px] uppercase font-black tracking-widest text-muted-foreground hover:text-red-500 ml-2 transition-colors">
+          <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); setConditionFilter("all"); }} className="text-[11px] uppercase font-black tracking-widest text-muted-foreground hover:text-red-500 ml-2 transition-colors">
             Clear All
           </button>
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Sidebar Filters */}
-        <aside className={`${showFilters ? "block" : "hidden"} lg:block w-full lg:w-64 shrink-0`}>
-          <div className="glass-card rounded-2xl p-6 space-y-8 lg:sticky lg:top-24 border border-white/40 shadow-xl shadow-primary/5">
+        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 shrink-0`}>
+          <div className="glass-card rounded-2xl p-6 space-y-8 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5">
+            {/* Condition Filter */}
+            <div>
+              <h3 className="font-black text-foreground text-xs uppercase tracking-widest mb-4 border-b border-primary/10 pb-2">Condition</h3>
+              <div className="flex flex-wrap gap-2">
+                {[{ label: "All", value: "all" }, { label: "New", value: "new" }, { label: "Refurbished", value: "refurbished" }].map(c => (
+                  <button key={c.value} onClick={() => setConditionFilter(c.value)}
+                    className={`px-4 py-2 min-h-[36px] rounded-full text-xs font-bold transition-all border ${conditionFilter === c.value ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50"}`}>
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <h3 className="font-black text-foreground text-xs uppercase tracking-widest mb-4 border-b border-primary/10 pb-2">Category</h3>
               <div className="space-y-3">
-                {[{ label: "All Products", value: "" }, { label: "Phones", value: "phone" }, { label: "Laptops", value: "laptop" }].map((c) => (
+                {[{ label: "All Products", value: "" }, { label: "Phones", value: "phone" }, { label: "Laptops", value: "laptop" }, { label: "Accessories", value: "accessory" }].map((c) => (
                   <label key={c.value} className="flex items-center gap-3 text-sm cursor-pointer group">
                     <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${category === c.value ? "bg-primary border-primary" : "border-border group-hover:border-primary/50"}`}>
                       {category === c.value && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -358,7 +374,7 @@ const Shop = () => {
                     <button
                       key={r}
                       onClick={() => toggleRAM(r)}
-                      className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all ${selectedRAM.includes(r) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+                      className={`px-3 py-2 min-h-[36px] rounded-lg border text-xs font-bold transition-all ${selectedRAM.includes(r) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
                     >
                       {r} <span className="opacity-60">({ramCounts[r] || 0})</span>
                     </button>
@@ -376,7 +392,7 @@ const Shop = () => {
                     <button
                       key={s}
                       onClick={() => toggleStorage(s)}
-                      className={`px-3 py-2 rounded-lg border text-xs font-bold transition-all ${selectedStorage.includes(s) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
+                      className={`px-3 py-2 min-h-[36px] rounded-lg border text-xs font-bold transition-all ${selectedStorage.includes(s) ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"}`}
                     >
                       {s} <span className="opacity-60">({storageCounts[s] || 0})</span>
                     </button>
@@ -395,7 +411,7 @@ const Shop = () => {
           </p>
 
           {dataLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
                   <div className="aspect-square bg-secondary/50" />
@@ -408,19 +424,19 @@ const Shop = () => {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} onQuickView={() => setQuickViewProduct(p)} />
               ))}
             </div>
           ) : (
-            <div className="bg-card/50 backdrop-blur-sm rounded-3xl p-8 md:p-20 text-center border border-dashed border-border">
+            <div className="bg-card/50 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-16 lg:p-20 text-center border border-dashed border-border">
               <div className="w-12 h-12 md:w-16 md:h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
               </div>
               <h3 className="text-xl font-bold text-foreground mb-1">No products found</h3>
               <p className="text-muted-foreground">Try adjusting your filters or search terms.</p>
-              <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); }} className="mt-6 text-primary font-bold hover:underline">Clear all filters</button>
+              <button onClick={() => { setSearch(""); setCategory(""); setSelectedBrands([]); setSelectedRAM([]); setSelectedStorage([]); setPriceRange([minPrice, maxPrice]); setConditionFilter("all"); }} className="mt-6 text-primary font-bold hover:underline">Clear all filters</button>
             </div>
           )}
         </div>

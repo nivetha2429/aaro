@@ -189,7 +189,7 @@ const ProductDetails = () => {
       `🛒 *Order Enquiry — AARO*`,
       ``,
       `📦 *${product.name}*`,
-      `🏷️ Brand: ${product.brand}  |  Category: ${product.category === "phone" ? "Smartphone" : "Laptop"}`,
+      `🏷️ Brand: ${product.brand}  |  Category: ${product.category === "phone" ? "Smartphone" : product.category === "accessory" ? "Accessory" : "Laptop"}`,
       ``,
       `⚙️ *Selected Configuration:*`,
       `  • RAM: ${selectedRAM}`,
@@ -251,7 +251,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-16 lg:pb-4">
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
         title={product.name}
         description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}
@@ -277,9 +277,9 @@ const ProductDetails = () => {
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 items-start">
         {/* ── Image Gallery ── */}
-        <div className="space-y-4 animate-fade-in lg:sticky lg:top-24">
+        <div className="space-y-4 animate-fade-in md:sticky md:top-24">
           <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
             {hasImages ? (
@@ -290,6 +290,18 @@ const ProductDetails = () => {
                 {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
               </div>
             )}
+            {/* Condition badge — top-left */}
+            <div className="absolute top-3 left-3 sm:top-6 sm:left-6 z-10">
+              {(product.condition || "new") === "new" ? (
+                <div className="bg-green-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm sm:rounded-2xl font-black text-xs sm:text-sm shadow-xl">
+                  New
+                </div>
+              ) : (
+                <div className="bg-amber-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm sm:rounded-2xl font-black text-xs sm:text-sm shadow-xl">
+                  Refurbished
+                </div>
+              )}
+            </div>
             {discount > 0 && (
               <div className="absolute top-3 right-3 sm:top-6 sm:right-6 gradient-offer text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-sm sm:rounded-2xl font-black text-xs sm:text-sm shadow-xl">
                 -{discount}%
@@ -311,12 +323,19 @@ const ProductDetails = () => {
 
         {/* ── Product Info ── */}
         <div className="animate-slide-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary mb-4 border border-primary/20">
-            <Tag className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-black uppercase tracking-wider">{product.brand} · {product.category === "phone" ? "Smartphone" : "Laptop"}</span>
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+              <Tag className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-black uppercase tracking-wider">{product.brand} · {product.category === "phone" ? "Smartphone" : product.category === "accessory" ? "Accessory" : "Laptop"}</span>
+            </div>
+            {product.condition === "refurbished" && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                <span className="text-[11px] font-black uppercase tracking-wider">Refurbished</span>
+              </div>
+            )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 leading-tight tracking-tight drop-shadow-sm">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 leading-tight tracking-tight drop-shadow-sm">
             {product.name}
           </h1>
 
@@ -332,7 +351,7 @@ const ProductDetails = () => {
           </div>
 
           <div className="flex items-baseline gap-4 mb-2 animate-fade-in" key={currentPrice}>
-            <span className="text-3xl sm:text-4xl md:text-5xl font-black text-primary tracking-tighter">₹{currentPrice.toLocaleString()}</span>
+            <span className="text-2xl sm:text-3xl md:text-4xl font-black text-primary tracking-tighter">₹{currentPrice.toLocaleString()}</span>
             {currentMRP > currentPrice && (
               <span className="text-base sm:text-xl text-muted-foreground line-through opacity-50">₹{currentMRP.toLocaleString()}</span>
             )}
@@ -419,6 +438,14 @@ const ProductDetails = () => {
                 })}
               </div>
             </div>
+
+            {/* Condition label */}
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-[11px] font-black uppercase text-muted-foreground tracking-widest">Condition:</span>
+              <span className={`text-xs font-black uppercase tracking-wider ${(product.condition || "new") === "new" ? "text-green-600" : "text-amber-600"}`}>
+                {(product.condition || "new") === "new" ? "Brand New" : "Refurbished"}
+              </span>
+            </div>
           </div>
 
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-8 max-w-xl">{product.description}</p>
@@ -459,15 +486,15 @@ const ProductDetails = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 mb-8">
+          <div className="flex flex-col gap-3 mb-8">
             <button onClick={handleAddToCart}
-              className={`flex-1 py-4 md:py-5 rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg shadow-xl shadow-primary/10 ${isAdded ? "bg-green-500 text-white shadow-green-500/20" : isAdmin ? "bg-gray-400 text-white cursor-not-allowed" : "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98]"}`}
+              className={`w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base shadow-xl shadow-primary/10 ${isAdded ? "bg-green-500 text-white shadow-green-500/20" : isAdmin ? "bg-gray-400 text-white cursor-not-allowed" : "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98]"}`}
               disabled={isAdded || isAdmin}>
-              {isAdded ? <><Check className="w-4 h-4 md:w-5 md:h-5" /> Added to Cart</> : isAdmin ? "ADMIN MODE" : <><ShoppingCart className="w-4 h-4 md:w-5 md:h-5" /> Add to Cart</>}
+              {isAdded ? <><Check className="w-5 h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-5 h-5" /> Admin Mode</> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
             </button>
             <button onClick={handleWhatsAppOrder}
-              className="flex-1 bg-[#25D366] text-white py-4 md:py-5 rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 md:gap-3 text-sm md:text-lg shadow-xl shadow-green-500/10 hover:opacity-90 hover:shadow-2xl hover:shadow-green-500/30 hover:-translate-y-1 active:scale-[0.98]">
-              <MessageCircle className="w-4 h-4 md:w-5 md:h-5" /> Order on WhatsApp
+              className="w-full bg-[#25D366] text-white py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base shadow-xl shadow-green-500/10 hover:opacity-90 hover:shadow-2xl hover:shadow-green-500/30 hover:-translate-y-1 active:scale-[0.98]">
+              <MessageCircle className="w-5 h-5" /> Order on WhatsApp
             </button>
           </div>
 
@@ -548,7 +575,7 @@ const ProductDetails = () => {
             <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
               <Tag className="w-6 h-6 text-primary" /> You May Also Like
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
               {related.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
@@ -561,7 +588,7 @@ const ProductDetails = () => {
           <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
             <Clock className="w-6 h-6 text-primary" /> Recently Viewed
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
             {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>

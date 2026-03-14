@@ -11,7 +11,7 @@ const Offers = () => {
   const displayOffers = offers.filter(o => o.title !== "__popup__");
 
   return (
-    <div className="min-h-screen pb-24 md:pb-0">
+    <div className="min-h-screen pb-24 lg:pb-0">
       <PageMeta title="Offers & Deals" description="Grab the latest deals and discounts on smartphones, laptops, and accessories at Aaro Systems." />
 
       {/* Hero Section */}
@@ -28,7 +28,7 @@ const Offers = () => {
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Exclusive Deals</span>
               </div>
-              <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white mb-2 sm:mb-4 leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-black text-white mb-2 sm:mb-4 leading-tight">
                 Summer <span className="text-primary italic">Spectacular</span>
               </h1>
               <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/80 max-w-sm">
@@ -40,7 +40,7 @@ const Offers = () => {
       </section>
 
       {/* Offers Grid */}
-      <div className="container mx-auto px-2 sm:px-4 -mt-6 sm:-mt-10 mb-12 sm:mb-16 relative z-10">
+      <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 -mt-6 sm:-mt-10 mb-12 sm:mb-16 relative z-10">
         {displayOffers.length > 0 ? (
           <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {displayOffers.map((offer) => (

@@ -36,7 +36,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
 
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [formData, setFormData] = useState<Partial<Product>>({ category: "phone", rating: 4.5, featured: false, features: [], images: [] });
+  const [formData, setFormData] = useState<Partial<Product>>({ category: "phone", rating: 4.5, featured: false, features: [], images: [], condition: "new" });
   const [specsData, setSpecsData] = useState<any>(emptySpecs());
   const [featuresInput, setFeaturesInput] = useState("");
   const [imagesInput, setImagesInput] = useState<string[]>([]);
@@ -107,7 +107,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
   };
 
   const handleAddVariant = () => {
-    setCurrentVariants([...currentVariants, { ram: "", storage: "", color: "", price: 0, originalPrice: 0, stock: 0, isAvailable: true }]);
+    setCurrentVariants([...currentVariants, { ram: "", storage: "", color: "", price: 0, originalPrice: 0, stock: 0, isAvailable: true, condition: "new" as const }]);
   };
 
   const handleRemoveVariant = (index: number) => {
@@ -443,6 +443,18 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                   </div>
                   {formData.tag && <p className="text-[10px] text-[#7a869a] ml-1">Tag <span className="font-black text-primary">{formData.tag}</span> will appear as a badge on the product card.</p>}
                 </div>
+                {/* Condition */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-[#7a869a] tracking-widest ml-1">Product Condition</label>
+                  <div className="flex gap-2">
+                    {[{ label: "New", value: "new" }, { label: "Refurbished", value: "refurbished" }].map(c => (
+                      <button key={c.value} type="button" onClick={() => setFormData({ ...formData, condition: c.value as 'new' | 'refurbished' })}
+                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${(formData.condition || "new") === c.value ? c.value === "new" ? "bg-green-500 text-white border-green-500 shadow-md" : "bg-amber-500 text-white border-amber-500 shadow-md" : "bg-white text-[#7a869a] border-[#eaedf3] hover:border-primary/30"}`}>
+                        {c.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Variants */}
@@ -456,7 +468,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                     <thead>
                       <tr className="border-b border-gray-50 text-[9px] font-black uppercase text-[#7a869a] tracking-widest">
                         <th className="pb-3 px-2">RAM</th><th className="pb-3 px-2">Storage</th><th className="pb-3 px-2">Color</th>
-                        <th className="pb-3 px-2">Price (₹)</th><th className="pb-3 px-2">MRP (₹)</th><th className="pb-3 px-2">Stock</th><th className="pb-3 text-right"></th>
+                        <th className="pb-3 px-2">Price (₹)</th><th className="pb-3 px-2">MRP (₹)</th><th className="pb-3 px-2">Stock</th><th className="pb-3 px-2">Condition</th><th className="pb-3 text-right"></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
@@ -468,6 +480,12 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                           <td className="py-3 px-2"><input type="number" value={variant.price || ""} onChange={e => handleVariantChange(idx, "price" as any, Number(e.target.value))} placeholder="0" className="w-20 h-8 text-xs font-bold border border-gray-200 bg-white focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-lg transition-all px-2" /></td>
                           <td className="py-3 px-2"><input type="number" value={variant.originalPrice || ""} onChange={e => handleVariantChange(idx, "originalPrice" as any, Number(e.target.value))} placeholder="0" className="w-20 h-8 text-xs font-bold border border-gray-200 bg-white focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-lg transition-all px-2" /></td>
                           <td className="py-3 px-2"><input type="number" value={variant.stock || ""} onChange={e => handleVariantChange(idx, "stock" as any, Number(e.target.value))} placeholder="0" className="w-16 h-8 text-xs font-bold border border-gray-200 bg-white focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-lg transition-all px-2" /></td>
+                          <td className="py-3 px-2">
+                            <select value={variant.condition || "new"} onChange={e => handleVariantChange(idx, "condition" as any, e.target.value)} className="w-24 h-8 text-xs font-bold border border-gray-200 bg-white focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-lg transition-all px-1.5">
+                              <option value="new">New</option>
+                              <option value="refurbished">Refurbished</option>
+                            </select>
+                          </td>
                           <td className="py-3 text-right"><Button variant="ghost" size="icon" onClick={() => handleRemoveVariant(idx)} className="h-8 w-8 rounded-lg text-destructive bg-destructive/10 hover:bg-destructive hover:text-white transition-all"><Trash2 className="w-4 h-4" /></Button></td>
                         </tr>
                       ))}

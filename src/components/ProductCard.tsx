@@ -47,7 +47,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
   };
 
   return (
-    <div className="glass-card rounded-sm sm:rounded-3xl p-[5px] sm:p-3 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect overflow-hidden">
+    <div className="glass-card rounded-sm sm:rounded-3xl p-1 sm:p-2 md:p-3 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect overflow-hidden">
       <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden rounded-sm sm:rounded-2xl mb-1 sm:mb-3 w-full">
         <div className="w-full h-full bg-secondary/30 flex items-center justify-center relative">
           {product.images && product.images.length > 0 ? (
@@ -74,8 +74,20 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
           )}
         </div>
 
+        {/* Condition badge — top-left overlay on image */}
+        <div className="absolute top-1.5 sm:top-3 left-1.5 sm:left-3 z-10">
+          {(product.condition || "new") === "new" ? (
+            <div className="bg-green-500 text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
+              New
+            </div>
+          ) : (
+            <div className="bg-amber-500 text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
+              Refurbished
+            </div>
+          )}
+        </div>
         {product.tag && (
-          <div className="absolute top-1.5 sm:top-3 left-1.5 sm:left-3 bg-primary text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
+          <div className="absolute top-7 sm:top-10 left-1.5 sm:left-3 bg-primary text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase z-10">
             {product.tag}
           </div>
         )}
@@ -124,7 +136,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
 
           <button
             onClick={handleAddToCart}
-            className={`w-full py-2 sm:py-2.5 rounded-sm sm:rounded-full text-[11px] sm:text-xs font-black transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 border border-white/10 ${isAdded
+            className={`w-full py-2.5 sm:py-3 min-h-[44px] rounded-sm sm:rounded-full text-[11px] sm:text-xs font-black transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 border border-white/10 ${isAdded
               ? "bg-green-500 text-white shadow-lg shadow-green-500/20"
               : isAdmin
                 ? "bg-gray-400 text-white cursor-not-allowed opacity-80"

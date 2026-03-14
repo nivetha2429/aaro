@@ -255,10 +255,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const deleteProduct = async (id: string) => {
-        await guardedFetch(`${API_URL}/products/${id}`, {
+        const res = await guardedFetch(`${API_URL}/products/${id}`, {
             method: "DELETE",
             headers: authHeaders(),
         });
+        if (!res.ok) throw new Error((await res.json()).message);
         await fetchProducts();
     };
 

@@ -57,7 +57,14 @@ router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
         const parsed = offerSchema.partial().safeParse(raw);
         if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
         if (parsed.data.active) {
-            await Offer.updateMany({ _id: { $ne: req.params.id } }, { active: false });
+            const existing = await Offer.findById(req.params.id);
+            if (existing) {
+                if (existing.title === '__popup__') {
+                    await Offer.updateMany({ _id: { $ne: req.params.id }, title: '__popup__' }, { active: false });
+                } else {
+                    await Offer.updateMany({ _id: { $ne: req.params.id }, title: { $ne: '__popup__' } }, { active: false });
+                }
+            }
         }
         const updated = await Offer.findByIdAndUpdate(req.params.id, parsed.data, { new: true });
         if (!updated) return res.status(404).json({ message: 'Offer not found' });

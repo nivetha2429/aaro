@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 const MyOrders = () => {
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const { token, isAuthenticated } = useAuth();
+    const { token, isAuthenticated, logout } = useAuth();
 
     useEffect(() => {
         if (isAuthenticated) fetchOrders();
@@ -19,13 +19,18 @@ const MyOrders = () => {
             const response = await fetch(`${API_URL}/orders`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (response.status === 401) {
+                toast.error("Session expired. Please login again.");
+                logout();
+                return;
+            }
             const data = await response.json();
             if (response.ok) {
                 setOrders(data);
             } else {
-                toast.error("Failed to load orders");
+                toast.error(data.message || "Failed to load orders");
             }
-        } catch (err) {
+        } catch {
             toast.error("Connection error");
         } finally {
             setLoading(false);
@@ -45,7 +50,7 @@ const MyOrders = () => {
     if (loading) return <div className="container mx-auto p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6 max-w-4xl animate-fade-in">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-foreground">My Orders</h1>
 
             {orders.length === 0 ? (

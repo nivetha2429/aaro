@@ -24,6 +24,7 @@ const productSchema = new mongoose.Schema({
     featured: { type: Boolean, default: false },
     isTrending: { type: Boolean, default: false },
     tag: { type: String, default: '' },
+    condition: { type: String, enum: ['new', 'refurbished'], default: 'new' },
 }, { timestamps: true });
 
 // Indexes for fast product lookups

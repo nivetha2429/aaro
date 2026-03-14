@@ -56,6 +56,8 @@ router.post('/login', authLimiter, async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
+        if (user.isActive === false) return res.status(403).json({ message: 'Account has been deactivated. Contact support.' });
+
         res.json({ token: sign(user), user: safeUser(user) });
     } catch {
         res.status(500).json({ message: 'Login failed' });

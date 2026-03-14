@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones } from "lucide-react";
+import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones, Phone, Users } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
@@ -76,7 +76,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setIsMenuOpen(false);
         setIsSearchOpen(false);
       }
@@ -93,13 +93,13 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500">
-      <div className="container mx-auto px-2 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img
             src={logo}
             alt="AARO Systems Logo"
-            className="h-16 sm:h-18 md:h-20 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-12 sm:h-14 lg:h-16 xl:h-18 w-auto max-w-[120px] sm:max-w-[140px] lg:max-w-none object-contain transition-transform group-hover:scale-105"
             onError={(e) => {
               if (!e.currentTarget.dataset.fallback) {
                 e.currentTarget.dataset.fallback = "true";
@@ -110,15 +110,17 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6 lg:gap-8 ml-4 lg:ml-8">
-          <Link to="/" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Home</Link>
-          <Link to="/laptops" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Laptops</Link>
-          <Link to="/phones" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Phones</Link>
-          <Link to="/accessories" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Accessory</Link>
-          <Link to="/brands" className="text-sm font-bold text-muted-foreground hover:text-primary transition-all">Brands</Link>
+        <nav className="hidden lg:flex items-center gap-3 lg:gap-4 xl:gap-6 ml-4 lg:ml-6 xl:ml-8">
+          <Link to="/" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Home</Link>
+          <Link to="/laptops" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Laptops</Link>
+          <Link to="/phones" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Phones</Link>
+          <Link to="/accessories" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Accessory</Link>
+          <Link to="/brands" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Brands</Link>
+          <Link to="/community" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Community</Link>
+          <Link to="/contact" className="text-xs lg:text-sm font-bold text-muted-foreground hover:text-primary transition-all whitespace-nowrap">Contact</Link>
         </nav>
 
-        <div className="flex-1 max-w-xs md:max-w-sm lg:max-w-lg xl:max-w-xl hidden md:flex relative">
+        <div className="flex-1 max-w-xs lg:max-w-sm xl:max-w-lg 2xl:max-w-xl hidden lg:flex relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
           <input
             type="text"
@@ -176,13 +178,16 @@ const Navbar = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2">
-          <button aria-label="Open search" className="md:hidden p-2 text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <button aria-label="Open menu" className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-primary" onClick={() => setIsMenuOpen(true)}>
+            <Menu className="w-5 h-5" />
+          </button>
+          <button aria-label="Open search" className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
             <Search className="w-5 h-5" />
           </button>
 
           {!isAdmin && (
-            <Link to="/cart" aria-label={`Cart (${totalItems} items)`} className="p-2 text-muted-foreground hover:text-primary relative group">
+            <Link to="/cart" aria-label={`Cart (${totalItems} items)`} className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-primary relative group">
               <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
@@ -192,7 +197,7 @@ const Navbar = () => {
             </Link>
           )}
 
-          <div className="h-6 w-px bg-border mx-1" />
+          <div className="h-6 w-px bg-border mx-0.5 sm:mx-1" />
 
           {!isAuthenticated ? (
             <Link to="/login" className="flex items-center gap-2 px-4 py-2 rounded-full border border-border hover:bg-secondary transition-all">
@@ -243,7 +248,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay & Sidebar */}
       <div
-        className={`fixed inset-0 z-[100] md:hidden ${isMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        className={`fixed inset-0 z-[100] lg:hidden ${isMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
       >
         {/* Backdrop */}
         <div
@@ -276,6 +281,8 @@ const Navbar = () => {
                 { label: "Phones", path: "/phones", icon: Smartphone },
                 { label: "Accessory", path: "/accessories", icon: Headphones },
                 { label: "Brands", path: "/brands", icon: Tag },
+                { label: "Community", path: "/community", icon: Users },
+                { label: "Contact", path: "/contact", icon: Phone },
               ].map((link) => (
                 <Link
                   key={link.path}
@@ -345,7 +352,7 @@ const Navbar = () => {
 
       {/* Mobile Search Overlay */}
       <div
-        className={`fixed inset-0 z-[110] bg-white/80 backdrop-blur-2xl transition-all duration-300 md:hidden ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
+        className={`fixed inset-0 z-[110] bg-white/80 backdrop-blur-2xl transition-all duration-300 lg:hidden ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
       >
         <div className="p-6 flex flex-col h-full">
           <div className="flex items-center justify-between mb-8">

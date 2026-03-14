@@ -108,20 +108,20 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       {/* Backdrop */}
       <div aria-hidden="true" className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
 
       {/* Modal */}
       <div
-        className="relative bg-background rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
+        className="relative bg-background rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           aria-label="Close quick view"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-secondary/80 hover:bg-secondary transition-colors border border-border"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-secondary/80 hover:bg-secondary transition-colors border border-border"
         >
           <X className="w-4 h-4 text-foreground" />
         </button>
@@ -272,7 +272,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
               <button
                 onClick={handleAddToCart}
                 disabled={isAdded || isAdmin}
-                className={`w-full py-3 rounded-full font-black text-sm transition-all flex items-center justify-center gap-2 ${isAdded
+                className={`w-full py-3 min-h-[44px] rounded-full font-black text-sm transition-all flex items-center justify-center gap-2 ${isAdded
                   ? "bg-green-500 text-white"
                   : isAdmin
                     ? "bg-gray-400 text-white cursor-not-allowed"
@@ -285,7 +285,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
               <Link
                 to={`/product/${product.id}`}
                 onClick={onClose}
-                className="w-full py-2.5 rounded-full font-bold text-sm border border-border text-foreground hover:bg-secondary/50 transition-all flex items-center justify-center gap-2"
+                className="w-full py-2.5 min-h-[44px] rounded-full font-bold text-sm border border-border text-foreground hover:bg-secondary/50 transition-all flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-3.5 h-3.5" /> View Full Details
               </Link>

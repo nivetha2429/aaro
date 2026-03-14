@@ -47,7 +47,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 pb-24 md:pb-12 animate-fade-in">
+        <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 pb-24 lg:pb-12 animate-fade-in">
             <PageMeta title="Register" description="Create your Aaro Systems account and start shopping." />
             <div className="bg-card rounded-2xl p-8 shadow-soft w-full max-w-sm border border-border">
                 <div className="w-14 h-14 rounded-xl gradient-dark mx-auto flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20">
@@ -119,7 +119,7 @@ const Register = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full gradient-dark text-white py-3 rounded-xl font-bold hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-slate-900/10 disabled:opacity-50"
+                        className="w-full gradient-dark text-white py-3 min-h-[44px] rounded-xl font-bold text-sm hover:opacity-90 transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-slate-900/10 disabled:opacity-50"
                     >
                         {loading ? "Creating Account..." : "Register"}
                     </button>

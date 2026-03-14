@@ -9,7 +9,8 @@ const variantSchema = new mongoose.Schema({
     originalPrice: { type: Number, required: true },
     stock: { type: Number, default: 0 },
     sku: { type: String },
-    isAvailable: { type: Boolean, default: true }
+    isAvailable: { type: Boolean, default: true },
+    condition: { type: String, enum: ['new', 'refurbished'], default: 'new' }
 }, { timestamps: true });
 
 // Prevent duplicate RAM + Storage + Color combinations for the same product

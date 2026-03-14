@@ -33,7 +33,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6">
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
 
       {/* Header */}
@@ -47,9 +47,9 @@ const Cart = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-start">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-3">
+        <div className="md:col-span-2 space-y-3">
           {items.map((item) => (
             <div key={`${item.product.id}-${item.ram}-${item.storage}-${item.color}`} className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-3 sm:p-4 flex gap-3 sm:gap-4 group hover:shadow-md transition-shadow">
               {/* Product Image */}
@@ -92,7 +92,7 @@ const Cart = () => {
                     <button
                       aria-label={`Decrease quantity of ${item.product.name}`}
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1, item.ram, item.storage, item.color)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-l-lg text-muted-foreground hover:text-foreground transition-colors"
+                      className="w-9 h-9 sm:w-8 sm:h-8 min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-white rounded-l-lg text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
@@ -100,7 +100,7 @@ const Cart = () => {
                     <button
                       aria-label={`Increase quantity of ${item.product.name}`}
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1, item.ram, item.storage, item.color)}
-                      className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-r-lg text-muted-foreground hover:text-foreground transition-colors"
+                      className="w-9 h-9 sm:w-8 sm:h-8 min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-white rounded-r-lg text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -119,7 +119,7 @@ const Cart = () => {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-5 sm:p-6 h-fit lg:sticky lg:top-24">
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-5 sm:p-6 h-fit md:sticky md:top-24">
           <h3 className="text-lg font-bold text-foreground mb-5">Order Summary</h3>
 
           <div className="space-y-3 mb-5">
@@ -139,7 +139,7 @@ const Cart = () => {
 
           <Link
             to="/order"
-            className="block w-full gradient-purple text-primary-foreground py-3.5 rounded-xl font-bold text-center shadow-lg shadow-primary/20 hover:opacity-95 active:scale-[0.98] transition-all"
+            className="block w-full gradient-purple text-primary-foreground py-3.5 min-h-[44px] rounded-xl font-bold text-sm text-center shadow-lg shadow-primary/20 hover:opacity-95 active:scale-[0.98] transition-all"
           >
             Proceed to Checkout
           </Link>

@@ -30,7 +30,7 @@ const CustomerDashboard = () => {
     ];
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 pb-24 md:pb-6 animate-fade-in">
+        <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">

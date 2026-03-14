@@ -91,11 +91,11 @@ const Brands = () => {
   );
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-10 pb-24 md:pb-10">
+    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10">
       <PageMeta title="Brands" description="Browse all brands available at Aaro Systems. Premium tech from trusted manufacturers." />
       {/* Header */}
       <div className="mb-12 text-center animate-slide-up">
-        <h1 className="text-2xl sm:text-4xl md:text-6xl font-black animate-shimmer mb-4 tracking-tighter">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black animate-shimmer mb-4 tracking-tighter">
           Our Brands
         </h1>
         <p className="text-muted-foreground text-xs sm:text-sm md:text-base max-w-lg mx-auto">

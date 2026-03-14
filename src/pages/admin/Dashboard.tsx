@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag } from "lucide-react";
+import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -11,6 +11,7 @@ import FeaturedTab from "./FeaturedTab";
 import OffersTab from "./OffersTab";
 import BannersTab from "./BannersTab";
 import OrdersTab from "./OrdersTab";
+import UsersTab from "./UsersTab";
 
 const SIDEBAR_ITEMS = [
   { id: "overview", icon: LayoutDashboard, label: "Overview" },
@@ -20,6 +21,7 @@ const SIDEBAR_ITEMS = [
   { id: "featured", icon: Star, label: "Featured" },
   { id: "offers", icon: Tag, label: "Popup Offer" },
   { id: "banners", icon: Image, label: "Banners" },
+  { id: "users", icon: Users, label: "Users" },
 ];
 
 const AdminDashboard = () => {
@@ -89,7 +91,7 @@ const AdminDashboard = () => {
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
         <header className="h-12 xl:h-14 bg-white border-b border-[#eaedf3] px-3 sm:px-4 xl:px-8 flex items-center justify-between shrink-0 sticky top-0 z-30">
           <div className="flex items-center gap-2 sm:gap-3">
-            <button onClick={() => setIsSidebarOpen(true)} className={`xl:hidden p-1.5 text-[#a3acb9] hover:bg-secondary rounded-xl ${isSidebarOpen ? 'hidden' : 'block'}`}>
+            <button onClick={() => setIsSidebarOpen(true)} className={`xl:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#a3acb9] hover:bg-secondary rounded-xl ${isSidebarOpen ? 'hidden' : 'block'}`}>
               <Menu className="w-5 h-5" />
             </button>
             <h2 className="text-sm sm:text-base font-bold text-[#1a1f36] capitalize">{activeTab}</h2>
@@ -129,6 +131,7 @@ const AdminDashboard = () => {
             {activeTab === "featured" && <FeaturedTab />}
             {activeTab === "offers" && <OffersTab />}
             {activeTab === "banners" && <BannersTab />}
+            {activeTab === "users" && <UsersTab />}
           </div>
         </div>
       </main>

@@ -33,7 +33,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const CustomerDashboard = lazy(() => import("./pages/CustomerDashboard"));
 const Brands = lazy(() => import("./pages/Brands"));
-const Elite = lazy(() => import("./pages/Elite"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Community = lazy(() => import("./pages/Community"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Global error boundary — prevents white-screen crashes
@@ -102,7 +103,7 @@ const ScrollToTop = () => {
   return null;
 };
 
-const ICON_PAGES = ["/", "/phones", "/laptops", "/accessories", "/brands"];
+const ICON_PAGES = ["/", "/phones", "/laptops", "/accessories", "/brands", "/contact", "/community"];
 
 const AppContents = () => {
   const location = useLocation();
@@ -142,7 +143,10 @@ const AppContents = () => {
                 <Route path="/my-orders" element={<ProtectedRoute><MyOrders /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
-                <Route path="/elite" element={<Elite />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/elite" element={<Navigate to="/community" replace />} />
+                <Route path="/whatsapp-group" element={<Navigate to="/community" replace />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
