@@ -6,7 +6,14 @@ const orderSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
-    items: { type: Array, required: true },
+    items: [{
+        product: { type: Object, required: true },
+        quantity: { type: Number, required: true, min: 1 },
+        price: { type: Number, required: true, min: 0 },
+        ram: { type: String },
+        storage: { type: String },
+        color: { type: String }
+    }],
     totalAmount: { type: Number, required: true },
     shippingAddress: { type: String, required: true },
     status: {
@@ -19,5 +26,6 @@ const orderSchema = new mongoose.Schema({
 // Indexes for fast order lookups
 orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ status: 1 });
+orderSchema.index({ createdAt: -1 });
 
 export default mongoose.model("Order", orderSchema);

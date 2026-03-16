@@ -12,6 +12,8 @@ import {
     Variant,
     Brand,
     Banner,
+    ContactSettings,
+    DEFAULT_CONTACT,
 } from "@/data/products";
 
 interface DataContextType {
@@ -50,18 +52,13 @@ interface DataContextType {
     updateVariant: (variant: Variant) => Promise<void>;
     deleteVariant: (id: string) => Promise<void>;
     fetchMyOrders: () => Promise<any[]>;
+    contactSettings: ContactSettings;
+    updateContactSettings: (settings: ContactSettings) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
-
-const getToken = () => localStorage.getItem("aaro_token");
-
-const authHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${getToken()}`,
-});
 
 // Normalize image URLs: convert any stored absolute localhost URL to a relative path
 // so they work regardless of which port the server was on when they were uploaded.
@@ -74,9 +71,20 @@ const normalizeImageUrl = (url: string): string => {
     return url;
 };
 
+// Module-level variable to track token refresh in progress
+let refreshPromise: Promise<any> | null = null;
+
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-    const { logout } = useAuth();
+    const { logout, login, token: authToken } = useAuth();
     const navigate = useNavigate();
+
+    // Get token from AuthContext (memory) only - no localStorage fallback
+    const getToken = () => authToken;
+
+    const authHeaders = () => ({
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${getToken()}`,
+    });
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
     const [brands, setBrands] = useState<Brand[]>([]);
@@ -85,6 +93,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [reviews, setReviews] = useState<Review[]>([]);
     const [models, setModels] = useState<ProductModel[]>([]);
     const [activeOffer, setActiveOffer] = useState<Offer | null>(null);
+    const [contactSettings, setContactSettings] = useState<ContactSettings>(DEFAULT_CONTACT);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -104,14 +113,83 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             handleUnauthorized();
             throw new Error("__SESSION_EXPIRED__");
         }
-        const res = await fetch(input, init);
+        let res: Response;
+        try {
+            res = await fetch(input, { ...init, credentials: "include" });
+        } catch {
+            toast.error("Network error — check your internet connection");
+            throw new Error("__NETWORK_ERROR__");
+        }
+        // On 401, try to refresh the access token once before giving up
         if (res.status === 401) {
+            try {
+                // If refresh is already in progress, await it instead of starting a new one
+                if (refreshPromise) {
+                    const data = await refreshPromise;
+                    // Retry original request with refreshed token
+                    const retryInit = { ...init, credentials: "include" as RequestCredentials };
+                    if (!retryInit.headers) retryInit.headers = {};
+                    if (typeof retryInit.headers === "object") {
+                        (retryInit.headers as Record<string, string>).Authorization = `Bearer ${data.token}`;
+                    }
+                    const retryRes = await fetch(input, retryInit);
+                    if (!retryRes.ok && retryRes.status === 401) {
+                        handleUnauthorized();
+                        throw new Error("__SESSION_EXPIRED__");
+                    }
+                    return retryRes;
+                }
+
+                // Start new refresh if not already in progress
+                refreshPromise = (async () => {
+                    try {
+                        const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+                            method: "POST",
+                            credentials: "include",
+                        });
+                        if (refreshRes.ok) {
+                            const data = await refreshRes.json();
+                            // Update AuthContext with new token
+                            login(data.token, data.user);
+                            return data;
+                        }
+                        throw new Error("Refresh failed");
+                    } finally {
+                        refreshPromise = null;
+                    }
+                })();
+
+                const data = await refreshPromise;
+                // Retry original request with new token
+                const retryInit = { ...init, credentials: "include" as RequestCredentials };
+                if (!retryInit.headers) retryInit.headers = {};
+                if (typeof retryInit.headers === "object") {
+                    (retryInit.headers as Record<string, string>).Authorization = `Bearer ${data.token}`;
+                }
+                const retryRes = await fetch(input, retryInit);
+                if (!retryRes.ok && retryRes.status === 401) {
+                    handleUnauthorized();
+                    throw new Error("__SESSION_EXPIRED__");
+                }
+                return retryRes;
+            } catch { /* refresh failed */ }
             handleUnauthorized();
-            // Throw a special sentinel so callers don't show a second error toast
             throw new Error("__SESSION_EXPIRED__");
         }
+        if (res.status === 403) {
+            toast.error("Access denied");
+            navigate("/", { replace: true });
+            throw new Error("__FORBIDDEN__");
+        }
+        if (res.status === 429) {
+            toast.error("Too many requests — please wait and try again");
+            throw new Error("__RATE_LIMITED__");
+        }
+        if (res.status >= 500) {
+            toast.error("Server error — please try again later");
+        }
         return res;
-    }, [handleUnauthorized]);
+    }, [handleUnauthorized, login, navigate]);
 
     const mapProduct = (p: any): Product => ({
         ...p,
@@ -184,19 +262,35 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Fetch with a single retry on network failure
+    const fetchWithRetry = async (url: string): Promise<any> => {
+        try {
+            const res = await fetch(url);
+            if (res.ok) return await res.json();
+            throw new Error(`${res.status}`);
+        } catch (err) {
+            // One retry after 1s
+            await new Promise(r => setTimeout(r, 1000));
+            const res = await fetch(url);
+            if (res.ok) return await res.json();
+            throw new Error(`retry failed`);
+        }
+    };
+
     useEffect(() => {
         const loadAllData = async () => {
             setLoading(true);
             const results = await Promise.allSettled([
-                fetch(`${API_URL}/products`).then(r => r.ok ? r.json() : Promise.reject(`products ${r.status}`)),
-                fetch(`${API_URL}/categories`).then(r => r.ok ? r.json() : Promise.reject(`categories ${r.status}`)),
-                fetch(`${API_URL}/offers`).then(r => r.ok ? r.json() : Promise.reject(`offers ${r.status}`)),
-                fetch(`${API_URL}/products/models`).then(r => r.ok ? r.json() : Promise.reject(`models ${r.status}`)),
-                fetch(`${API_URL}/brands`).then(r => r.ok ? r.json() : Promise.reject(`brands ${r.status}`)),
-                fetch(`${API_URL}/banners`).then(r => r.ok ? r.json() : Promise.reject(`banners ${r.status}`)),
+                fetchWithRetry(`${API_URL}/products`),
+                fetchWithRetry(`${API_URL}/categories`),
+                fetchWithRetry(`${API_URL}/offers`),
+                fetchWithRetry(`${API_URL}/products/models`),
+                fetchWithRetry(`${API_URL}/brands`),
+                fetchWithRetry(`${API_URL}/banners`),
+                fetchWithRetry(`${API_URL}/contact-settings`),
             ]);
 
-            const [productsResult, categoriesResult, offersResult, modelsResult, brandsResult, bannersResult] = results;
+            const [productsResult, categoriesResult, offersResult, modelsResult, brandsResult, bannersResult, contactResult] = results;
 
             if (productsResult.status === 'fulfilled' && Array.isArray(productsResult.value))
                 setProducts(productsResult.value.map(mapProduct));
@@ -227,6 +321,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (bannersResult.status === 'fulfilled' && Array.isArray(bannersResult.value))
                 setBanners(bannersResult.value.map(mapBanner));
             else console.error("Banners fetch failed:", bannersResult.status === 'rejected' ? bannersResult.reason : 'not array');
+
+            if (contactResult.status === 'fulfilled' && contactResult.value && contactResult.value.phone !== undefined)
+                setContactSettings({ ...DEFAULT_CONTACT, ...contactResult.value });
+            else console.error("Contact settings fetch failed:", contactResult.status === 'rejected' ? contactResult.reason : 'empty');
 
             setLoading(false);
         };
@@ -475,6 +573,18 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await fetchProducts();
     };
 
+    // ── Contact Settings ──
+    const updateContactSettings = async (settings: ContactSettings) => {
+        const res = await guardedFetch(`${API_URL}/contact-settings`, {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify(settings),
+        });
+        if (!res.ok) throw new Error((await res.json()).message);
+        const updated = await res.json();
+        setContactSettings({ ...DEFAULT_CONTACT, ...updated });
+    };
+
     const fetchMyOrders = async () => {
         try {
             const res = await guardedFetch(`${API_URL}/orders`, {
@@ -525,6 +635,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 updateVariant,
                 deleteVariant,
                 fetchMyOrders,
+                contactSettings,
+                updateContactSettings,
             }}
         >
             {children}

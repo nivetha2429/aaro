@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Trash2, Plus, X, Tag, Layers, Pencil, Loader2, Upload } from "lucide-react";
 import { useData } from "@/context/DataContext";
+import { useAuth } from "@/context/AuthContext";
 import { Category, Brand } from "@/data/products";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -18,6 +19,7 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
   const [imgSrc, setImgSrc] = useState(brand.image || "");
   const [imgError, setImgError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (brand.image) { setImgSrc(brand.image); setImgError(false); }
@@ -31,7 +33,7 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
     e.target.value = "";
     setBusy(true);
     try {
-      const token = localStorage.getItem("aaro_token");
+
       const formData = new FormData();
       formData.append("image", file);
       const uploadRes = await fetch(`${API_URL}/upload`, {
@@ -105,6 +107,7 @@ interface CategoriesTabProps {
 
 const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) => {
   const { categories, brands, addCategory, updateCategory, deleteCategory, addBrand, updateBrand, deleteBrand } = useData();
+  const { token } = useAuth();
 
   // Category Form
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -161,7 +164,7 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
         if (!brandForm.image && created?.id) {
           toast.loading(`Fetching logo for ${brandForm.name}...`, { id: "logo-fetch" });
           try {
-            const token = localStorage.getItem("aaro_token");
+      
             await fetch(`${API_URL}/brands/${created.id}/fetch-logo`, {
               method: "POST",
               headers: { Authorization: `Bearer ${token}` },

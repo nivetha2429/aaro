@@ -47,10 +47,10 @@ const MyOrders = () => {
         }
     };
 
-    if (loading) return <div className="container mx-auto p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
+    if (loading) return <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in">
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in">
             <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-foreground">My Orders</h1>
 
             {orders.length === 0 ? (

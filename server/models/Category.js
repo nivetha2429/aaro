@@ -8,4 +8,6 @@ const categorySchema = new mongoose.Schema({
     productCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
+categorySchema.index({ slug: 1 });
+
 export default mongoose.model('Category', categorySchema);

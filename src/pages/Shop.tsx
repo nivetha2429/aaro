@@ -65,6 +65,30 @@ const Shop = () => {
     }
   }, [searchParams]);
 
+  // Listen to browser back/forward and update filter state from URL params
+  useEffect(() => {
+    const handlePopstate = () => {
+      const params = new URLSearchParams(window.location.search);
+      setSearch(params.get("search") || "");
+      setCategory(params.get("category") || "");
+      setSelectedBrands(params.get("brand") ? params.get("brand")!.split(",") : []);
+      setSortBy(params.get("sort") || "featured");
+      setConditionFilter(params.get("condition") || "all");
+      const minPrice = params.get("minPrice");
+      const maxPrice = params.get("maxPrice");
+      if (minPrice || maxPrice) {
+        setPriceRange([minPrice ? Number(minPrice) : 0, maxPrice ? Number(maxPrice) : 0]);
+      }
+      const ram = params.get("ram");
+      setSelectedRAM(ram ? ram.split(",") : []);
+      const storage = params.get("storage");
+      setSelectedStorage(storage ? storage.split(",") : []);
+    };
+
+    window.addEventListener("popstate", handlePopstate);
+    return () => window.removeEventListener("popstate", handlePopstate);
+  }, []);
+
   // Dynamically calculate brands based on the current category
   const brands = useMemo(() => {
     const relevantProducts = category
@@ -181,7 +205,7 @@ const Shop = () => {
   }, [debouncedSearch, category, selectedBrands, selectedRAM, selectedStorage, priceRange, sortBy, conditionFilter, products]);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-4">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-4">
       <PageMeta title="Shop" description="Browse all smartphones and laptops at Aaro Systems. Filter by brand, price, RAM, and storage." />
       <div className="flex items-center gap-4 mb-6">
         <button
@@ -279,10 +303,10 @@ const Shop = () => {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6">
         {/* Sidebar Filters */}
         <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 shrink-0`}>
-          <div className="glass-card rounded-2xl p-6 space-y-8 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5">
+          <div className="glass-card rounded-2xl p-4 sm:p-5 md:p-6 space-y-8 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5">
             {/* Condition Filter */}
             <div>
               <h3 className="font-black text-foreground text-xs uppercase tracking-widest mb-4 border-b border-primary/10 pb-2">Condition</h3>

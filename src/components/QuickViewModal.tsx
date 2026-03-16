@@ -135,6 +135,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                   src={selectedImage || product.images[0]}
                   alt={product.name}
                   className="w-full h-full object-contain p-4 drop-shadow-xl"
+                  loading="lazy"
                 />
               ) : (
                 <span className="text-7xl">{product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}</span>
@@ -148,7 +149,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                     onClick={() => setSelectedImage(img)}
                     className={`aspect-square rounded-xl overflow-hidden border-2 transition-all ${selectedImage === img ? "border-primary" : "border-border/50 opacity-60 hover:opacity-100"}`}
                   >
-                    <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" />
+                    <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
                   </button>
                 ))}
               </div>

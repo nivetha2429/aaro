@@ -53,12 +53,12 @@ export const createUploadRouter = (uploadsPath) => {
         }
     };
 
-    router.post('/', authMiddleware, isAdmin, uploadLimiter, upload.single('image'), async (req, res) => {
+    router.post('/', uploadLimiter, authMiddleware, isAdmin, upload.single('image'), async (req, res) => {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         await handleUpload(req, res, req.file);
     });
 
-    router.post('/multiple', authMiddleware, isAdmin, uploadLimiter, upload.array('images', 4), async (req, res) => {
+    router.post('/multiple', uploadLimiter, authMiddleware, isAdmin, upload.array('images', 4), async (req, res) => {
         if (!req.files?.length) return res.status(400).json({ message: 'No files uploaded' });
         try {
             const urls = await Promise.all(req.files.map(async (file) => {

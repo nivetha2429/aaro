@@ -1,17 +1,25 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users } from "lucide-react";
+import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users, Phone, Shield, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
-import OverviewTab from "./OverviewTab";
-import ProductsTab from "./ProductsTab";
-import CategoriesTab from "./CategoriesTab";
-import FeaturedTab from "./FeaturedTab";
-import OffersTab from "./OffersTab";
-import BannersTab from "./BannersTab";
-import OrdersTab from "./OrdersTab";
-import UsersTab from "./UsersTab";
+const OverviewTab = React.lazy(() => import("./OverviewTab"));
+const ProductsTab = React.lazy(() => import("./ProductsTab"));
+const CategoriesTab = React.lazy(() => import("./CategoriesTab"));
+const FeaturedTab = React.lazy(() => import("./FeaturedTab"));
+const OffersTab = React.lazy(() => import("./OffersTab"));
+const BannersTab = React.lazy(() => import("./BannersTab"));
+const OrdersTab = React.lazy(() => import("./OrdersTab"));
+const UsersTab = React.lazy(() => import("./UsersTab"));
+const ContactTab = React.lazy(() => import("./ContactTab"));
+const CredentialsTab = React.lazy(() => import("./CredentialsTab"));
+
+const TabLoader = () => (
+  <div className="flex items-center justify-center py-20">
+    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+  </div>
+);
 
 const SIDEBAR_ITEMS = [
   { id: "overview", icon: LayoutDashboard, label: "Overview" },
@@ -21,11 +29,13 @@ const SIDEBAR_ITEMS = [
   { id: "featured", icon: Star, label: "Featured" },
   { id: "offers", icon: Tag, label: "Popup Offer" },
   { id: "banners", icon: Image, label: "Banners" },
+  { id: "contact", icon: Phone, label: "Contact" },
   { id: "users", icon: Users, label: "Users" },
+  { id: "credentials", icon: Shield, label: "Login & Security" },
 ];
 
 const AdminDashboard = () => {
-  const { user, logout: authLogout } = useAuth();
+  const { user, logout: authLogout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -34,7 +44,7 @@ const AdminDashboard = () => {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!localStorage.getItem("aaro_token")) navigate("/login");
+    if (!isAuthenticated) navigate("/login");
     const handleResize = () => setIsSidebarOpen(window.innerWidth >= 1024);
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -94,7 +104,7 @@ const AdminDashboard = () => {
             <button onClick={() => setIsSidebarOpen(true)} className={`xl:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#a3acb9] hover:bg-secondary rounded-xl ${isSidebarOpen ? 'hidden' : 'block'}`}>
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="text-sm sm:text-base font-bold text-[#1a1f36] capitalize">{activeTab}</h2>
+            <h2 className="text-sm sm:text-base font-bold text-[#1a1f36] capitalize">{SIDEBAR_ITEMS.find(i => i.id === activeTab)?.label || activeTab}</h2>
           </div>
           <div className="flex items-center gap-2">
             <button className="relative p-1.5 text-[#a3acb9] hover:text-primary">
@@ -123,16 +133,20 @@ const AdminDashboard = () => {
         </header>
 
         <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-5 lg:p-6 bg-[#f8f9fc]">
-          <div className="space-y-4 animate-fade-in mb-6">
-            {activeTab === "overview" && <OverviewTab onQuickAction={handleQuickAction} />}
-            {activeTab === "orders" && <OrdersTab />}
-            {activeTab === "products" && <ProductsTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
-            {activeTab === "categories" && <CategoriesTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
-            {activeTab === "featured" && <FeaturedTab />}
-            {activeTab === "offers" && <OffersTab />}
-            {activeTab === "banners" && <BannersTab />}
-            {activeTab === "users" && <UsersTab />}
-          </div>
+          <Suspense fallback={<TabLoader />}>
+            <div className="space-y-4 animate-fade-in mb-6">
+              {activeTab === "overview" && <OverviewTab onQuickAction={handleQuickAction} />}
+              {activeTab === "orders" && <OrdersTab />}
+              {activeTab === "products" && <ProductsTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
+              {activeTab === "categories" && <CategoriesTab pendingAction={pendingAction} onActionHandled={clearPendingAction} />}
+              {activeTab === "featured" && <FeaturedTab />}
+              {activeTab === "offers" && <OffersTab />}
+              {activeTab === "banners" && <BannersTab />}
+              {activeTab === "contact" && <ContactTab />}
+              {activeTab === "users" && <UsersTab />}
+              {activeTab === "credentials" && <CredentialsTab />}
+            </div>
+          </Suspense>
         </div>
       </main>
 

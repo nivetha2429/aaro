@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones, Phone, Users } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones, Phone, Users, Store } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
@@ -18,11 +19,16 @@ const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { products } = useData();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isInsideAdmin = location.pathname.startsWith("/admin");
+
+  // Debounce search to prevent filtering on every keystroke
+  const debouncedSearch = useDebounce(searchQuery, 250);
 
   // Compute live search results
-  const searchResults = products.filter(p =>
-    searchQuery.length > 1 && p.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ).slice(0, 6);
+  const searchResults = useMemo(() => products.filter(p =>
+    debouncedSearch.length > 1 && p.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+  ).slice(0, 6), [debouncedSearch, products]);
 
   // Reset active index when results change
   useEffect(() => { setActiveIndex(-1); }, [searchQuery]);
@@ -93,7 +99,7 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500">
-      <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img
@@ -152,7 +158,7 @@ const Navbar = () => {
                   >
                     <div className="w-10 h-10 rounded-lg bg-background flex items-center justify-center shrink-0 border border-border">
                       {p.images && p.images[0] ? (
-                        <img src={p.images[0]} alt={p.name} className="w-6 h-6 object-contain" />
+                        <img src={p.images[0]} alt={p.name} className="w-6 h-6 object-contain" loading="lazy" />
                       ) : (
                         p.category === 'phone' ? '📱' : p.category === 'accessory' ? '🎧' : '💻'
                       )}
@@ -221,7 +227,10 @@ const Navbar = () => {
                     <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
                   </div>
 
-                  {isAdmin && (
+                  {/* Admin outside admin panel: Admin Panel, My Profile, Logout */}
+                  {/* Admin inside admin panel: My Profile, View Store, Logout */}
+                  {/* Regular user: My Orders, My Profile, Logout */}
+                  {isAdmin && !isInsideAdmin && (
                     <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
                       <LayoutDashboard className="w-4 h-4 text-primary" /> Admin Panel
                     </Link>
@@ -231,9 +240,17 @@ const Navbar = () => {
                     <User className="w-4 h-4 text-primary" /> My Profile
                   </Link>
 
-                  <Link to="/my-orders" className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
-                    <Package className="w-4 h-4 text-primary" /> My Orders
-                  </Link>
+                  {isAdmin && isInsideAdmin && (
+                    <Link to="/" className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
+                      <Store className="w-4 h-4 text-primary" /> View Store
+                    </Link>
+                  )}
+
+                  {!isAdmin && (
+                    <Link to="/my-orders" className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
+                      <Package className="w-4 h-4 text-primary" /> My Orders
+                    </Link>
+                  )}
 
                   <button onClick={() => { setIsProfileOpen(false); handleLogout(); }} className="w-full flex items-center gap-3 px-4 py-2 text-xs text-red-500 hover:bg-red-500/10 transition-colors">
                     <LogOut className="w-4 h-4" /> Logout
@@ -258,7 +275,7 @@ const Navbar = () => {
 
         {/* Sidebar */}
         <div
-          className={`absolute left-0 top-0 bottom-0 w-[85%] max-w-[320px] bg-white transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col shadow-[20px_0_60px_-15px_rgba(76,29,149,0.3)] ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
+          className={`absolute left-0 top-0 bottom-0 w-[90%] max-w-[280px] sm:max-w-[320px] bg-white transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col shadow-[20px_0_60px_-15px_rgba(76,29,149,0.3)] ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
           <div className="p-6 border-b border-primary/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -287,7 +304,7 @@ const Navbar = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="flex items-center justify-between p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all group border border-foreground/10 hover:border-foreground/20"
+                  className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all group border border-foreground/10 hover:border-foreground/20"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <div className="flex items-center gap-4">
@@ -316,18 +333,43 @@ const Navbar = () => {
                       <p className="text-[10px] font-bold text-muted-foreground uppercase">{user?.role}</p>
                     </div>
                   </div>
-                  <Link to={isAdmin ? "/admin/dashboard" : "/profile"} className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
+                  {/* Admin outside admin panel: Admin Panel, My Profile, Logout */}
+                  {isAdmin && !isInsideAdmin && (
+                    <Link to="/admin/dashboard" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
+                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
+                        <LayoutDashboard className="w-4 h-4" />
+                      </div>
+                      <span className="font-bold text-sm text-primary">Admin Panel</span>
+                    </Link>
+                  )}
+
+                  <Link to="/profile" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
                     <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                      {isAdmin ? <LayoutDashboard className="w-4 h-4" /> : <User className="w-4 h-4" />}
+                      <User className="w-4 h-4" />
                     </div>
-                    <span className="font-bold text-sm text-primary">{isAdmin ? "Admin Portal" : "My Profile Settings"}</span>
+                    <span className="font-bold text-sm text-primary">My Profile</span>
                   </Link>
-                  <Link to="/my-orders" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
-                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                      <Package className="w-4 h-4" />
-                    </div>
-                    <span className="font-bold text-sm text-primary">Order Tracking</span>
-                  </Link>
+
+                  {/* Admin inside admin panel: View Store */}
+                  {isAdmin && isInsideAdmin && (
+                    <Link to="/" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
+                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
+                        <Store className="w-4 h-4" />
+                      </div>
+                      <span className="font-bold text-sm text-primary">View Store</span>
+                    </Link>
+                  )}
+
+                  {/* Regular user: My Orders */}
+                  {!isAdmin && (
+                    <Link to="/my-orders" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
+                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
+                        <Package className="w-4 h-4" />
+                      </div>
+                      <span className="font-bold text-sm text-primary">My Orders</span>
+                    </Link>
+                  )}
+
                   <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-xl text-red-500 hover:bg-red-50 transition-all font-bold text-sm">
                     <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
                       <LogOut className="w-4 h-4" />
@@ -354,8 +396,8 @@ const Navbar = () => {
       <div
         className={`fixed inset-0 z-[110] bg-white/80 backdrop-blur-2xl transition-all duration-300 lg:hidden ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
       >
-        <div className="p-6 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-8">
+        <div className="p-4 sm:p-6 flex flex-col h-full">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h3 className="text-xl font-black tracking-tight">Search Catalog</h3>
             <button aria-label="Close search" onClick={() => setIsSearchOpen(false)} className="p-2 rounded-full hover:bg-secondary">
               <X className="w-6 h-6" />
@@ -386,7 +428,7 @@ const Navbar = () => {
                     >
                       <div className="w-12 h-12 rounded-xl bg-background flex items-center justify-center shrink-0 border border-border shadow-soft">
                         {p.images && p.images[0] ? (
-                          <img src={p.images[0]} alt={p.name} className="w-8 h-8 object-contain" />
+                          <img src={p.images[0]} alt={p.name} className="w-8 h-8 object-contain" loading="lazy" />
                         ) : (
                           p.category === 'phone' ? '📱' : p.category === 'accessory' ? '🎧' : '💻'
                         )}

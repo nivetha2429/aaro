@@ -22,39 +22,87 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    // Token is stored in memory only (not localStorage) for security
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // On mount: try to restore session from refresh cookie (HttpOnly)
     useEffect(() => {
-        try {
-            const savedToken = localStorage.getItem("aaro_token");
-            const savedUser = localStorage.getItem("aaro_user");
-            if (savedToken && savedUser && !isJwtExpired(savedToken)) {
-                setToken(savedToken);
-                setUser(JSON.parse(savedUser));
-            } else if (savedToken) {
+        const restoreSession = async () => {
+            // Create timeout to prevent loading state from getting stuck
+            let loadingTimeout: ReturnType<typeof setTimeout>;
+            try {
+                loadingTimeout = setTimeout(() => {
+                    setLoading(false);
+                }, 10000); // 10 second timeout
+
+                const res = await fetch(`${API_URL}/auth/refresh`, {
+                    method: "POST",
+                    credentials: "include",
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setToken(data.token);
+                    setUser(data.user);
+                }
+            } catch (e) {
+                console.error("Failed to restore auth session", e);
+            } finally {
+                // Clean up old localStorage tokens (migration)
                 localStorage.removeItem("aaro_token");
                 localStorage.removeItem("aaro_user");
+                clearTimeout(loadingTimeout);
+                setLoading(false);
             }
-        } catch (e) {
-            console.error("Failed to restore auth session", e);
-            localStorage.removeItem("aaro_token");
-            localStorage.removeItem("aaro_user");
-        } finally {
-            setLoading(false);
-        }
+        };
+        restoreSession();
     }, []);
+
+    // Auto-refresh access token before it expires
+    useEffect(() => {
+        if (!token) return;
+
+        // Refresh 1 minute before expiry
+        let timeout: ReturnType<typeof setTimeout>;
+        try {
+            const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+            const payload = JSON.parse(atob(base64));
+            const expiresIn = payload.exp * 1000 - Date.now() - 60_000; // 1 min before
+            if (expiresIn > 0) {
+                timeout = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${API_URL}/auth/refresh`, {
+                            method: "POST",
+                            credentials: "include",
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            setToken(data.token);
+                            setUser(data.user);
+                        }
+                    } catch {
+                        // Silent fail — guardedFetch will catch 401
+                    }
+                }, expiresIn);
+            }
+        } catch { /* invalid token format */ }
+
+        return () => clearTimeout(timeout);
+    }, [token]);
 
     const login = useCallback((newToken: string, newUser: User) => {
         setToken(newToken);
         setUser(newUser);
-        localStorage.setItem("aaro_token", newToken);
+        // No longer store token in localStorage (memory only)
+        // Keep user in localStorage for quick UI restore (non-sensitive)
         localStorage.setItem("aaro_user", JSON.stringify(newUser));
     }, []);
 
-    const logout = useCallback(() => {
+    const logout = useCallback(async () => {
         setToken(null);
         setUser(null);
         localStorage.removeItem("aaro_token");
@@ -62,6 +110,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem("aaro_admin");
         localStorage.removeItem("aaro_cart");
         localStorage.removeItem("aaro_recently_viewed");
+        // Clear refresh cookie on server
+        try {
+            await fetch(`${API_URL}/auth/logout`, { method: "POST", credentials: "include" });
+        } catch { /* silent */ }
     }, []);
 
     const updateUser = useCallback((updatedUser: User) => {

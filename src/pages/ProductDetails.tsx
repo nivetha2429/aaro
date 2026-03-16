@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Star, ShoppingCart, MessageCircle, ArrowLeft, Check, Tag, Zap, Play, Clock } from "lucide-react";
 import PageMeta from "@/components/PageMeta";
-import { WHATSAPP_NUMBER } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { useData } from "@/context/DataContext";
 import { useAuth } from "@/context/AuthContext";
@@ -30,7 +29,7 @@ const SPEC_LABELS: Record<string, string> = {
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const { products, fetchReviews, addReview, fetchVariants } = useData();
+  const { products, fetchReviews, addReview, fetchVariants, contactSettings } = useData();
   const { user, isAdmin } = useAuth();
   const product = products.find((p) => p.id === id || p._id === id);
   const { addToCart } = useCart();
@@ -145,7 +144,7 @@ const ProductDetails = () => {
 
   if (!product) {
     return (
-      <div className="container mx-auto px-2 sm:px-4 py-8 text-center">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-8 text-center">
         <p className="text-muted-foreground">Product not found.</p>
         <Link to="/shop" className="text-primary hover:underline text-sm mt-2 inline-block">Back to Shop</Link>
       </div>
@@ -222,7 +221,7 @@ const ProductDetails = () => {
       toast.error("This variant is out of stock. Please choose another option.");
       return;
     }
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
+    const url = `https://wa.me/${contactSettings.whatsappNumber}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -251,7 +250,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
         title={product.name}
         description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}
@@ -277,10 +276,10 @@ const ProductDetails = () => {
         <ArrowLeft className="w-4 h-4" /> Back to Shop
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 items-start">
         {/* ── Image Gallery ── */}
         <div className="space-y-4 animate-fade-in md:sticky md:top-24">
-          <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-8 md:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
+          <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-2 sm:p-4 md:p-8 lg:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
             {hasImages ? (
               <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
@@ -310,7 +309,7 @@ const ProductDetails = () => {
           </div>
 
           {hasImages && product.images.length > 1 && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-3">
               {product.images.map((img, i) => (
                 <button key={i} aria-label={`View image ${i + 1}`} onClick={() => setSelectedImage(img)}
                   className={`aspect-square rounded-sm sm:rounded-2xl overflow-hidden transition-all duration-300 border-2 ${selectedImage === img ? "border-primary shadow-lg scale-95" : "border-white/50 grayscale hover:grayscale-0 hover:border-primary/50"}`}>
@@ -369,7 +368,7 @@ const ProductDetails = () => {
           </div>
 
           {/* Amazon-style Variant Selection */}
-          <div className="space-y-6 mb-8 bg-zinc-50/50 p-3 sm:p-6 rounded-sm sm:rounded-[2rem] border border-border">
+          <div className="space-y-6 mb-8 bg-zinc-50/50 p-2 sm:p-4 md:p-6 rounded-sm sm:rounded-[2rem] border border-border">
             {/* RAM Options */}
             <div className="space-y-3">
               <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest ml-1">Select RAM</label>
@@ -475,7 +474,7 @@ const ProductDetails = () => {
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
                   <div key={key} className="flex items-center px-6 py-3 hover:bg-secondary/20 transition-colors">
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground w-20 md:w-28 shrink-0">
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground w-16 sm:w-20 md:w-28 shrink-0">
                       {SPEC_LABELS[key] || key}
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-foreground">{val}</span>
@@ -486,15 +485,15 @@ const ProductDetails = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-3 mb-8">
+          <div className="flex flex-col gap-2 sm:gap-3 mb-8">
             <button onClick={handleAddToCart}
-              className={`w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base shadow-xl shadow-primary/10 ${isAdded ? "bg-green-500 text-white shadow-green-500/20" : isAdmin ? "bg-gray-400 text-white cursor-not-allowed" : "bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98]"}`}
+              className={`w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base backdrop-blur-sm border ${isAdded ? "bg-green-500/10 border-green-500/30 text-green-600 shadow-soft" : isAdmin ? "bg-white/30 border-white/40 text-muted-foreground cursor-not-allowed" : "bg-white/50 border-white/50 text-foreground shadow-soft hover:shadow-card hover:-translate-y-1 active:scale-[0.98]"}`}
               disabled={isAdded || isAdmin}>
-              {isAdded ? <><Check className="w-5 h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-5 h-5" /> Admin Mode</> : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
+              {isAdded ? <><Check className="w-5 h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-5 h-5" /> Admin Mode</> : <><ShoppingCart className="w-5 h-5 text-primary" /> Add to Cart</>}
             </button>
             <button onClick={handleWhatsAppOrder}
-              className="w-full bg-[#25D366] text-white py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base shadow-xl shadow-green-500/10 hover:opacity-90 hover:shadow-2xl hover:shadow-green-500/30 hover:-translate-y-1 active:scale-[0.98]">
-              <MessageCircle className="w-5 h-5" /> Order on WhatsApp
+              className="w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base backdrop-blur-sm bg-white/50 border border-white/50 text-foreground shadow-soft hover:shadow-card hover:-translate-y-1 active:scale-[0.98]">
+              <MessageCircle className="w-5 h-5 text-[#25D366]" /> Order on WhatsApp
             </button>
           </div>
 
@@ -588,7 +587,7 @@ const ProductDetails = () => {
           <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
             <Clock className="w-6 h-6 text-primary" /> Recently Viewed
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
             {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>

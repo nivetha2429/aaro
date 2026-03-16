@@ -10,5 +10,6 @@ const reviewSchema = new mongoose.Schema({
 
 // Index for fast review lookups per product
 reviewSchema.index({ productId: 1, createdAt: -1 });
+reviewSchema.index({ userId: 1 });
 
 export default mongoose.model('Review', reviewSchema);

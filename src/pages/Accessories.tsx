@@ -30,7 +30,7 @@ const Accessories = () => {
   }, [allAccessories, search, selectedBrands, conditionFilter]);
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta title="Accessories" description="Browse our collection of premium accessories. Find the latest gadgets and add-ons at the best prices." />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>

@@ -97,7 +97,7 @@ const BannersTab = () => {
     <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl overflow-hidden group hover:shadow-xl transition-all duration-300">
       <div className="relative h-32 sm:h-44 md:h-48 bg-[#f8f9fc]">
         {resolvedImage ? (
-          <img src={resolvedImage} alt={banner.title || "Banner"} className="w-full h-full object-cover" />
+          <img src={resolvedImage} alt={banner.title || "Banner"} className="w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-1">
             <Image className="w-8 h-8 sm:w-10 sm:h-10 text-[#eaedf3]" />

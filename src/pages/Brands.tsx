@@ -37,7 +37,7 @@ const Brands = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center animate-pulse text-muted-foreground">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-16 text-center animate-pulse text-muted-foreground">
         Loading brands...
       </div>
     );
@@ -91,7 +91,7 @@ const Brands = () => {
   );
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10">
       <PageMeta title="Brands" description="Browse all brands available at Aaro Systems. Premium tech from trusted manufacturers." />
       {/* Header */}
       <div className="mb-12 text-center animate-slide-up">

@@ -33,7 +33,7 @@ const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
 
       {/* Header */}
@@ -47,19 +47,20 @@ const Cart = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 items-start">
         {/* Cart Items */}
         <div className="md:col-span-2 space-y-3">
           {items.map((item) => (
-            <div key={`${item.product.id}-${item.ram}-${item.storage}-${item.color}`} className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-3 sm:p-4 flex gap-3 sm:gap-4 group hover:shadow-md transition-shadow">
+            <div key={`${item.product.id}-${item.ram || 'noram'}-${item.storage || 'nostorage'}-${item.color || 'nocolor'}`} className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-2 sm:p-3 md:p-4 flex gap-2 sm:gap-3 md:gap-4 group hover:shadow-md transition-shadow">
               {/* Product Image */}
               <Link to={`/product/${item.product.id}`} className="shrink-0">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg sm:rounded-xl bg-gray-50 overflow-hidden flex items-center justify-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl bg-gray-50 overflow-hidden flex items-center justify-center">
                   {item.product.images?.[0] ? (
                     <img
                       src={item.product.images[0]}
                       alt={item.product.name}
                       className="w-full h-full object-contain p-1"
+                      loading="lazy"
                     />
                   ) : (
                     <span className="text-3xl">{item.product.category === "phone" ? "📱" : item.product.category === "accessory" ? "🎧" : "💻"}</span>
@@ -119,7 +120,7 @@ const Cart = () => {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-5 sm:p-6 h-fit md:sticky md:top-24">
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-4 sm:p-5 md:p-6 h-fit md:sticky md:top-24">
           <h3 className="text-lg font-bold text-foreground mb-5">Order Summary</h3>
 
           <div className="space-y-3 mb-5">
@@ -145,7 +146,7 @@ const Cart = () => {
           </Link>
 
           {/* Trust Badges */}
-          <div className="mt-5 flex items-center justify-center gap-5 text-muted-foreground">
+          <div className="mt-5 flex items-center justify-center gap-3 sm:gap-4 md:gap-5 text-muted-foreground">
             <div className="flex flex-col items-center gap-1">
               <ShieldCheck className="w-4 h-4" />
               <span className="text-[9px] font-medium">Secure Pay</span>

@@ -41,7 +41,7 @@ const FeaturedTab = () => {
                   </Button>
                 </div>
                 <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-xl sm:rounded-2xl bg-[#f8f9fc] border border-[#eaedf3] flex items-center justify-center p-1 sm:p-2 mt-1 sm:mt-2 mb-2 sm:mb-4 shrink-0 overflow-hidden">
-                  {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-5 h-5 sm:w-6 sm:h-6 text-[#a3acb9]" />}
+                  {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" loading="lazy" /> : <Package className="w-5 h-5 sm:w-6 sm:h-6 text-[#a3acb9]" />}
                 </div>
                 <div className="text-center">
                   <p className="text-[11px] sm:text-sm font-bold text-[#1a1f36] line-clamp-1 mb-1">{p.name}</p>
@@ -83,7 +83,7 @@ const FeaturedTab = () => {
                 <div key={p.id} className="flex items-center justify-between p-4 rounded-2xl border border-[#eaedf3] hover:border-primary/30 hover:bg-[#f8f9fc] transition-colors">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center overflow-hidden shrink-0 border border-[#eaedf3] p-1 shadow-sm">
-                      {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-5 h-5 text-muted-foreground" />}
+                      {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" loading="lazy" /> : <Package className="w-5 h-5 text-muted-foreground" />}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-[#1a1f36] line-clamp-1">{p.name}</p>

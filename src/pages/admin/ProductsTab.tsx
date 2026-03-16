@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, Fragment } from "react";
+import { useDebounce } from "@/hooks/useDebounce";
 import { Trash2, Plus, X, Package, BarChart3, Smartphone, Laptop, Headphones, ChevronDown, Layers, Search, Pencil, Loader2, Star, MessageSquare } from "lucide-react";
 import { useData } from "@/context/DataContext";
 import { Product, Variant, Review } from "@/data/products";
@@ -162,9 +163,11 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
     } catch { toast.error("Failed to save product"); }
   };
 
+  const debouncedInventorySearch = useDebounce(inventorySearch, 300);
+
   const groupedProducts = useMemo(() => {
     const g: Record<string, Product[]> = {};
-    const search = inventorySearch.toLowerCase();
+    const search = debouncedInventorySearch.toLowerCase();
     products.forEach(p => {
       const c = p.category || "General";
       if (filterCategory !== "all" && c !== filterCategory) return;
@@ -173,7 +176,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
       g[c].push(p);
     });
     return g;
-  }, [products, filterCategory, inventorySearch]);
+  }, [products, filterCategory, debouncedInventorySearch]);
 
   return (
     <>
@@ -244,7 +247,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                     <div key={pid}>
                       <div className="flex items-center gap-3 p-3">
                         <div className="w-12 h-12 rounded-xl bg-white border border-[#eaedf3] shadow-sm flex items-center justify-center p-1 overflow-hidden shrink-0">
-                          {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-5 h-5 text-muted-foreground" />}
+                          {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" loading="lazy" /> : <Package className="w-5 h-5 text-muted-foreground" />}
                         </div>
                         <p className="flex-1 font-bold text-sm text-[#1a1f36] line-clamp-2 min-w-0">{p.name}</p>
                         <button
@@ -258,7 +261,7 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                         <div className="px-3 pb-4 space-y-2 bg-[#fafbfd] border-t border-[#eaedf3]">
                           <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-1.5">
-                              {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-5 h-5 object-contain rounded shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
+                              {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-5 h-5 object-contain rounded shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
                               <p className="text-[10px] font-black text-[#a3acb9] uppercase tracking-widest">{p.brand}</p>
                             </div>
                             <div className="flex items-center gap-1">
@@ -327,14 +330,14 @@ const ProductsTab = ({ pendingAction, onActionHandled }: ProductsTabProps) => {
                                   <td rowSpan={rows.length} className="px-3 sm:px-6 py-2 sm:py-3 align-middle border-r border-[#f0f2f7]">
                                     <div className="flex items-center gap-2 sm:gap-3">
                                       <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white border border-[#eaedf3] shadow-sm flex items-center justify-center p-1 overflow-hidden shrink-0">
-                                        {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" /> : <Package className="w-5 h-5 text-muted-foreground" />}
+                                        {p.images?.[0] ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-contain" loading="lazy" /> : <Package className="w-5 h-5 text-muted-foreground" />}
                                       </div>
                                       <span className="font-bold text-[#1a1f36] text-xs sm:text-sm line-clamp-2 max-w-[120px] sm:max-w-[160px]">{p.name}</span>
                                     </div>
                                   </td>
                                   <td rowSpan={rows.length} className="px-3 sm:px-6 align-middle border-r border-[#f0f2f7]">
                                     <div className="flex items-center gap-2">
-                                      {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-6 h-6 object-contain rounded shrink-0" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
+                                      {(() => { const b = brands.find(br => br.name === p.brand); return b?.image ? <img src={b.image} alt={b.name} className="w-6 h-6 object-contain rounded shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null; })()}
                                       <span className="text-[#7a869a] text-xs font-semibold">{p.brand}</span>
                                     </div>
                                   </td>

@@ -12,9 +12,15 @@ const router = Router();
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 0;
-        const limit = Math.max(1, parseInt(req.query.limit) || 50);
+        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
         const category = req.query.category;
         const brand = req.query.brand;
+
+        // Validate category enum
+        const validCategories = ['phone', 'laptop', 'accessory'];
+        if (category && !validCategories.includes(category)) {
+            return res.status(400).json({ message: 'Invalid category. Must be one of: phone, laptop, accessory' });
+        }
 
         const filter = {};
         if (category) filter.category = category;
@@ -46,7 +52,8 @@ router.get('/', async (req, res) => {
             return res.json({ products: result, total, page, pages: Math.ceil(total / limit) });
         }
         res.json(result);
-    } catch {
+    } catch (err) {
+        console.error('Failed to fetch products:', err);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -67,6 +74,9 @@ router.post('/variants', authMiddleware, isAdmin, async (req, res) => {
     try {
         const parsed = variantStandaloneSchema.safeParse(req.body);
         if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        if (parsed.data.price > parsed.data.originalPrice) {
+            return res.status(400).json({ message: 'Price cannot be greater than original price' });
+        }
         const variant = await new Variant(parsed.data).save();
         res.status(201).json(variant);
     } catch (err) {
@@ -78,6 +88,9 @@ router.put('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const parsed = variantStandaloneSchema.partial().safeParse(req.body);
         if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
+        if (parsed.data.price !== undefined && parsed.data.originalPrice !== undefined && parsed.data.price > parsed.data.originalPrice) {
+            return res.status(400).json({ message: 'Price cannot be greater than original price' });
+        }
         const variant = await Variant.findByIdAndUpdate(req.params.id, parsed.data, { new: true, runValidators: true });
         if (!variant) return res.status(404).json({ message: 'Variant not found' });
         res.json(variant);
@@ -141,15 +154,7 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
             await Variant.insertMany(variants.map(v => ({ ...v, productId: product._id })));
         }
 
-        // Auto-create 3 default reviews and update product rating
-        await Review.insertMany([
-            { productId: product._id, name: 'Rahul Sharma', comment: 'Amazing build quality and performance. Worth every penny!', rating: 5 },
-            { productId: product._id, name: 'Priya Patel', comment: 'Simply the best in its class. Highly recommended.', rating: 5 },
-            { productId: product._id, name: 'Ankit Verma', comment: "Been using it for a week, and I'm impressed with the battery life.", rating: 5 },
-        ]);
-        await Product.findByIdAndUpdate(product._id, { reviewCount: 3, rating: 5 });
-
-        res.status(201).json({ ...product.toObject(), reviewCount: 3, rating: 5 });
+        res.status(201).json(product.toObject());
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
     }
@@ -201,12 +206,17 @@ router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const deleted = await Product.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ message: 'Product not found' });
-        await Promise.all([
-            Review.deleteMany({ productId: req.params.id }).catch(() => {}),
-            Variant.deleteMany({ productId: req.params.id }).catch(() => {}),
-        ]);
+        try {
+            await Promise.all([
+                Review.deleteMany({ productId: req.params.id }),
+                Variant.deleteMany({ productId: req.params.id }),
+            ]);
+        } catch (cleanupErr) {
+            console.error('Error cleaning up reviews/variants:', cleanupErr);
+        }
         res.json({ message: 'Product deleted' });
-    } catch {
+    } catch (err) {
+        console.error('Failed to delete product:', err);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

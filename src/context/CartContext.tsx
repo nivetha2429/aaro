@@ -27,7 +27,20 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem("aaro_cart");
-      return saved ? JSON.parse(saved) : [];
+      if (!saved) return [];
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return [];
+      // Validate cart item structure
+      return parsed.filter((item: any) => {
+        return (
+          item.product &&
+          item.product.id &&
+          typeof item.quantity === "number" &&
+          item.quantity > 0 &&
+          typeof item.price === "number" &&
+          item.price >= 0
+        );
+      });
     } catch {
       return [];
     }

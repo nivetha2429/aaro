@@ -1,28 +1,67 @@
 import { useNavigate, Link } from "react-router-dom";
-import { ShoppingBag, User, Settings, ArrowRight, Package, LogOut } from "lucide-react";
+import { ShoppingBag, User, ArrowRight, Package, LogOut, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useData } from "@/context/DataContext";
 import { useEffect, useState } from "react";
 
 const CustomerDashboard = () => {
-    const { user, logout } = useAuth();
-    const { fetchMyOrders } = useData();
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { user, isAdmin, logout } = useAuth();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (user) {
-            // In a real app we'd fetch actual orders from DB
-            setLoading(true);
-            setTimeout(() => {
-                setLoading(false);
-            }, 1000);
-        }
-    }, [user]);
 
     if (!user) return null;
 
+    // Admin view — simple: Admin Panel, My Profile, Logout
+    if (isAdmin) {
+        return (
+            <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">
+                            {user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <h1 className="text-2xl md:text-3xl font-black text-foreground tracking-tight truncate max-w-[200px] sm:max-w-none">Welcome, {user.name}!</h1>
+                            <p className="text-muted-foreground font-medium">Admin · {user.email}</p>
+                        </div>
+                    </div>
+                    <button onClick={() => { logout(); navigate("/"); }} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-secondary text-foreground font-bold hover:bg-destructive hover:text-white transition-all">
+                        <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                </div>
+
+                <div className="glass-card rounded-[2.5rem] p-4 sm:p-8 border border-white/60 shadow-2xl shadow-primary/10 max-w-xl">
+                    <div className="space-y-4">
+                        <Link to="/admin/dashboard" className="flex items-center justify-between p-5 rounded-2xl bg-white/60 border border-white hover:border-primary/30 hover:shadow-lg transition-all group">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <LayoutDashboard className="w-5 h-5 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="font-black text-foreground">Admin Panel</p>
+                                    <p className="text-xs text-muted-foreground">Manage products, orders & settings</p>
+                                </div>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                        </Link>
+
+                        <Link to="/profile" className="flex items-center justify-between p-5 rounded-2xl bg-white/60 border border-white hover:border-primary/30 hover:shadow-lg transition-all group">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                                    <User className="w-5 h-5 text-accent" />
+                                </div>
+                                <div>
+                                    <p className="font-black text-foreground">My Profile</p>
+                                    <p className="text-xs text-muted-foreground">Manage your personal info</p>
+                                </div>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Customer view
     const stats = [
         { label: "Total Orders", value: "0", icon: ShoppingBag, color: "bg-blue-500" },
         { label: "Member Since", value: new Date().getFullYear().toString(), icon: Package, color: "bg-pink-500" },
@@ -30,7 +69,7 @@ const CustomerDashboard = () => {
     ];
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">
@@ -41,11 +80,9 @@ const CustomerDashboard = () => {
                         <p className="text-muted-foreground font-medium">Customer Dashboard · {user.email}</p>
                     </div>
                 </div>
-                <div className="flex gap-3">
-                    <button onClick={() => logout()} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-secondary text-foreground font-bold hover:bg-destructive hover:text-white transition-all">
-                        <LogOut className="w-4 h-4" /> Sign Out
-                    </button>
-                </div>
+                <button onClick={() => { logout(); navigate("/"); }} className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-secondary text-foreground font-bold hover:bg-destructive hover:text-white transition-all">
+                    <LogOut className="w-4 h-4" /> Sign Out
+                </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
@@ -63,7 +100,6 @@ const CustomerDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {/* Quick Links */}
                 <div className="glass-card rounded-[2.5rem] p-4 sm:p-8 border border-white/60 shadow-2xl shadow-primary/10">
                     <h3 className="text-xl font-black text-foreground mb-6 flex items-center gap-3">
                         <Package className="w-6 h-6 text-primary" /> My Account
@@ -97,7 +133,6 @@ const CustomerDashboard = () => {
                     </div>
                 </div>
 
-                {/* Promotion / Offers */}
                 <div className="gradient-purple rounded-[2.5rem] p-4 sm:p-8 text-white relative overflow-hidden shadow-2xl shadow-primary/20">
                     <div className="relative z-10 h-full flex flex-col justify-between">
                         <div>

@@ -11,6 +11,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
+import AdminRoute from "@/components/AdminRoute";
 import { OfferPopup } from "@/components/OfferPopup";
 import logo from "@/assets/logo.png";
 
@@ -150,7 +151,7 @@ const AppContents = () => {
 
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-                <Route path="/admin/dashboard" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>

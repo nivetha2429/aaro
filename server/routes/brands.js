@@ -121,19 +121,24 @@ router.post('/fetch-all-logos', authMiddleware, isAdmin, async (req, res) => {
         const success = [], failed = [];
 
         for (const brand of allBrands) {
-            const localPath = await downloadAndSaveLogo(brand.name);
-            if (localPath) {
-                brand.image = localPath;
-                await brand.save();
-                success.push(brand.name);
-            } else {
-                failed.push(brand.name);
+            try {
+                const localPath = await downloadAndSaveLogo(brand.name);
+                if (localPath) {
+                    brand.image = localPath;
+                    await brand.save();
+                    success.push(brand.name);
+                } else {
+                    failed.push({ name: brand.name, error: 'Could not download logo' });
+                }
+            } catch (err) {
+                failed.push({ name: brand.name, error: 'Failed to save logo' });
             }
         }
 
         res.json({ success, failed, total: allBrands.length });
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        console.error('Fetch all logos failed:', err);
+        res.status(500).json({ message: 'Failed to fetch logos' });
     }
 });
 

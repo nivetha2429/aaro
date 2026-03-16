@@ -10,6 +10,6 @@ const offerSchema = new mongoose.Schema({
     tag: { type: String, default: '' },
 }, { timestamps: true });
 
-// No pre-save hook — active/inactive management is handled atomically in route handlers
+offerSchema.index({ active: 1 });
 
 export default mongoose.model('Offer', offerSchema);

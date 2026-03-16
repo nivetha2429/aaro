@@ -138,7 +138,44 @@ export const orders: Order[] = [];
 export const reviews: Review[] = [];
 export const offers: Offer[] = [];
 
-export const WHATSAPP_NUMBER = "918668054205";
-export const INSTAGRAM_URL = "https://instagram.com/aarosystems";
-export const INSTAGRAM_LINK = "https://instagram.com/aarosystems";
-export const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK";
+export interface Branch {
+  _id?: string;
+  name: string;
+  address: string;
+  phone: string;
+  whatsapp: string;
+  hours: string;
+  closed: string;
+  mapUrl: string;
+}
+
+export interface ContactSettings {
+  phone: string;
+  email: string;
+  address: string;
+  whatsappNumber: string;
+  instagramUrl: string;
+  instagramHandle: string;
+  whatsappGroupLink: string;
+  branches: Branch[];
+}
+
+export const DEFAULT_CONTACT: ContactSettings = {
+  phone: "+91 70942 23143",
+  email: "aarosystems.s@gmail.com",
+  address: "Karur, India",
+  whatsappNumber: "917094223143",
+  instagramUrl: "https://instagram.com/aarosystems",
+  instagramHandle: "@aarosystems",
+  whatsappGroupLink: "https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK",
+  branches: [
+    { name: "AARO Systems — Karur Main", address: "123, Jawahar Bazaar, Near Bus Stand, Karur, Tamil Nadu 639001", phone: "+91 86680 54205", whatsapp: "917094223143", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Karur+Bus+Stand+Tamil+Nadu" },
+    { name: "AARO Systems — Karur Branch 2", address: "45, Kovai Road, Thanthonimalai, Karur, Tamil Nadu 639002", phone: "+91 70104 52495", whatsapp: "917010452495", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Thanthonimalai+Karur+Tamil+Nadu" },
+    { name: "AARO Systems — Karur Branch 3", address: "78, Pallapatti Main Road, Karur, Tamil Nadu 639003", phone: "+91 86680 54205", whatsapp: "917094223143", hours: "Mon – Sat: 10:00 AM – 9:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Pallapatti+Karur+Tamil+Nadu" },
+  ],
+};
+
+export const WHATSAPP_NUMBER = DEFAULT_CONTACT.whatsappNumber;
+export const INSTAGRAM_URL = DEFAULT_CONTACT.instagramUrl;
+export const INSTAGRAM_LINK = DEFAULT_CONTACT.instagramUrl;
+export const WHATSAPP_GROUP_LINK = DEFAULT_CONTACT.whatsappGroupLink;

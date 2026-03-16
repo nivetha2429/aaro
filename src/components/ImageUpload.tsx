@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -16,6 +17,7 @@ interface ImageUploadProps {
 export const ImageUpload = ({ value, onChange, label, className = "", accept = "image/*", maxSizeMB = 5 }: ImageUploadProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
+    const { token } = useAuth();
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith("image/")) return toast.error("Please select an image file");
@@ -25,7 +27,6 @@ export const ImageUpload = ({ value, onChange, label, className = "", accept = "
         try {
             const formData = new FormData();
             formData.append("image", file);
-            const token = localStorage.getItem("aaro_token");
             const res = await fetch(`${API_URL}/upload`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },
@@ -147,6 +148,7 @@ export const MultiImageUpload = ({ values, onChange, label, max = 4 }: MultiImag
 export const VideoUpload = ({ value, onChange, label, className = "" }: ImageUploadProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
+    const { token } = useAuth();
 
     const handleFile = async (file: File) => {
         if (!file.type.startsWith("video/")) return toast.error("Please select a video file");
@@ -156,7 +158,6 @@ export const VideoUpload = ({ value, onChange, label, className = "" }: ImageUpl
         try {
             const formData = new FormData();
             formData.append("image", file); // Reusing the same multer field
-            const token = localStorage.getItem("aaro_token");
             const res = await fetch(`${API_URL}/upload`, {
                 method: "POST",
                 headers: { Authorization: `Bearer ${token}` },

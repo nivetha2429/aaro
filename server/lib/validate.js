@@ -56,6 +56,9 @@ const variantSchema = z.object({
     sku: z.string().optional(),
     isAvailable: z.boolean().optional(),
     condition: z.enum(['new', 'refurbished']).default('new'),
+}).refine(data => data.price <= data.originalPrice, {
+    message: 'Price cannot be greater than original price',
+    path: ['price'],
 });
 
 export const productSchema = z.object({
@@ -120,6 +123,9 @@ export const variantStandaloneSchema = z.object({
     stock: z.number().int().min(0).default(0),
     sku: z.string().optional(),
     condition: z.enum(['new', 'refurbished']).default('new'),
+}).refine(data => data.price <= data.originalPrice, {
+    message: 'Price cannot be greater than original price',
+    path: ['price'],
 });
 
 export const productModelSchema = z.object({
@@ -132,7 +138,10 @@ export const bannerSchema = z.object({
     image: z.string().min(1, 'Image URL is required'),
     title: z.string().max(200).optional().default(''),
     subtitle: z.string().max(500).optional().default(''),
-    link: z.string().max(500).optional().default('/shop'),
+    link: z.string().max(500).optional().default('/shop').refine(
+        link => link.startsWith('/') || link.startsWith('https://'),
+        'Link must start with / or https://'
+    ),
     position: z.enum(['hero', 'center']).optional().default('hero'),
     order: z.number().int().min(0).optional().default(0),
     active: z.boolean().optional().default(true),
@@ -147,6 +156,57 @@ export const forgotPasswordSchema = z.object({
     email: z.string().email('Invalid email address'),
     phone: z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
     newPassword: z.string().min(6, 'New password must be at least 6 characters').max(128),
+});
+
+// ── Contact Settings Schema ──
+
+const branchSettingsSchema = z.object({
+    _id: z.string().optional(),
+    name: z.string().min(1, 'Branch name is required').max(200),
+    address: z.string().min(1, 'Address is required').max(500),
+    phone: z.string().min(1, 'Phone is required').max(30),
+    whatsapp: z.string().min(1, 'WhatsApp number is required').max(20),
+    hours: z.string().max(200).default(''),
+    closed: z.string().max(200).default(''),
+    mapUrl: z.string().max(500).default(''),
+});
+
+export const contactSettingsSchema = z.object({
+    phone: z.string().max(30).default(''),
+    email: z.string().max(200).default(''),
+    address: z.string().max(500).default(''),
+    whatsappNumber: z.string().max(20).default(''),
+    instagramUrl: z.string().max(500).default(''),
+    instagramHandle: z.string().max(100).default(''),
+    whatsappGroupLink: z.string().max(500).default(''),
+    branches: z.array(branchSettingsSchema).default([]),
+});
+
+// ── Admin Credentials Schemas ──
+
+export const adminUpdateEmailSchema = z.object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newEmail: z.string().email('Invalid email address'),
+    confirmEmail: z.string().email('Invalid email address'),
+}).refine(d => d.newEmail === d.confirmEmail, { message: 'Emails do not match', path: ['confirmEmail'] });
+
+export const adminUpdatePasswordSchema = z.object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'New password must be at least 8 characters').max(128),
+    confirmPassword: z.string().min(1, 'Confirm password is required'),
+}).refine(d => d.newPassword === d.confirmPassword, { message: 'Passwords do not match', path: ['confirmPassword'] });
+
+// ── Admin User Toggle Schema ──
+
+export const userToggleSchema = z.object({
+    isActive: z.boolean({ required_error: 'isActive is required' }),
+});
+
+// ── Review Update Schema ──
+
+export const reviewUpdateSchema = z.object({
+    comment: z.string().min(3, 'Comment too short').max(1000),
+    rating: z.number().int().min(1).max(5),
 });
 
 /** Format zod error into a single readable string */

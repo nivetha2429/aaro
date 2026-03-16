@@ -4,7 +4,7 @@ import Review from '../models/Review.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import { authMiddleware, isAdmin } from '../middleware/authMiddleware.js';
-import { reviewSchema, zodError, mongoError } from '../lib/validate.js';
+import { reviewSchema, reviewUpdateSchema, zodError, mongoError } from '../lib/validate.js';
 
 const router = Router();
 
@@ -17,7 +17,7 @@ router.get('/:productId', async (req, res) => {
     }
 });
 
-router.post('/', authMiddleware, isAdmin, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     try {
         const parsed = reviewSchema.safeParse({ ...req.body, rating: Number(req.body.rating) });
         if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
@@ -47,13 +47,12 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
 
 router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
-        const { rating, comment } = req.body;
-        if (!comment?.trim()) return res.status(400).json({ message: 'Comment is required' });
-        if (!rating || rating < 1 || rating > 5) return res.status(400).json({ message: 'Rating must be 1-5' });
+        const parsed = reviewUpdateSchema.safeParse({ ...req.body, rating: Number(req.body.rating) });
+        if (!parsed.success) return res.status(400).json({ message: zodError(parsed.error) });
 
         const review = await Review.findByIdAndUpdate(
             req.params.id,
-            { rating: Number(rating), comment: comment.trim() },
+            { rating: parsed.data.rating, comment: parsed.data.comment.trim() },
             { new: true }
         );
         if (!review) return res.status(404).json({ message: 'Review not found' });
@@ -65,7 +64,7 @@ router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
         ]);
         await Product.findByIdAndUpdate(review.productId, {
             reviewCount: agg?.count || 1,
-            rating: Math.round((agg?.avg || rating) * 10) / 10,
+            rating: Math.round((agg?.avg || parsed.data.rating) * 10) / 10,
         });
 
         res.json(review);

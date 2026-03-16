@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Phone, Package, ShoppingBag, Edit2, Check, X, Loader2 } from "lucide-react";
+import { User, Mail, Phone, Package, ShoppingBag, Edit2, Check, X, Loader2, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/lib/schemas";
 
 const Profile = () => {
-    const { user, token, updateUser } = useAuth();
+    const { user, token, updateUser, isAdmin } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -64,7 +64,7 @@ const Profile = () => {
     ];
 
     return (
-        <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in text-black">
+        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in text-black">
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
                 {/* Sidebar/Welcome */}
                 <div className="lg:w-1/3 text-center lg:text-left">
@@ -77,10 +77,17 @@ const Profile = () => {
                     <p className="text-sm text-muted-foreground mb-8">Manage your account details and preferences.</p>
 
                     <div className="space-y-3">
-                        <Link to="/my-orders" className="flex items-center gap-3 w-full p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group">
-                            <Package className="w-5 h-5 text-primary" />
-                            <span className="text-sm font-semibold">View My Orders</span>
-                        </Link>
+                        {isAdmin ? (
+                            <Link to="/admin/dashboard" className="flex items-center gap-3 w-full p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group">
+                                <LayoutDashboard className="w-5 h-5 text-primary" />
+                                <span className="text-sm font-semibold">Admin Panel</span>
+                            </Link>
+                        ) : (
+                            <Link to="/my-orders" className="flex items-center gap-3 w-full p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group">
+                                <Package className="w-5 h-5 text-primary" />
+                                <span className="text-sm font-semibold">View My Orders</span>
+                            </Link>
+                        )}
                         <Link to="/shop" className="flex items-center gap-3 w-full p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all group">
                             <ShoppingBag className="w-5 h-5 text-primary" />
                             <span className="text-sm font-semibold">Continue Shopping</span>

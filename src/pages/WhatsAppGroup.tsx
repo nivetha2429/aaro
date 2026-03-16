@@ -1,11 +1,13 @@
 import { MessageCircle, Gift, Zap, Bell, Users, Star, ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
-import { WHATSAPP_GROUP_LINK } from "@/data/products";
+import { useData } from "@/context/DataContext";
 import PageMeta from "@/components/PageMeta";
 
 const WhatsAppGroup = () => {
+  const { contactSettings } = useData();
+
   return (
-    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-12 md:py-24 animate-fade-in">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-6 sm:py-12 md:py-24 animate-fade-in">
       <PageMeta title="Join WhatsApp Group" description="Join the AARO Systems WhatsApp group for exclusive deals, offers, and new arrivals." />
 
       {/* Hero Section */}
@@ -94,7 +96,7 @@ const WhatsAppGroup = () => {
             Tap the button below to join our WhatsApp group and start saving on premium tech today.
           </p>
           <a
-            href={WHATSAPP_GROUP_LINK}
+            href={contactSettings.whatsappGroupLink}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-3 bg-[#25D366] text-white px-8 sm:px-12 py-4 sm:py-5 rounded-full font-black text-sm sm:text-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-xl shadow-green-500/30 hover:shadow-2xl hover:shadow-green-500/40 active:scale-[0.98] click-scale whatsapp-pulse"

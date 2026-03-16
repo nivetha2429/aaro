@@ -22,7 +22,7 @@ const Offers = () => {
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent flex items-center">
-          <div className="container mx-auto px-2 sm:px-4">
+          <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10">
             <div className="max-w-lg xl:max-w-xl animate-slide-up">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20 mb-3 sm:mb-5">
                 <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -40,7 +40,7 @@ const Offers = () => {
       </section>
 
       {/* Offers Grid */}
-      <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 -mt-6 sm:-mt-10 mb-12 sm:mb-16 relative z-10">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 -mt-6 sm:-mt-10 mb-12 sm:mb-16 relative z-10">
         {displayOffers.length > 0 ? (
           <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             {displayOffers.map((offer) => (

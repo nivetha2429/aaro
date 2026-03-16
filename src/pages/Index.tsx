@@ -1,11 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, ChevronLeft, ChevronRight, MessageCircle, Instagram } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import BrandLogo from "@/components/BrandLogo";
 import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
-import { toast } from "sonner";
 import heroBanner from "@/assets/hero-banner.jpg";
 import smartphoneBanner from "@/assets/banners/smartphone.jpg";
 import laptopBanner from "@/assets/banners/laptop.jpg";
@@ -45,7 +44,7 @@ const defaultHeroBanners = [
 ];
 
 const Index = () => {
-  const { products, brands, banners } = useData();
+  const { products, brands, banners, contactSettings } = useData();
   const featured = products.filter((p) => p.featured);
 
   // Resolve DB banner images (map /src/assets paths to Vite imports, pass through valid URLs)
@@ -92,7 +91,7 @@ const Index = () => {
 
       {/* Hero Banner Carousel */}
       <section
-        className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-2 sm:mt-4"
+        className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-2 sm:mt-4"
       >
       <div
         className="relative overflow-hidden rounded-sm sm:rounded-2xl shadow-soft group/hero"
@@ -153,7 +152,7 @@ const Index = () => {
       </section>
 
       {/* Features */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-6 sm:mt-8 md:mt-12">
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-6 sm:mt-8 md:mt-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
           {features.map((f) => (
             <div key={f.label} className="group flex items-center justify-between p-3 sm:p-4 rounded-sm sm:rounded-2xl bg-white border border-white/50 shadow-soft hover:shadow-xl hover:shadow-primary/5 transition-all cursor-default">
@@ -173,7 +172,7 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-6 sm:mt-8 md:mt-12 lg:mt-16">
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-6 sm:mt-8 md:mt-12 lg:mt-16">
         <div className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 animate-slide-up stagger-1">
           <div>
             <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-black animate-shimmer">Featured Products</h2>
@@ -191,7 +190,7 @@ const Index = () => {
       </section>
 
       {/* Categories */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
         <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
         <div className="grid grid-cols-3 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
           {categories.map((c) => (
@@ -205,9 +204,9 @@ const Index = () => {
       </section>
 
       {/* Center Banner (editable from admin) */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-8 sm:mt-12 md:mt-16 lg:mt-24">
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 lg:mt-24">
         <Link to={centerBanner?.link || "/shop"} className="group relative h-[200px] sm:h-[260px] md:h-[320px] lg:h-[400px] xl:h-[460px] 2xl:h-[520px] rounded-sm sm:rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center text-center">
-          <img src={centerBanner?.image || heroBanner} alt={centerBanner?.title || "Premium Gadgets Banner"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+          <img src={centerBanner?.image || heroBanner} alt={centerBanner?.title || "Premium Gadgets Banner"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/60" />
           <div className="relative z-10 px-6">
             <span className="inline-block text-[10px] md:text-xs font-black uppercase tracking-[0.4em] bg-primary text-white px-4 py-2 rounded-full mb-4 shadow-lg animate-pulse">Exclusive Deals</span>
@@ -218,7 +217,7 @@ const Index = () => {
       </section>
 
       {/* Brands Showcase */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-8 sm:mt-12 md:mt-16 group">
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 group">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-8 gap-2 sm:gap-4 border-b border-primary/10 pb-4 sm:pb-6">
           <div>
             <h2 className="text-base sm:text-xl md:text-2xl lg:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1 sm:mb-2">Global Brands</h2>
@@ -236,7 +235,7 @@ const Index = () => {
               const mobileBrands = allBrands.slice(0, 20);
               return (
                 <>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-11 2xl:grid-cols-13 gap-1.5 sm:gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 gap-1.5 sm:gap-2">
                     {allBrands.map((brandName, idx) => {
                       const brandEntry = brands.find(b => b.name === brandName);
                       const isHiddenOnMobile = !mobileBrands.includes(brandName);
@@ -275,30 +274,46 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-10 sm:mb-16 md:mb-24 animate-scale-in">
-        <div className="glass-morphism rounded-sm sm:rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-12 lg:p-20 text-center relative overflow-hidden border border-primary/10 shadow-2xl">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full -ml-32 -mt-32 blur-3xl opacity-50" />
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent/10 rounded-full -mr-32 -mb-32 blur-3xl opacity-50" />
+      {/* Join Our Community */}
+      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-10 sm:mb-16 md:mb-24 animate-scale-in">
+        <div className="glass-morphism rounded-sm sm:rounded-[2.5rem] md:rounded-[4rem] p-4 sm:p-6 md:p-10 lg:p-16 xl:p-20 text-center relative overflow-hidden border border-white/40 shadow-2xl">
+          {/* Decorative blobs */}
+          <div className="absolute top-0 left-0 w-72 h-72 bg-primary/10 rounded-full -ml-36 -mt-36 blur-3xl" />
+          <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent/10 rounded-full -mr-36 -mb-36 blur-3xl" />
+
           <div className="relative z-10">
+            {/* Badge */}
+            <div className="text-left mb-4 sm:mb-5 md:mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Stay Connected</span>
+              </div>
+            </div>
+
             <Link to="/community" className="group/elite inline-block">
               <h3 className="text-lg sm:text-xl md:text-3xl lg:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 tracking-tighter group-hover/elite:scale-105 transition-transform">
                 Join Our Community
               </h3>
             </Link>
-            <p className="text-xs sm:text-sm md:text-base lg:text-xl text-muted-foreground mb-6 sm:mb-8 md:mb-12 max-w-xl mx-auto font-medium">Get early access to sales and exclusive tech updates delivered to your inbox.</p>
-            <div className="flex flex-col sm:flex-row max-w-xl mx-auto gap-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-[2] px-8 py-4 md:py-6 rounded-full border border-primary/10 bg-white/90 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-primary/40 shadow-inner backdrop-blur-md transition-all font-medium"
-              />
-              <button
-                onClick={() => toast.success("Welcome to the AARO Elite! Please check your email.")}
-                className="flex-1 bg-gradient-to-r from-primary to-accent text-white px-10 py-4 md:py-6 rounded-full font-black text-sm md:text-base hover:opacity-90 transition-all shadow-xl shadow-primary/20 hover:shadow-2xl hover:-translate-y-1 active:scale-95"
+            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground mb-8 sm:mb-10 md:mb-14 max-w-xl mx-auto font-medium">Get exclusive deals, flash sales & new arrival updates directly on WhatsApp & Instagram.</p>
+            <div className="flex flex-col sm:flex-row max-w-lg mx-auto gap-4 sm:gap-5">
+              <a
+                href={contactSettings.whatsappGroupLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex-1 inline-flex items-center justify-center gap-2.5 bg-white/50 backdrop-blur-sm text-foreground border border-white/50 px-6 py-4 md:py-5 min-h-[52px] rounded-full font-black text-sm md:text-base shadow-soft hover:bg-[#25D366]/10 hover:border-[#25D366]/30 hover:text-[#25D366] hover:shadow-card hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]"
               >
-                Subscribe
-              </button>
+                <MessageCircle className="w-5 h-5 text-[#25D366] transition-colors duration-300" />
+                WhatsApp Group
+              </a>
+              <a
+                href={contactSettings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex-1 inline-flex items-center justify-center gap-2.5 bg-white/50 backdrop-blur-sm text-foreground border border-white/50 px-6 py-4 md:py-5 min-h-[52px] rounded-full font-black text-sm md:text-base shadow-soft hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-600 hover:shadow-card hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]"
+              >
+                <Instagram className="w-5 h-5 text-pink-500 transition-colors duration-300" />
+                Instagram
+              </a>
             </div>
           </div>
         </div>

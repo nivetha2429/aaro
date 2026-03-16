@@ -1,10 +1,13 @@
 import { MessageCircle, Instagram, ArrowLeft, ExternalLink, Users, Gift, Zap, Bell, Camera, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
-import { WHATSAPP_GROUP_LINK, INSTAGRAM_LINK } from "@/data/products";
+import { useData } from "@/context/DataContext";
 import PageMeta from "@/components/PageMeta";
 
-const Community = () => (
-  <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10 animate-fade-in">
+const Community = () => {
+  const { contactSettings: c } = useData();
+
+  return (
+  <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10 animate-fade-in">
     <PageMeta title="Community" description="Join our WhatsApp group for exclusive deals and follow us on Instagram for the latest products and updates." />
 
     {/* Header */}
@@ -19,14 +22,14 @@ const Community = () => (
     </div>
 
     {/* Two Cards Side by Side */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-10 sm:mb-16">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 mb-10 sm:mb-16">
 
       {/* WhatsApp Group Card */}
-      <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-6 sm:p-8 border border-[#25D366]/20 hover:border-[#25D366]/40 shadow-xl hover:shadow-2xl hover:shadow-[#25D366]/10 transition-all duration-500 flex flex-col relative overflow-hidden group">
+      <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-6 md:p-8 border border-[#25D366]/20 hover:border-[#25D366]/40 shadow-xl hover:shadow-2xl hover:shadow-[#25D366]/10 transition-all duration-500 flex flex-col relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#25D366]/5 rounded-full -mr-24 -mt-24 blur-2xl group-hover:scale-150 transition-transform duration-700" />
 
         <div className="relative z-10">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-[#25D366] flex items-center justify-center mb-6 shadow-xl shadow-green-500/30 group-hover:scale-110 transition-transform">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl sm:rounded-3xl bg-[#25D366] flex items-center justify-center mb-6 shadow-xl shadow-green-500/30 group-hover:scale-110 transition-transform">
             <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
 
@@ -54,7 +57,7 @@ const Community = () => (
         </div>
 
         <a
-          href={WHATSAPP_GROUP_LINK}
+          href={c.whatsappGroupLink}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-auto inline-flex items-center justify-center gap-3 bg-[#25D366] text-white py-3.5 sm:py-4 min-h-[44px] rounded-xl sm:rounded-2xl font-black text-sm hover:opacity-90 hover:-translate-y-1 transition-all shadow-xl shadow-green-500/20 active:scale-[0.98] whatsapp-pulse"
@@ -67,11 +70,11 @@ const Community = () => (
       </div>
 
       {/* Instagram Card */}
-      <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-6 sm:p-8 border border-pink-200/40 hover:border-pink-300/60 shadow-xl hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 flex flex-col relative overflow-hidden group">
+      <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-4 sm:p-6 md:p-8 border border-pink-200/40 hover:border-pink-300/60 shadow-xl hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-500 flex flex-col relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-orange-500/5 rounded-full -mr-24 -mt-24 blur-2xl group-hover:scale-150 transition-transform duration-700" />
 
         <div className="relative z-10">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-orange-500 flex items-center justify-center mb-6 shadow-xl shadow-pink-500/30 group-hover:scale-110 transition-transform">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-orange-500 flex items-center justify-center mb-6 shadow-xl shadow-pink-500/30 group-hover:scale-110 transition-transform">
             <Instagram className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
           </div>
 
@@ -99,7 +102,7 @@ const Community = () => (
         </div>
 
         <a
-          href={INSTAGRAM_LINK}
+          href={c.instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 text-white py-3.5 sm:py-4 min-h-[44px] rounded-xl sm:rounded-2xl font-black text-sm hover:opacity-90 hover:-translate-y-1 transition-all shadow-xl shadow-pink-500/20 active:scale-[0.98]"
@@ -108,7 +111,7 @@ const Community = () => (
           Follow Us
           <ExternalLink className="w-4 h-4 opacity-70" />
         </a>
-        <p className="text-[10px] text-muted-foreground text-center mt-3 uppercase tracking-wider font-bold">@aarosystems · Daily updates</p>
+        <p className="text-[10px] text-muted-foreground text-center mt-3 uppercase tracking-wider font-bold">{c.instagramHandle} · Daily updates</p>
       </div>
     </div>
 
@@ -119,6 +122,7 @@ const Community = () => (
       </Link>
     </div>
   </div>
-);
+  );
+};
 
 export default Community;

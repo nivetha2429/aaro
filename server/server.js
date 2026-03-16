@@ -9,9 +9,8 @@ import helmet from 'helmet';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
 import fs from 'fs';
-import pino from 'pino';
-
 import authRouter from './routes/auth.js';
 import productRouter from './routes/products.js';
 import categoryRouter from './routes/categories.js';
@@ -20,15 +19,16 @@ import reviewRouter from './routes/reviews.js';
 import offerRouter from './routes/offers.js';
 import orderRouter from './routes/orders.js';
 import bannerRouter from './routes/banners.js';
+import contactSettingsRouter from './routes/contactSettings.js';
 import userRouter from './routes/users.js';
 import { createUploadRouter } from './routes/upload.js';
 
 dotenv.config();
 
 // ── Validate required env vars at startup ──
-if (!process.env.JWT_SECRET) {
-    process.stderr.write('WARNING: JWT_SECRET is not set. Auth will not work!\n');
-}
+import { validateEnv } from './config/env.js';
+import logger from './config/logger.js';
+validateEnv();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,9 +36,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 const IS_PROD = process.env.NODE_ENV === 'production';
-
-// ── Structured Logger ──
-const logger = pino({ level: IS_PROD ? 'info' : 'debug' });
 
 // ── Compression (gzip) ──
 app.use(compression());
@@ -100,10 +97,13 @@ app.use((req, _res, next) => {
     next();
 });
 
-// ── Global API Rate Limiter (100 req / 15 min per IP) ──
+// ── Cookie Parser (for refresh tokens) ──
+app.use(cookieParser());
+
+// ── Global API Rate Limiter (200 req / 15 min per IP) ──
 const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 200,
     message: { message: 'Too many requests, please try again later' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -111,13 +111,21 @@ const globalLimiter = rateLimit({
 });
 app.use('/api', globalLimiter);
 
+// ── Ping (lightweight liveness check) ──
+app.get('/ping', (_req, res) => res.send('pong'));
+
 // ── Health Check (Render needs this) ──
+const startTime = Date.now();
 app.get('/health', (_req, res) => {
     const dbState = mongoose.connection.readyState;
-    // 1 = connected, 2 = connecting, 0/3 = disconnected/disconnecting
-    if (dbState === 1) return res.status(200).json({ status: 'ok', db: 'connected' });
-    if (dbState === 2) return res.status(503).json({ status: 'starting', db: 'connecting' });
-    res.status(503).json({ status: 'degraded', db: 'disconnected' });
+    const dbLabels = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+    const info = {
+        status: dbState === 1 ? 'ok' : dbState === 2 ? 'starting' : 'degraded',
+        db: dbLabels[dbState] || 'unknown',
+        uptime: Math.floor((Date.now() - startTime) / 1000),
+        timestamp: new Date().toISOString(),
+    };
+    res.status(dbState === 1 ? 200 : 503).json(info);
 });
 
 // ── Static: Uploads ──
@@ -134,6 +142,7 @@ app.use('/api/reviews', reviewRouter);
 app.use('/api/offers', offerRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/banners', bannerRouter);
+app.use('/api/contact-settings', contactSettingsRouter);
 app.use('/api/admin/users', userRouter);
 app.use('/api/upload', createUploadRouter(uploadsPath));
 
@@ -143,7 +152,7 @@ const indexHtml = path.join(distPath, 'index.html');
 app.use(express.static(distPath));
 app.use((_req, res, next) => {
     // API / uploads / health are handled above — skip them
-    if (_req.path.startsWith('/api') || _req.path.startsWith('/uploads') || _req.path === '/health') {
+    if (_req.path.startsWith('/api') || _req.path.startsWith('/uploads') || _req.path === '/health' || _req.path === '/ping') {
         return next();
     }
     // Always send index.html so React Router handles the URL on the client

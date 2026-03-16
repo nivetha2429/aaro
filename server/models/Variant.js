@@ -15,5 +15,6 @@ const variantSchema = new mongoose.Schema({
 
 // Prevent duplicate RAM + Storage + Color combinations for the same product
 variantSchema.index({ productId: 1, ram: 1, storage: 1, color: 1 }, { unique: true });
+variantSchema.index({ sku: 1 }, { unique: true, sparse: true });
 
 export default mongoose.model('Variant', variantSchema);

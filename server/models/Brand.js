@@ -9,4 +9,7 @@ const brandSchema = new mongoose.Schema({
     productCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
+brandSchema.index({ slug: 1 });
+brandSchema.index({ category: 1 });
+
 export default mongoose.model('Brand', brandSchema);

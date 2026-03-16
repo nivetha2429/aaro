@@ -16,4 +16,6 @@ const productModelSchema = new mongoose.Schema({
     featuresTemplate: [{ type: String }]
 }, { timestamps: true });
 
+productModelSchema.index({ category: 1, brand: 1 });
+
 export default mongoose.model('ProductModel', productModelSchema);

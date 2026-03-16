@@ -18,4 +18,7 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
+userSchema.index({ role: 1 });
+userSchema.index({ isActive: 1 });
+
 export default mongoose.model("User", userSchema);

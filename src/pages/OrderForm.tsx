@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
-import { WHATSAPP_NUMBER } from "@/data/products";
 import { MessageCircle, CheckCircle, Package, Home, ArrowLeft } from "lucide-react";
+import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
 import { orderFormSchema, type OrderFormData } from "@/lib/schemas";
 
@@ -14,6 +14,7 @@ const API_URL = import.meta.env.VITE_API_URL || "/api";
 const OrderForm = () => {
   const { items, totalPrice, clearCart } = useCart();
   const { user, token, isAuthenticated } = useAuth();
+  const { contactSettings } = useData();
   const [submitted, setSubmitted] = useState(() => sessionStorage.getItem("aaro_order_placed") === "true");
   const [loading, setLoading] = useState(false);
   const [savedWaUrl, setSavedWaUrl] = useState(() => sessionStorage.getItem("aaro_wa_url") || "");
@@ -86,7 +87,7 @@ const OrderForm = () => {
     setLoading(true);
     try {
       const fullAddress = `${data.address}, ${data.city}, ${data.state} - ${data.pincode}`;
-      const waUrl = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(buildWhatsAppMessage())}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=${contactSettings.whatsappNumber}&text=${encodeURIComponent(buildWhatsAppMessage())}`;
 
       const response = await fetch(`${API_URL}/orders`, {
         method: "POST",
@@ -127,7 +128,7 @@ const OrderForm = () => {
 
   if (submitted) {
     return (
-      <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-8 pb-32 lg:pb-8 text-center animate-fade-in">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-8 pb-32 lg:pb-8 text-center animate-fade-in">
         <div className="max-w-md mx-auto">
           <div className="relative inline-block mb-4">
             <CheckCircle className="w-20 h-20 mx-auto text-green-500 animate-elastic" />
@@ -167,7 +168,7 @@ const OrderForm = () => {
   const inputClass = "w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium";
 
   return (
-    <div className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-6 pb-32 lg:pb-6 max-w-lg animate-fade-in">
+    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-32 lg:pb-6 max-w-lg animate-fade-in">
       <div className="flex items-center gap-3 mb-6">
         <Link to="/" className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
           <ArrowLeft className="w-4 h-4" />

@@ -32,5 +32,6 @@ productSchema.index({ category: 1 });
 productSchema.index({ brand: 1, category: 1 });
 productSchema.index({ featured: 1 });
 productSchema.index({ isTrending: 1 });
+productSchema.index({ condition: 1 });
 
 export default mongoose.model('Product', productSchema);

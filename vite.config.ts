@@ -26,11 +26,22 @@ export default defineConfig(({ mode }) => ({
   appType: 'spa',
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['sonner', 'lucide-react'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/') || id.includes('node_modules/react-router')) {
+            return 'react-vendor';
+          }
+          if (id.includes('node_modules/@radix-ui')) {
+            return 'radix-ui';
+          }
+          if (id.includes('node_modules/sonner') || id.includes('node_modules/lucide-react')) {
+            return 'ui-vendor';
+          }
+          if (id.includes('node_modules/zod') || id.includes('node_modules/react-hook-form')) {
+            return 'form-utils';
+          }
         },
       },
     },
