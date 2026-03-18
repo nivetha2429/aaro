@@ -108,13 +108,13 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       {/* Backdrop */}
       <div aria-hidden="true" className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
 
       {/* Modal */}
       <div
-        className="relative bg-background rounded-t-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
+        className="relative bg-background rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -285,7 +285,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
               <Link
                 to={`/product/${product.id}`}
-                onClick={onClose}
+                onClick={() => { onClose(); window.scrollTo(0, 0); }}
                 className="w-full py-2.5 min-h-[44px] rounded-full font-bold text-sm border border-border text-foreground hover:bg-secondary/50 transition-all flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-3.5 h-3.5" /> View Full Details

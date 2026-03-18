@@ -126,7 +126,7 @@ export const OfferPopup = () => {
           role="dialog"
           aria-modal="true"
           aria-labelledby="offer-heading"
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-white/30 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md animate-fade-in"
           onClick={close}
         >
           <div

@@ -473,7 +473,7 @@ const ProductDetails = () => {
               </div>
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
-                  <div key={key} className="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] md:grid-cols-[140px_1fr] px-4 sm:px-6 py-3 hover:bg-secondary/20 transition-colors">
+                  <div key={key} className="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] md:grid-cols-[150px_1fr] gap-8 sm:gap-10 px-4 sm:px-6 py-5 sm:py-4 hover:bg-secondary/20 transition-colors">
                     <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">
                       {SPEC_LABELS[key] || key}
                     </span>
@@ -487,13 +487,13 @@ const ProductDetails = () => {
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 sm:gap-3 mb-8">
             <button onClick={handleAddToCart}
-              className={`w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base backdrop-blur-sm border ${isAdded ? "bg-green-500/10 border-green-500/30 text-green-600 shadow-soft" : isAdmin ? "bg-white/30 border-white/40 text-muted-foreground cursor-not-allowed" : "bg-white/50 border-white/50 text-foreground shadow-soft hover:shadow-card hover:-translate-y-1 active:scale-[0.98]"}`}
+              className={`w-full py-2.5 sm:py-4 min-h-[40px] sm:min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-base border ${isAdded ? "bg-green-100 border-green-300 text-green-700 shadow-md shadow-green-200/40" : isAdmin ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary/10 border-primary/30 text-primary shadow-md shadow-primary/10 hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1 active:scale-[0.98]"}`}
               disabled={isAdded || isAdmin}>
-              {isAdded ? <><Check className="w-5 h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-5 h-5" /> Admin Mode</> : <><ShoppingCart className="w-5 h-5 text-primary" /> Add to Cart</>}
+              {isAdded ? <><Check className="w-4 h-4 sm:w-5 sm:h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" /> Admin Mode</> : <><ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" /> Add to Cart</>}
             </button>
             <button onClick={handleWhatsAppOrder}
-              className="w-full py-4 min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2.5 text-sm sm:text-base backdrop-blur-sm bg-white/50 border border-white/50 text-foreground shadow-soft hover:shadow-card hover:-translate-y-1 active:scale-[0.98]">
-              <MessageCircle className="w-5 h-5 text-[#25D366]" /> Order on WhatsApp
+              className="w-full py-2.5 sm:py-4 min-h-[40px] sm:min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-base bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] shadow-md shadow-[#25D366]/10 hover:bg-[#25D366]/20 hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-1 active:scale-[0.98]">
+              <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" /> Order on WhatsApp
             </button>
           </div>
 
