@@ -122,8 +122,8 @@ const AppContents = () => {
       <div className="w-full bg-background min-h-screen flex flex-col relative">
         <Toaster richColors position="bottom-right" />
         {!isAdminPath && <Navbar />}
-        <main className={`flex-1 flex flex-col ${!isAdminPath ? "min-h-[calc(100vh-80px)]" : ""}`}>
-          <div key={location.pathname} className="page-transition flex-1 flex flex-col">
+        <main className={`flex-1 ${!isAdminPath ? "pb-20 lg:pb-0" : ""}`}>
+          <div key={location.pathname} className="page-transition">
             <Suspense fallback={<AaroLoader />}>
               <Routes>
                 <Route path="/" element={<Index />} />

@@ -185,9 +185,6 @@ const Navbar = () => {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <button aria-label="Open menu" className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-primary" onClick={() => setIsMenuOpen(true)}>
-            <Menu className="w-5 h-5" />
-          </button>
           <button aria-label="Open search" className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(!isSearchOpen)}>
             <Search className="w-5 h-5" />
           </button>

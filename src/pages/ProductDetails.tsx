@@ -468,16 +468,16 @@ const ProductDetails = () => {
           {/* Structured Specifications */}
           {specEntries.length > 0 && (
             <div className="mb-8 rounded-sm sm:rounded-3xl border border-border/50 overflow-hidden">
-              <div className="bg-secondary/30 px-6 py-3 border-b border-border/50">
+              <div className="bg-secondary/30 px-4 sm:px-6 py-3 border-b border-border/50">
                 <h3 className="font-black text-xs uppercase tracking-widest text-foreground">Specifications</h3>
               </div>
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
-                  <div key={key} className="flex items-center px-6 py-3 hover:bg-secondary/20 transition-colors">
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground w-16 sm:w-20 md:w-28 shrink-0">
+                  <div key={key} className="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] md:grid-cols-[140px_1fr] px-4 sm:px-6 py-3 hover:bg-secondary/20 transition-colors">
+                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">
                       {SPEC_LABELS[key] || key}
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-foreground">{val}</span>
+                    <span className="text-xs sm:text-sm font-bold text-foreground break-words">{val}</span>
                   </div>
                 ))}
               </div>
