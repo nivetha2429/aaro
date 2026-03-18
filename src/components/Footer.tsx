@@ -1,20 +1,22 @@
 import { Link } from "react-router-dom";
 import { Instagram, Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { useData } from "@/context/DataContext";
-import logo from "@/assets/logo.png";
 
 const Footer = () => {
   const { contactSettings: c } = useData();
-
   return (
-    <footer className="bg-background border-t border-border mt-1 md:mt-4 pb-20 lg:pb-10">
-      <div className="w-full section-px section-py pb-16 lg:pb-8">
+    <footer className="bg-background border-t border-border mt-0 pb-20 lg:pb-10">
+      <div className="w-full section-px pt-4 sm:pt-6 pb-16 lg:pb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-fluid">
 
           {/* Logo & Description */}
           <div className="text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-2 mb-3 sm:mb-5">
-              <img src={logo} alt="AARO Logo" className="w-auto object-contain" style={{ height: 'clamp(2.5rem, 2rem + 1.5vw, 4rem)' }} loading="lazy" />
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-0">
+              {c.logoUrl ? (
+                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(120px, 18vw, 170px)', maxWidth: 'clamp(360px, 45vw, 540px)' }} />
+              ) : (
+                <span className="text-xl font-black tracking-tight text-foreground">AARO<span className="text-primary italic">Systems</span></span>
+              )}
             </div>
             <p className="text-muted-foreground text-fluid-xs leading-relaxed max-w-xs mx-auto md:mx-0">Your one-stop shop for premium phones and laptops at unbeatable prices.</p>
           </div>

@@ -7,8 +7,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
 
-import logo from "@/assets/logo.png";
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -17,7 +15,8 @@ const Navbar = () => {
   const [activeIndex, setActiveIndex] = useState(-1);
   const { totalItems } = useCart();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
-  const { products } = useData();
+  const { products, contactSettings } = useData();
+
   const navigate = useNavigate();
   const location = useLocation();
   const isInsideAdmin = location.pathname.startsWith("/admin");
@@ -98,22 +97,17 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500" style={{ minHeight: 'clamp(48px, 3rem + 1vw, 72px)' }}>
-      <div className="w-full section-px py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500" style={{ minHeight: 'clamp(48px, 3rem + 1vw, 64px)' }}>
+      <div className="w-full section-px py-0 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <img
-            src={logo}
-            alt="AARO Systems Logo"
-            className="w-auto object-contain transition-transform group-hover:scale-105"
-            style={{ height: 'clamp(2.5rem, 2rem + 1.5vw, 4.5rem)', maxWidth: 'clamp(100px, 80px + 3vw, 180px)' }}
-            onError={(e) => {
-              if (!e.currentTarget.dataset.fallback) {
-                e.currentTarget.dataset.fallback = "true";
-                e.currentTarget.src = "https://placehold.co/200x60/7c3aed/ffffff?text=AARO+SYSTEMS";
-              }
-            }}
-          />
+          {contactSettings.logoUrl ? (
+            <img src={contactSettings.logoUrl} alt="AARO Systems" className="block object-contain transition-transform group-hover:scale-105 -my-6" style={{ height: 'clamp(96px, 14vw, 130px)', maxWidth: 'clamp(320px, 40vw, 450px)' }} />
+          ) : (
+            <span className="text-lg sm:text-xl font-black tracking-tight text-foreground transition-transform group-hover:scale-105">
+              AARO<span className="text-primary italic">Systems</span>
+            </span>
+          )}
         </Link>
 
         {/* Desktop Navigation */}

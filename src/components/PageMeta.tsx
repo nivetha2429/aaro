@@ -13,7 +13,8 @@ interface PageMetaProps {
 
 const SITE_NAME = "Aaro Groups";
 const SITE_URL = "https://aarogroups.com";
-const DEFAULT_IMAGE = `${SITE_URL}/logo.png`;
+const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+const DEFAULT_IMAGE = OG_IMAGE;
 
 const PageMeta = ({
   title,
@@ -48,6 +49,9 @@ const PageMeta = ({
       <meta property="og:title" content={fullTitle} />
       {description && <meta property="og:description" content={description} />}
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:type" content="image/jpeg" />
       <meta property="og:url" content={url} />
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={SITE_NAME} />

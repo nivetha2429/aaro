@@ -49,6 +49,9 @@ self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
 
+  // Only handle http/https requests (skip chrome-extension:// etc.)
+  if (!url.protocol.startsWith("http")) return;
+
   // Skip upload requests
   if (url.pathname.startsWith("/uploads/")) return;
 

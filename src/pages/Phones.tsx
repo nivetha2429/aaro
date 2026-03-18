@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { Search, SlidersHorizontal, Check, Smartphone } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import SkeletonCard from "@/components/SkeletonCard";
 import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 
 const Phones = () => {
-  const { products } = useData();
+  const { products, loading } = useData();
   const allPhones = useMemo(() => products.filter((p) => p.category === "phone"), [products]);
   const brands = useMemo(() => [...new Set(allPhones.map((p) => p.brand))].sort(), [allPhones]);
 
@@ -117,7 +118,13 @@ const Phones = () => {
 
         {/* Product Grid */}
         <div className="flex-1 w-full">
-          {filteredPhones.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : filteredPhones.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredPhones.map((p) => (
                 <ProductCard key={p.id} product={p} />

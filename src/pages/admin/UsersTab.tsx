@@ -33,7 +33,7 @@ const UsersTab = () => {
       if (res.status === 401) { toast.error("Session expired"); logout(); return; }
       if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
-      setUsers(data);
+      setUsers(Array.isArray(data) ? data : data.users || []);
     } catch {
       toast.error("Failed to load users");
     } finally {

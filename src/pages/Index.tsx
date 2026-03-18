@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, ChevronLeft, ChevronRight, MessageCircle, Instagram } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import SkeletonCard from "@/components/SkeletonCard";
 import BrandLogo from "@/components/BrandLogo";
 import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
@@ -44,7 +45,7 @@ const defaultHeroBanners = [
 ];
 
 const Index = () => {
-  const { products, brands, banners, contactSettings } = useData();
+  const { products, brands, banners, contactSettings, loading } = useData();
   const featured = products.filter((p) => p.featured);
 
   // Resolve DB banner images (map /src/assets paths to Vite imports, pass through valid URLs)
@@ -113,7 +114,7 @@ const Index = () => {
               width={1200}
               height={520}
               loading={idx === 0 ? "eager" : "lazy"}
-              fetchPriority={idx === 0 ? "high" : undefined}
+              fetchpriority={idx === 0 ? "high" : undefined}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${idx === currentSlide ? "opacity-100" : "opacity-0"}`}
             />
           ))}
@@ -192,9 +193,10 @@ const Index = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
-          {featured.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+          {loading
+            ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+            : featured.map((p) => <ProductCard key={p.id} product={p} />)
+          }
         </div>
       </section>
 
@@ -284,7 +286,7 @@ const Index = () => {
       </section>
 
       {/* Join Our Community */}
-      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-10 sm:mb-16 md:mb-24 animate-scale-in">
+      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-4 sm:mb-6 md:mb-8 animate-scale-in">
         <div className="glass-morphism rounded-fluid-xl p-fluid text-center relative overflow-hidden border border-white/40 shadow-2xl" style={{ padding: 'clamp(1rem, 0.5rem + 3vw, 5rem)' }}>
           {/* Decorative blobs */}
           <div className="absolute top-0 left-0 w-72 h-72 bg-primary/10 rounded-full -ml-36 -mt-36 blur-3xl" />

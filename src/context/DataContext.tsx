@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { isJwtExpired } from "@/lib/auth";
@@ -79,7 +79,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
 
     // Get token from AuthContext (memory) only - no localStorage fallback
-    const getToken = () => authToken;
+    const tokenRef = useRef(authToken);
+    tokenRef.current = authToken;
+    const getToken = () => tokenRef.current;
 
     const authHeaders = () => ({
         "Content-Type": "application/json",

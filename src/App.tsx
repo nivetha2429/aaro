@@ -13,7 +13,6 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
 import AdminRoute from "@/components/AdminRoute";
 import { OfferPopup } from "@/components/OfferPopup";
-import logo from "@/assets/logo.png";
 
 // Eager-load the home page (critical path)
 import Index from "./pages/Index";
@@ -39,13 +38,13 @@ const Community = lazy(() => import("./pages/Community"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Global error boundary — prevents white-screen crashes
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; errorMessage: string }> {
   constructor(props: { children: ReactNode }) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, errorMessage: "" };
   }
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, errorMessage: error?.message || "Unknown error" };
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("ErrorBoundary caught:", error, info.componentStack);
@@ -56,8 +55,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center p-8 max-w-md">
             <h1 className="text-2xl font-bold text-foreground mb-2">Something went wrong</h1>
-            <p className="text-muted-foreground mb-6">An unexpected error occurred. Please try refreshing the page.</p>
-            <button onClick={() => { this.setState({ hasError: false }); window.location.href = "/"; }}
+            <p className="text-muted-foreground mb-4">An unexpected error occurred. Please try refreshing the page.</p>
+            <p className="text-xs text-red-500 bg-red-50 p-2 rounded mb-4 font-mono break-all">{this.state.errorMessage}</p>
+            <button onClick={() => { this.setState({ hasError: false, errorMessage: "" }); window.location.href = "/"; }}
               className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-colors">
               Go Home
             </button>
@@ -69,10 +69,14 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-const AaroLoader = ({ fullScreen = false }: { fullScreen?: boolean }) => (
+const AaroLoader = ({ fullScreen = false, logoUrl = "" }: { fullScreen?: boolean; logoUrl?: string }) => (
   <div className={`${fullScreen ? "min-h-screen" : "min-h-[60vh]"} flex items-center justify-center bg-background`}>
     <div className="flex flex-col items-center gap-5">
-      <img src={logo} alt="AARO" className="h-16 sm:h-20 w-auto object-contain aaro-loader-logo" />
+      {logoUrl ? (
+        <img src={logoUrl} alt="AARO Systems" className="block object-contain aaro-loader-logo" style={{ height: 'clamp(80px, 10vw, 120px)', maxWidth: 'clamp(220px, 28vw, 300px)' }} />
+      ) : (
+        <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground aaro-loader-logo">AARO<span className="text-primary italic">Systems</span></span>
+      )}
       <div className="w-32 h-1 rounded-full bg-primary/10 aaro-loader-bar" />
       <div className="flex items-center gap-1.5">
         <div className="w-2 h-2 rounded-full bg-primary aaro-dot-1" />
@@ -108,12 +112,37 @@ const ICON_PAGES = ["/", "/phones", "/laptops", "/accessories", "/brands", "/con
 
 const AppContents = () => {
   const location = useLocation();
-  const { loading: dataLoading } = useData();
+  const { loading: dataLoading, contactSettings } = useData();
   const isAdminPath = location.pathname.startsWith("/admin");
   const showIcons = ICON_PAGES.includes(location.pathname);
 
+  // Update favicon, apple-touch-icon & cache logo for initial loader
+  useEffect(() => {
+    const logoUrl = contactSettings.logoUrl;
+    if (logoUrl) {
+      localStorage.setItem("aaro_logo", logoUrl);
+    } else {
+      localStorage.removeItem("aaro_logo");
+    }
+    if (!logoUrl) return;
+    const setIcon = (selector: string, url: string) => {
+      const el = document.querySelector(selector) as HTMLLinkElement | null;
+      if (el) el.href = url;
+    };
+    setIcon('link[rel="icon"][sizes="192x192"]', logoUrl);
+    setIcon('link[rel="icon"][sizes="96x96"]', logoUrl);
+    setIcon('link[rel="icon"][sizes="48x48"]', logoUrl);
+    setIcon('link[rel="icon"][sizes="32x32"]', logoUrl);
+    setIcon('link[rel="icon"][sizes="16x16"]', logoUrl);
+    setIcon('link[rel="shortcut icon"]', logoUrl);
+    setIcon('link[rel="apple-touch-icon"]', logoUrl);
+  }, [contactSettings.logoUrl]);
+
+  // Read cached logo for the loading screen (before contactSettings loads)
+  const cachedLogo = contactSettings.logoUrl || localStorage.getItem("aaro_logo") || "";
+
   if (dataLoading) {
-    return <AaroLoader fullScreen />;
+    return <AaroLoader fullScreen logoUrl={cachedLogo} />;
   }
 
   return (
@@ -124,7 +153,7 @@ const AppContents = () => {
         {!isAdminPath && <Navbar />}
         <main className={`flex-1 ${!isAdminPath ? "pb-20 lg:pb-0" : ""}`}>
           <div key={location.pathname} className="page-transition">
-            <Suspense fallback={<AaroLoader />}>
+            <Suspense fallback={<AaroLoader logoUrl={contactSettings.logoUrl} />}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/shop" element={<Shop />} />

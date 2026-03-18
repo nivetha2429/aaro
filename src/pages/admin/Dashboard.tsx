@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users, Phone, Shield, Loader2 } from "lucide-react";
+import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users, Phone, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ const BannersTab = React.lazy(() => import("./BannersTab"));
 const OrdersTab = React.lazy(() => import("./OrdersTab"));
 const UsersTab = React.lazy(() => import("./UsersTab"));
 const ContactTab = React.lazy(() => import("./ContactTab"));
-const CredentialsTab = React.lazy(() => import("./CredentialsTab"));
+
 
 const TabLoader = () => (
   <div className="flex items-center justify-center py-20">
@@ -31,7 +31,6 @@ const SIDEBAR_ITEMS = [
   { id: "banners", icon: Image, label: "Banners" },
   { id: "contact", icon: Phone, label: "Contact" },
   { id: "users", icon: Users, label: "Users" },
-  { id: "credentials", icon: Shield, label: "Login & Security" },
 ];
 
 const AdminDashboard = () => {
@@ -39,7 +38,10 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
-  const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem("aaro_admin_tab") || "overview");
+  const [activeTab, setActiveTab] = useState(() => {
+    const saved = sessionStorage.getItem("aaro_admin_tab") || "overview";
+    return SIDEBAR_ITEMS.some(item => item.id === saved) ? saved : "overview";
+  });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
 
@@ -75,45 +77,45 @@ const AdminDashboard = () => {
         <div className="h-full flex flex-col p-4">
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg gradient-dark flex items-center justify-center shadow-md">
-                <Package className="w-4 h-4 text-white" />
+              <div className="w-10 h-10 rounded-lg gradient-dark flex items-center justify-center shadow-md">
+                <Package className="w-5 h-5 text-white" />
               </div>
-              <span className="text-base font-black text-[#1a1f36]">AARO<span className="text-primary italic">Admin</span></span>
+              <span className="text-lg font-black text-[#1a1f36]">AARO<span className="text-primary italic">Admin</span></span>
             </div>
             <button onClick={() => setIsSidebarOpen(false)} className="xl:hidden p-1.5 text-[#a3acb9] hover:text-primary"><X className="w-5 h-5" /></button>
           </div>
           <nav className="flex-1 space-y-0.5 overflow-y-auto pr-1">
             {SIDEBAR_ITEMS.map(item => (
               <button key={item.id} onClick={() => { setActiveTab(item.id); if (window.innerWidth < 1280) setIsSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${activeTab === item.id ? "bg-primary text-white shadow-md shadow-primary/25" : "text-[#4f566b] hover:bg-[#f4f7fa]"}`}>
-                <item.icon className="w-4 h-4 flex-shrink-0" />
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === item.id ? "bg-primary text-white shadow-md shadow-primary/25" : "text-[#4f566b] hover:bg-[#f4f7fa]"}`}>
+                <item.icon className="w-5 h-5 flex-shrink-0" />
                 <span>{item.label}</span>
               </button>
             ))}
           </nav>
           <button onClick={handleLogout} className="mt-auto flex items-center gap-3 px-3 py-3 rounded-xl text-xs font-bold text-destructive hover:bg-destructive/5 transition-colors border-t border-[#eaedf3] pt-4">
-            <LogOut className="w-4 h-4" /> Sign Out
+            <LogOut className="w-5 h-5" /> Sign Out
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="h-12 xl:h-14 bg-white border-b border-[#eaedf3] px-3 sm:px-4 xl:px-8 flex items-center justify-between shrink-0 sticky top-0 z-30">
+        <header className="h-14 xl:h-16 bg-white border-b border-[#eaedf3] px-3 sm:px-4 xl:px-8 flex items-center justify-between shrink-0 sticky top-0 z-30">
           <div className="flex items-center gap-2 sm:gap-3">
             <button onClick={() => setIsSidebarOpen(true)} className={`xl:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-[#a3acb9] hover:bg-secondary rounded-xl ${isSidebarOpen ? 'hidden' : 'block'}`}>
-              <Menu className="w-5 h-5" />
+              <Menu className="w-6 h-6" />
             </button>
-            <h2 className="text-sm sm:text-base font-bold text-[#1a1f36] capitalize">{SIDEBAR_ITEMS.find(i => i.id === activeTab)?.label || activeTab}</h2>
+            <h2 className="text-base sm:text-lg font-bold text-[#1a1f36] capitalize">{SIDEBAR_ITEMS.find(i => i.id === activeTab)?.label || activeTab}</h2>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="relative p-1.5 text-[#a3acb9] hover:text-primary">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-destructive rounded-full border border-white" />
+          <div className="flex items-center gap-3">
+            <button className="relative p-2 text-[#a3acb9] hover:text-primary">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border border-white" />
             </button>
             <div className="flex items-center gap-2 border-l border-[#eaedf3] pl-3 relative">
               {isProfileOpen && <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />}
-              <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="w-8 h-8 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors flex items-center justify-center font-bold text-primary text-[10px] relative z-50">
+              <button onClick={() => setIsProfileOpen(!isProfileOpen)} className="w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors flex items-center justify-center font-bold text-primary text-xs relative z-50">
                 {user?.name?.charAt(0).toUpperCase() || "A"}
               </button>
               <div className={`absolute right-4 top-full mt-1 w-44 bg-white border border-[#eaedf3] rounded-xl shadow-xl py-1.5 transition-all transform origin-top-right z-50 ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
@@ -144,7 +146,6 @@ const AdminDashboard = () => {
               {activeTab === "banners" && <BannersTab />}
               {activeTab === "contact" && <ContactTab />}
               {activeTab === "users" && <UsersTab />}
-              {activeTab === "credentials" && <CredentialsTab />}
             </div>
           </Suspense>
         </div>
