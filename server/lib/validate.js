@@ -179,6 +179,7 @@ export const contactSettingsSchema = z.object({
     instagramUrl: z.string().max(500).default(''),
     instagramHandle: z.string().max(100).default(''),
     whatsappGroupLink: z.string().max(500).default(''),
+    logoUrl: z.string().max(500).optional().default(''),
     branches: z.array(branchSettingsSchema).default([]),
 });
 

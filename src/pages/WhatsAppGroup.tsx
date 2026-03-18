@@ -7,7 +7,7 @@ const WhatsAppGroup = () => {
   const { contactSettings } = useData();
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-6 sm:py-12 md:py-24 animate-fade-in">
+    <div className="w-full section-px py-6 sm:py-12 md:py-24 animate-fade-in">
       <PageMeta title="Join WhatsApp Group" description="Join the AARO Systems WhatsApp group for exclusive deals, offers, and new arrivals." />
 
       {/* Hero Section */}

@@ -30,8 +30,21 @@ const Phones = () => {
   }, [allPhones, search, selectedBrands, conditionFilter]);
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
-      <PageMeta title="Smartphones" description="Browse our collection of premium smartphones from top brands. Find the latest models at the best prices." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
+      <PageMeta
+        title="Buy Mobile Phones Online"
+        description="Buy latest mobile phones at best prices in Coimbatore. iPhone, Samsung, OnePlus, Xiaomi, Vivo & more. New & refurbished phones with warranty at Aaro Groups."
+        keywords="buy mobile phone Coimbatore, iPhone price India, Samsung phone online, OnePlus Coimbatore, refurbished phones India"
+        canonicalPath="/phones"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aarogroups.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Phones", "item": "https://aarogroups.com/phones" }
+          ]
+        }}
+      />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>
           <h1 className="text-glow mb-1">Phones</h1>
@@ -105,7 +118,7 @@ const Phones = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {filteredPhones.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredPhones.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

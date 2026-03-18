@@ -157,6 +157,7 @@ export interface ContactSettings {
   instagramUrl: string;
   instagramHandle: string;
   whatsappGroupLink: string;
+  logoUrl: string;
   branches: Branch[];
 }
 
@@ -168,6 +169,7 @@ export const DEFAULT_CONTACT: ContactSettings = {
   instagramUrl: "https://instagram.com/aarosystems",
   instagramHandle: "@aarosystems",
   whatsappGroupLink: "https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK",
+  logoUrl: "",
   branches: [
     { name: "AARO Systems — Karur Main", address: "123, Jawahar Bazaar, Near Bus Stand, Karur, Tamil Nadu 639001", phone: "+91 86680 54205", whatsapp: "917094223143", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Karur+Bus+Stand+Tamil+Nadu" },
     { name: "AARO Systems — Karur Branch 2", address: "45, Kovai Road, Thanthonimalai, Karur, Tamil Nadu 639002", phone: "+91 70104 52495", whatsapp: "917010452495", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Thanthonimalai+Karur+Tamil+Nadu" },

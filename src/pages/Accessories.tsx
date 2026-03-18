@@ -30,8 +30,21 @@ const Accessories = () => {
   }, [allAccessories, search, selectedBrands, conditionFilter]);
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
-      <PageMeta title="Accessories" description="Browse our collection of premium accessories. Find the latest gadgets and add-ons at the best prices." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
+      <PageMeta
+        title="Buy Accessories Online"
+        description="Shop phone & laptop accessories at Aaro Groups Coimbatore. Cases, chargers, earbuds, headphones & more at best prices with fast delivery."
+        keywords="phone accessories Coimbatore, laptop accessories India, earbuds online, charger price, headphones Coimbatore"
+        canonicalPath="/accessories"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aarogroups.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Accessories", "item": "https://aarogroups.com/accessories" }
+          ]
+        }}
+      />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>
           <h1 className="text-glow mb-1">Accessories</h1>
@@ -104,7 +117,7 @@ const Accessories = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {filteredAccessories.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredAccessories.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

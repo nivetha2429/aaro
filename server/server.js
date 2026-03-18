@@ -22,6 +22,7 @@ import bannerRouter from './routes/banners.js';
 import contactSettingsRouter from './routes/contactSettings.js';
 import userRouter from './routes/users.js';
 import { createUploadRouter } from './routes/upload.js';
+import sitemapRouter from './routes/sitemap.js';
 
 dotenv.config();
 
@@ -131,7 +132,19 @@ app.get('/health', (_req, res) => {
 // ── Static: Uploads ──
 const uploadsPath = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsPath)) fs.mkdirSync(uploadsPath, { recursive: true });
-app.use('/uploads', express.static(uploadsPath));
+app.use('/uploads', express.static(uploadsPath, { maxAge: '7d' }));
+
+// ── Cache-Control for public GET API routes (5 min) ──
+const cacheableApiPaths = ['/api/products', '/api/categories', '/api/brands', '/api/banners', '/api/offers', '/api/contact-settings'];
+app.use((req, res, next) => {
+    if (req.method === 'GET' && cacheableApiPaths.some(p => req.path === p || req.path.startsWith(p + '/'))) {
+        res.set('Cache-Control', 'public, max-age=300');
+    }
+    if (req.path.startsWith('/api/auth') || req.path.startsWith('/api/orders')) {
+        res.set('Cache-Control', 'no-store');
+    }
+    next();
+});
 
 // ── API Routes (must come before static/SPA catch-all) ──
 app.use('/api/auth', authRouter);
@@ -145,11 +158,20 @@ app.use('/api/banners', bannerRouter);
 app.use('/api/contact-settings', contactSettingsRouter);
 app.use('/api/admin/users', userRouter);
 app.use('/api/upload', createUploadRouter(uploadsPath));
+app.use('/sitemap.xml', sitemapRouter);
 
 // ── Static: React Frontend & SPA Catch-all ──
 const distPath = path.join(__dirname, '..', 'dist');
 const indexHtml = path.join(distPath, 'index.html');
-app.use(express.static(distPath));
+app.use(express.static(distPath, {
+    maxAge: '1y',
+    immutable: true,
+    setHeaders(res, filePath) {
+        if (filePath.endsWith('.html')) {
+            res.set('Cache-Control', 'no-cache');
+        }
+    },
+}));
 app.use((_req, res, next) => {
     // API / uploads / health are handled above — skip them
     if (_req.path.startsWith('/api') || _req.path.startsWith('/uploads') || _req.path === '/health' || _req.path === '/ping') {

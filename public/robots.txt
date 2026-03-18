@@ -1,3 +1,25 @@
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /phones
+Allow: /laptops
+Allow: /accessories
+Allow: /brands
+Allow: /contact
+Allow: /community
+Allow: /product/
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /order
+Disallow: /my-orders
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /uploads/
+
 User-agent: Googlebot
 Allow: /
 
@@ -10,7 +32,4 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
-
-Sitemap: https://aaro.onrender.com/sitemap.xml
+Sitemap: https://aarogroups.com/sitemap.xml

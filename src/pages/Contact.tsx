@@ -8,8 +8,26 @@ const Contact = () => {
   const branches = contactSettings.branches;
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
-      <PageMeta title="Contact Us" description="Visit or call any of our branches in Karur. Get in touch with Aaro Systems for product inquiries and support." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
+      <PageMeta
+        title="Contact Us"
+        description="Visit Aaro Groups store in Coimbatore or call us for product enquiries. Phone, WhatsApp & store visit available. Open Monday to Saturday."
+        keywords="Aaro Groups contact, electronics shop Coimbatore address, phone store near me, mobile shop contact number"
+        canonicalPath="/contact"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Aaro Groups",
+          "telephone": "+917010452495",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Coimbatore",
+            "addressRegion": "Tamil Nadu",
+            "addressCountry": "IN"
+          },
+          "openingHours": "Mo-Sa 09:00-21:00"
+        }}
+      />
 
       <div className="flex items-center gap-3 mb-6">
         <Link to="/" className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">

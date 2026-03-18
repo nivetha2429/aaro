@@ -12,7 +12,7 @@ const CustomerDashboard = () => {
     // Admin view — simple: Admin Panel, My Profile, Logout
     if (isAdmin) {
         return (
-            <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
+            <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
                 <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
                     <div className="flex items-center gap-4">
                         <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">
@@ -69,7 +69,7 @@ const CustomerDashboard = () => {
     ];
 
     return (
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
+        <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
                     <div className="w-20 h-20 rounded-3xl gradient-dark flex items-center justify-center text-3xl text-white shadow-2xl shadow-primary/20">

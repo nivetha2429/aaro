@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Package, Truck, Clock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
+import PageMeta from "@/components/PageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
@@ -47,11 +48,12 @@ const MyOrders = () => {
         }
     };
 
-    if (loading) return <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
+    if (loading) return <div className="w-full section-px p-12 text-center animate-pulse text-muted-foreground">Loading your orders...</div>;
 
     return (
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in">
-            <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-foreground">My Orders</h1>
+        <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in">
+            <PageMeta title="My Orders" description="Track your orders at Aaro Groups." robots="noindex, nofollow" />
+            <h1 className="text-fluid-2xl font-bold mb-8 text-foreground">My Orders</h1>
 
             {orders.length === 0 ? (
                 <div className="bg-card border border-border rounded-sm sm:rounded-2xl p-12 text-center">
@@ -63,26 +65,26 @@ const MyOrders = () => {
                 <div className="space-y-6">
                     {orders.map((order) => (
                         <div key={order._id} className="bg-card border border-border rounded-sm sm:rounded-2xl overflow-hidden shadow-soft hover:shadow-lg transition-shadow">
-                            <div className="p-4 sm:p-6 bg-secondary/30 flex flex-wrap justify-between items-center gap-3">
+                            <div className="p-fluid bg-secondary/30 flex flex-wrap justify-between items-center gap-fluid-sm">
                                 <div>
-                                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Order ID</p>
-                                    <p className="text-sm font-mono text-foreground">#{order._id.slice(-8).toUpperCase()}</p>
+                                    <p className="text-fluid-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Order ID</p>
+                                    <p className="text-fluid-sm font-mono text-foreground">#{order._id.slice(-8).toUpperCase()}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Placed on</p>
-                                    <p className="text-sm text-foreground">{new Date(order.createdAt).toLocaleDateString()}</p>
+                                    <p className="text-fluid-xs text-muted-foreground uppercase font-bold tracking-wider mb-1">Placed on</p>
+                                    <p className="text-fluid-sm text-foreground">{new Date(order.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex items-center gap-2 bg-background/50 px-3 py-1.5 rounded-full border border-border">
                                     {getStatusIcon(order.status)}
-                                    <span className="text-sm font-bold text-foreground">{order.status}</span>
+                                    <span className="text-fluid-sm font-bold text-foreground">{order.status}</span>
                                 </div>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="p-fluid space-y-4">
                                 <div className="space-y-3">
                                     {order.items.map((item: any, idx: number) => (
-                                        <div key={idx} className="flex items-center gap-4 border-b border-border/50 pb-3 last:border-0">
+                                        <div key={idx} className="flex items-center gap-fluid-sm border-b border-border/50 pb-3 last:border-0">
                                             {/* Product Image */}
-                                            <div className="w-16 h-16 rounded-sm sm:rounded-xl bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-fluid bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
                                                 {item.product?.images?.[0] ? (
                                                     <img
                                                         src={item.product.images[0]}
@@ -101,23 +103,23 @@ const MyOrders = () => {
                                             </div>
                                             {/* Details */}
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-foreground truncate">{item.product?.name}</p>
+                                                <p className="text-fluid-sm font-bold text-foreground truncate">{item.product?.name}</p>
                                                 {(item.ram || item.storage || item.color) && (
-                                                    <p className="text-xs text-muted-foreground mt-0.5">
+                                                    <p className="text-fluid-xs text-muted-foreground mt-0.5">
                                                         {[item.ram, item.storage, item.color].filter(Boolean).join(" / ")}
                                                     </p>
                                                 )}
-                                                <p className="text-xs text-muted-foreground">Qty: {item.quantity}</p>
+                                                <p className="text-fluid-xs text-muted-foreground">Qty: {item.quantity}</p>
                                             </div>
-                                            <span className="text-sm font-black text-primary shrink-0">
+                                            <span className="text-fluid-sm font-black text-primary shrink-0">
                                                 ₹{((item.price ?? item.product?.price ?? 0) * item.quantity).toLocaleString()}
                                             </span>
                                         </div>
                                     ))}
                                 </div>
                                 <div className="flex justify-between items-center pt-2">
-                                    <span className="text-muted-foreground text-sm font-medium">Total Amount</span>
-                                    <span className="text-xl font-bold text-primary">₹{order.totalAmount.toLocaleString()}</span>
+                                    <span className="text-muted-foreground text-fluid-sm font-medium">Total Amount</span>
+                                    <span className="text-fluid-lg font-bold text-primary">₹{order.totalAmount.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>

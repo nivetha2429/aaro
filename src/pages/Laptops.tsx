@@ -30,8 +30,21 @@ const Laptops = () => {
   }, [allLaptops, search, selectedBrands, conditionFilter]);
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
-      <PageMeta title="Laptops" description="Explore premium laptops for work, gaming, and creativity. Top brands at competitive prices with free shipping." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
+      <PageMeta
+        title="Buy Laptops Online"
+        description="Buy laptops at best prices in Coimbatore. HP, Dell, Lenovo, Apple MacBook & more. Gaming, business & student laptops with warranty at Aaro Groups."
+        keywords="buy laptop Coimbatore, HP laptop price, Dell laptop India, MacBook Coimbatore, gaming laptop Tamil Nadu, student laptop deals"
+        canonicalPath="/laptops"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aarogroups.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Laptops", "item": "https://aarogroups.com/laptops" }
+          ]
+        }}
+      />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6 border-b border-primary/10 pb-4">
         <div>
           <h1 className="text-glow mb-1">Laptops</h1>
@@ -104,7 +117,7 @@ const Laptops = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {filteredLaptops.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredLaptops.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

@@ -1,15 +1,31 @@
-const CACHE_VERSION = 2;
+const CACHE_VERSION = 3;
 const STATIC_CACHE = `aaro-static-v${CACHE_VERSION}`;
 const API_CACHE = `aaro-api-v${CACHE_VERSION}`;
-const STATIC_ASSETS = ["/", "/manifest.json"];
 
-// API routes to cache (stale-while-revalidate)
-const CACHEABLE_API = ["/api/products", "/api/categories", "/api/brands", "/api/banners", "/api/offers"];
+// Precache on install
+const PRECACHE_URLS = [
+  "/",
+  "/manifest.json",
+  "/offline.html",
+];
 
-// Install — cache shell
+// API routes eligible for stale-while-revalidate
+const CACHEABLE_API = [
+  "/api/products",
+  "/api/categories",
+  "/api/brands",
+  "/api/banners",
+  "/api/offers",
+  "/api/contact-settings",
+];
+
+// Static asset extensions — cache-first
+const STATIC_EXT = /\.(js|css|woff2?|ttf|eot|png|jpe?g|gif|webp|avif|svg|ico)$/i;
+
+// Install — precache critical assets
 self.addEventListener("install", (e) => {
   e.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(STATIC_CACHE).then((cache) => cache.addAll(PRECACHE_URLS))
   );
   self.skipWaiting();
 });
@@ -36,18 +52,35 @@ self.addEventListener("fetch", (e) => {
   // Skip upload requests
   if (url.pathname.startsWith("/uploads/")) return;
 
-  // API requests: stale-while-revalidate for cacheable endpoints
+  // Static assets: cache-first
+  if (STATIC_EXT.test(url.pathname)) {
+    e.respondWith(
+      caches.match(e.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(e.request).then((res) => {
+          if (res.status === 200) {
+            const clone = res.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
+        });
+      })
+    );
+    return;
+  }
+
+  // API requests: network-first with cache fallback
   if (CACHEABLE_API.some((path) => url.pathname === path)) {
     e.respondWith(
-      caches.open(API_CACHE).then((cache) =>
-        cache.match(e.request).then((cached) => {
-          const fetchPromise = fetch(e.request).then((res) => {
-            if (res.status === 200) cache.put(e.request, res.clone());
-            return res;
-          });
-          return cached || fetchPromise;
+      fetch(e.request)
+        .then((res) => {
+          if (res.status === 200) {
+            const clone = res.clone();
+            caches.open(API_CACHE).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
         })
-      )
+        .catch(() => caches.match(e.request))
     );
     return;
   }
@@ -55,7 +88,25 @@ self.addEventListener("fetch", (e) => {
   // Skip non-cacheable API calls (auth, orders, etc.)
   if (url.pathname.startsWith("/api/")) return;
 
-  // Static assets: network first, fallback to cache
+  // HTML navigation: network-first, offline fallback
+  if (e.request.mode === "navigate") {
+    e.respondWith(
+      fetch(e.request)
+        .then((res) => {
+          if (res.status === 200) {
+            const clone = res.clone();
+            caches.open(STATIC_CACHE).then((cache) => cache.put(e.request, clone));
+          }
+          return res;
+        })
+        .catch(() =>
+          caches.match(e.request).then((cached) => cached || caches.match("/offline.html"))
+        )
+    );
+    return;
+  }
+
+  // Other: network first, cache fallback
   e.respondWith(
     fetch(e.request)
       .then((res) => {

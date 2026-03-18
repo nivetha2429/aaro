@@ -27,6 +27,16 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
     sourcemap: false,
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 600,
+    assetsInlineLimit: 4096,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: mode === 'production',
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -41,6 +51,9 @@ export default defineConfig(({ mode }) => ({
           }
           if (id.includes('node_modules/zod') || id.includes('node_modules/react-hook-form')) {
             return 'form-utils';
+          }
+          if (id.includes('node_modules/react-helmet') || id.includes('node_modules/swiper')) {
+            return 'lib-vendor';
           }
         },
       },

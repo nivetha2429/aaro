@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { isJwtExpired } from "@/lib/auth";
@@ -580,9 +580,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             headers: authHeaders(),
             body: JSON.stringify(settings),
         });
-        if (!res.ok) throw new Error((await res.json()).message);
-        const updated = await res.json();
-        setContactSettings({ ...DEFAULT_CONTACT, ...updated });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to update contact settings");
+        setContactSettings({ ...DEFAULT_CONTACT, ...data });
     };
 
     const fetchMyOrders = async () => {
@@ -597,48 +597,48 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const contextValue = useMemo(() => ({
+        products,
+        reviews,
+        offers,
+        categories,
+        brands,
+        models,
+        banners,
+        loading,
+        error,
+        activeOffer,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        addCategory,
+        updateCategory,
+        deleteCategory,
+        addBrand,
+        updateBrand,
+        deleteBrand,
+        addOffer,
+        updateOffer,
+        deleteOffer,
+        addBanner,
+        updateBanner,
+        deleteBanner,
+        addReview,
+        updateReview,
+        deleteReview,
+        fetchReviews,
+        fetchModelsByCategory,
+        fetchVariants,
+        addVariant,
+        updateVariant,
+        deleteVariant,
+        fetchMyOrders,
+        contactSettings,
+        updateContactSettings,
+    }), [products, reviews, offers, categories, brands, models, banners, loading, error, activeOffer, contactSettings]);
+
     return (
-        <DataContext.Provider
-            value={{
-                products,
-                reviews,
-                offers,
-                categories,
-                brands,
-                models,
-                banners,
-                loading,
-                error,
-                activeOffer,
-                addProduct,
-                updateProduct,
-                deleteProduct,
-                addCategory,
-                updateCategory,
-                deleteCategory,
-                addBrand,
-                updateBrand,
-                deleteBrand,
-                addOffer,
-                updateOffer,
-                deleteOffer,
-                addBanner,
-                updateBanner,
-                deleteBanner,
-                addReview,
-                updateReview,
-                deleteReview,
-                fetchReviews,
-                fetchModelsByCategory,
-                fetchVariants,
-                addVariant,
-                updateVariant,
-                deleteVariant,
-                fetchMyOrders,
-                contactSettings,
-                updateContactSettings,
-            }}
-        >
+        <DataContext.Provider value={contextValue}>
             {children}
         </DataContext.Provider>
     );

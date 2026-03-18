@@ -19,7 +19,7 @@ const Cart = () => {
   if (items.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-16">
-        <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
+        <PageMeta title="Shopping Cart" description="Review your shopping cart at Aaro Groups." robots="noindex, nofollow" />
         <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-5">
           <ShoppingCart className="w-10 h-10 text-primary" />
         </div>
@@ -33,8 +33,8 @@ const Cart = () => {
   }
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
-      <PageMeta title="Cart" description="Review your shopping cart at Aaro Systems." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
+      <PageMeta title="Shopping Cart" description="Review your shopping cart at Aaro Groups." robots="noindex, nofollow" />
 
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -42,19 +42,19 @@ const Cart = () => {
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Shopping Cart</h1>
+          <h1 className="text-fluid-xl font-bold text-foreground">Shopping Cart</h1>
           <p className="text-xs text-muted-foreground">{totalItems} {totalItems === 1 ? "item" : "items"}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-fluid items-start">
         {/* Cart Items */}
         <div className="md:col-span-2 space-y-3">
           {items.map((item) => (
-            <div key={`${item.product.id}-${item.ram || 'noram'}-${item.storage || 'nostorage'}-${item.color || 'nocolor'}`} className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-2 sm:p-3 md:p-4 flex gap-2 sm:gap-3 md:gap-4 group hover:shadow-md transition-shadow">
+            <div key={`${item.product.id}-${item.ram || 'noram'}-${item.storage || 'nostorage'}-${item.color || 'nocolor'}`} className="bg-white rounded-fluid-lg border border-border/60 shadow-sm p-fluid flex gap-fluid-sm group hover:shadow-md transition-shadow">
               {/* Product Image */}
               <Link to={`/product/${item.product.id}`} className="shrink-0">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl bg-gray-50 overflow-hidden flex items-center justify-center">
+                <div className="rounded-fluid bg-gray-50 overflow-hidden flex items-center justify-center" style={{ width: 'clamp(3.5rem, 3rem + 2vw, 6rem)', height: 'clamp(3.5rem, 3rem + 2vw, 6rem)' }}>
                   {item.product.images?.[0] ? (
                     <img
                       src={item.product.images[0]}
@@ -72,11 +72,11 @@ const Cart = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wide">{item.product.brand}</p>
-                    <Link to={`/product/${item.product.id}`} className="font-bold text-sm sm:text-base text-foreground hover:text-primary transition-colors line-clamp-1 block">
+                    <p className="text-fluid-xs font-semibold text-muted-foreground uppercase tracking-wide">{item.product.brand}</p>
+                    <Link to={`/product/${item.product.id}`} className="font-bold text-fluid-sm text-foreground hover:text-primary transition-colors line-clamp-1 block">
                       {item.product.name}
                     </Link>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">{item.ram} · {item.storage} · {item.color}</p>
+                    <p className="text-fluid-xs text-muted-foreground mt-0.5">{item.ram} · {item.storage} · {item.color}</p>
                   </div>
                   <button
                     aria-label={`Remove ${item.product.name} from cart`}
@@ -107,7 +107,7 @@ const Cart = () => {
                     </button>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-base sm:text-lg text-foreground">₹{(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="font-bold text-fluid-base text-foreground">₹{(item.price * item.quantity).toLocaleString()}</p>
                     {item.quantity > 1 && (
                       <p className="text-[10px] text-muted-foreground">₹{item.price.toLocaleString()} each</p>
                     )}
@@ -120,8 +120,8 @@ const Cart = () => {
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white rounded-xl sm:rounded-2xl border border-border/60 shadow-sm p-4 sm:p-5 md:p-6 h-fit md:sticky md:top-24">
-          <h3 className="text-lg font-bold text-foreground mb-5">Order Summary</h3>
+        <div className="bg-white rounded-fluid-lg border border-border/60 shadow-sm p-fluid h-fit md:sticky md:top-24">
+          <h3 className="text-fluid-lg font-bold text-foreground mb-5">Order Summary</h3>
 
           <div className="space-y-3 mb-5">
             <div className="flex justify-between text-sm">
@@ -134,7 +134,7 @@ const Cart = () => {
             </div>
             <div className="pt-4 border-t flex justify-between items-center">
               <span className="font-bold text-foreground">Total</span>
-              <span className="text-xl sm:text-2xl font-bold text-primary">₹{totalPrice.toLocaleString()}</span>
+              <span className="text-fluid-xl font-bold text-primary">₹{totalPrice.toLocaleString()}</span>
             </div>
           </div>
 

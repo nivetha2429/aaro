@@ -98,14 +98,15 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500">
-      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
+    <header className="sticky top-0 z-50 w-full bg-white/60 backdrop-blur-lg border-b border-primary/10 shadow-sm transition-all duration-500" style={{ minHeight: 'clamp(48px, 3rem + 1vw, 72px)' }}>
+      <div className="w-full section-px py-1.5 sm:py-2 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img
             src={logo}
             alt="AARO Systems Logo"
-            className="h-12 sm:h-14 lg:h-16 xl:h-18 w-auto max-w-[120px] sm:max-w-[140px] lg:max-w-none object-contain transition-transform group-hover:scale-105"
+            className="w-auto object-contain transition-transform group-hover:scale-105"
+            style={{ height: 'clamp(2.5rem, 2rem + 1.5vw, 4.5rem)', maxWidth: 'clamp(100px, 80px + 3vw, 180px)' }}
             onError={(e) => {
               if (!e.currentTarget.dataset.fallback) {
                 e.currentTarget.dataset.fallback = "true";

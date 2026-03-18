@@ -144,7 +144,7 @@ const ProductDetails = () => {
 
   if (!product) {
     return (
-      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-8 text-center">
+      <div className="w-full section-px py-8 text-center">
         <p className="text-muted-foreground">Product not found.</p>
         <Link to="/shop" className="text-primary hover:underline text-sm mt-2 inline-block">Back to Shop</Link>
       </div>
@@ -250,11 +250,13 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6">
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
-        title={product.name}
-        description={`${product.brand} ${product.name} — ${product.description?.slice(0, 150)}`}
+        title={`${product.brand} ${product.name} — Buy Online`}
+        description={`Buy ${product.brand} ${product.name}${selectedVariant ? ` (${[selectedVariant.ram, selectedVariant.storage].filter(Boolean).join('/')})` : ''} at best price in India. ${(product.condition || 'new') === 'new' ? 'Brand new' : 'Refurbished'} with warranty. Free shipping from Aaro Groups Coimbatore.`}
+        keywords={`${product.brand} ${product.name} price, buy ${product.name} online, ${product.brand} ${product.category} Coimbatore, ${product.name} specs`}
         ogImage={product.images?.[0]}
+        canonicalPath={`/product/${product.id}`}
         structuredData={{
           "@context": "https://schema.org",
           "@type": "Product",
@@ -269,6 +271,7 @@ const ProductDetails = () => {
             lowPrice: Math.min(...variants.map(v => v.price)),
             highPrice: Math.max(...variants.map(v => v.price)),
             offerCount: variants.length,
+            availability: "https://schema.org/InStock",
           } : undefined,
         }}
       />
@@ -279,7 +282,7 @@ const ProductDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 items-start">
         {/* ── Image Gallery ── */}
         <div className="space-y-4 animate-fade-in md:sticky md:top-24">
-          <div className="glass-card rounded-sm sm:rounded-[2.5rem] p-2 sm:p-4 md:p-8 lg:p-12 aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
+          <div className="glass-card rounded-fluid-xl p-fluid aspect-square flex items-center justify-center relative overflow-hidden group border border-white/50 shadow-2xl bg-white/40">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
             {hasImages ? (
               <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
@@ -334,7 +337,7 @@ const ProductDetails = () => {
             )}
           </div>
 
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 leading-tight tracking-tight drop-shadow-sm">
+          <h1 className="text-fluid-2xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 leading-tight tracking-tight drop-shadow-sm">
             {product.name}
           </h1>
 
@@ -350,9 +353,9 @@ const ProductDetails = () => {
           </div>
 
           <div className="flex items-baseline gap-4 mb-2 animate-fade-in" key={currentPrice}>
-            <span className="text-2xl sm:text-3xl md:text-4xl font-black text-primary tracking-tighter">₹{currentPrice.toLocaleString()}</span>
+            <span className="text-fluid-price font-black text-primary tracking-tighter">₹{currentPrice.toLocaleString()}</span>
             {currentMRP > currentPrice && (
-              <span className="text-base sm:text-xl text-muted-foreground line-through opacity-50">₹{currentMRP.toLocaleString()}</span>
+              <span className="text-fluid-sm text-muted-foreground line-through opacity-50">₹{currentMRP.toLocaleString()}</span>
             )}
           </div>
 
@@ -368,7 +371,7 @@ const ProductDetails = () => {
           </div>
 
           {/* Amazon-style Variant Selection */}
-          <div className="space-y-6 mb-8 bg-zinc-50/50 p-2 sm:p-4 md:p-6 rounded-sm sm:rounded-[2rem] border border-border">
+          <div className="space-y-6 mb-8 bg-zinc-50/50 p-fluid rounded-fluid-lg border border-border">
             {/* RAM Options */}
             <div className="space-y-3">
               <label className="text-[11px] font-black uppercase text-muted-foreground tracking-widest ml-1">Select RAM</label>
@@ -447,7 +450,7 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-8 max-w-xl">{product.description}</p>
+          <p className="text-muted-foreground text-fluid-sm leading-relaxed mb-8 max-w-xl">{product.description}</p>
 
           {/* Features Badges */}
           {product.features && product.features.length > 0 && (
@@ -473,11 +476,11 @@ const ProductDetails = () => {
               </div>
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
-                  <div key={key} className="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] md:grid-cols-[150px_1fr] gap-8 sm:gap-10 px-4 sm:px-6 py-5 sm:py-4 hover:bg-secondary/20 transition-colors">
-                    <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  <div key={key} className="flex flex-col xs:flex-row xs:items-baseline gap-1 xs:gap-fluid px-fluid py-fluid hover:bg-secondary/20 transition-colors">
+                    <span className="text-fluid-xs font-black uppercase tracking-wider text-muted-foreground xs:min-w-[90px] sm:min-w-[120px] md:min-w-[150px] shrink-0">
                       {SPEC_LABELS[key] || key}
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-foreground break-words">{val}</span>
+                    <span className="text-fluid-sm font-bold text-foreground break-words">{val}</span>
                   </div>
                 ))}
               </div>
@@ -485,14 +488,14 @@ const ProductDetails = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-2 sm:gap-3 mb-8">
+          <div className="flex flex-col gap-fluid-sm mb-8">
             <button onClick={handleAddToCart}
-              className={`w-full py-2.5 sm:py-4 min-h-[40px] sm:min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-base border ${isAdded ? "bg-green-100 border-green-300 text-green-700 shadow-md shadow-green-200/40" : isAdmin ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary/10 border-primary/30 text-primary shadow-md shadow-primary/10 hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1 active:scale-[0.98]"}`}
+              className={`w-full py-fluid min-h-[44px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 text-fluid-sm border ${isAdded ? "bg-green-100 border-green-300 text-green-700 shadow-md shadow-green-200/40" : isAdmin ? "bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary/10 border-primary/30 text-primary shadow-md shadow-primary/10 hover:bg-primary/20 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-1 active:scale-[0.98]"}`}
               disabled={isAdded || isAdmin}>
               {isAdded ? <><Check className="w-4 h-4 sm:w-5 sm:h-5" /> Added to Cart</> : isAdmin ? <><ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" /> Admin Mode</> : <><ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" /> Add to Cart</>}
             </button>
             <button onClick={handleWhatsAppOrder}
-              className="w-full py-2.5 sm:py-4 min-h-[40px] sm:min-h-[52px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-base bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] shadow-md shadow-[#25D366]/10 hover:bg-[#25D366]/20 hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-1 active:scale-[0.98]">
+              className="w-full py-fluid min-h-[44px] rounded-full font-black transition-all duration-300 flex items-center justify-center gap-2 text-fluid-sm bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] shadow-md shadow-[#25D366]/10 hover:bg-[#25D366]/20 hover:shadow-lg hover:shadow-[#25D366]/20 hover:-translate-y-1 active:scale-[0.98]">
               <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" /> Order on WhatsApp
             </button>
           </div>
@@ -508,7 +511,7 @@ const ProductDetails = () => {
       {/* ── Product Video ── */}
       {videoEmbed && (
         <div className="mt-16">
-          <h2 className="text-xl md:text-2xl font-black text-foreground mb-6 flex items-center gap-3">
+          <h2 className="text-fluid-xl font-black text-foreground mb-6 flex items-center gap-3">
             <Play className="w-6 h-6 text-primary" /> Product Video
           </h2>
           <div className="rounded-sm sm:rounded-3xl overflow-hidden shadow-2xl border border-border/30 aspect-video">
@@ -525,7 +528,7 @@ const ProductDetails = () => {
 
       {/* ── Reviews Section ── */}
       <div className="mt-16">
-        <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
+        <h2 className="text-fluid-xl font-black text-foreground mb-8 flex items-center gap-3">
           <Star className="w-6 h-6 text-accent fill-accent" /> Reviews & Ratings
           <span className="text-sm font-normal text-muted-foreground">({reviews.length})</span>
         </h2>
@@ -571,10 +574,10 @@ const ProductDetails = () => {
         if (related.length === 0) return null;
         return (
           <div className="mt-16">
-            <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
+            <h2 className="text-fluid-xl font-black text-foreground mb-8 flex items-center gap-3">
               <Tag className="w-6 h-6 text-primary" /> You May Also Like
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-fluid">
               {related.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
           </div>
@@ -584,10 +587,10 @@ const ProductDetails = () => {
       {/* Recently Viewed */}
       {recentlyViewed.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-xl md:text-2xl font-black text-foreground mb-8 flex items-center gap-3">
+          <h2 className="text-fluid-xl font-black text-foreground mb-8 flex items-center gap-3">
             <Clock className="w-6 h-6 text-primary" /> Recently Viewed
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-fluid">
             {recentlyViewed.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         </div>

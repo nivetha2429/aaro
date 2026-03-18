@@ -37,7 +37,7 @@ const Brands = () => {
 
   if (loading) {
     return (
-      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-16 text-center animate-pulse text-muted-foreground">
+      <div className="w-full section-px py-16 text-center animate-pulse text-muted-foreground">
         Loading brands...
       </div>
     );
@@ -91,8 +91,13 @@ const Brands = () => {
   );
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10">
-      <PageMeta title="Brands" description="Browse all brands available at Aaro Systems. Premium tech from trusted manufacturers." />
+    <div className="w-full section-px py-4 sm:py-6 md:py-10 pb-24 lg:pb-10">
+      <PageMeta
+        title="Shop by Brand"
+        description="Explore top electronics brands at Aaro Groups. Apple, Samsung, OnePlus, HP, Dell, Lenovo & more. Find your favourite brand's latest products."
+        keywords="Apple store Coimbatore, Samsung shop, OnePlus dealer, HP laptops, Dell Coimbatore, brand electronics India"
+        canonicalPath="/brands"
+      />
       {/* Header */}
       <div className="mb-12 text-center animate-slide-up">
         <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black animate-shimmer mb-4 tracking-tighter">

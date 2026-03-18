@@ -1,16 +1,48 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { User, Mail, Phone, Package, ShoppingBag, Edit2, Check, X, Loader2, LayoutDashboard } from "lucide-react";
+import { useData } from "@/context/DataContext";
+import { User, Mail, Phone, Package, ShoppingBag, Edit2, Check, X, Loader2, LayoutDashboard, Save, Image, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/lib/schemas";
+import { ImageUpload } from "@/components/ImageUpload";
+import fallbackLogo from "@/assets/logo.png";
+import PageMeta from "@/components/PageMeta";
 
 const Profile = () => {
     const { user, token, updateUser, isAdmin } = useAuth();
+    const { contactSettings, updateContactSettings } = useData();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [logoUrl, setLogoUrl] = useState(contactSettings.logoUrl || "");
+    const [logoSaving, setLogoSaving] = useState(false);
+
+    const handleLogoSave = async () => {
+        setLogoSaving(true);
+        try {
+            await updateContactSettings({ ...contactSettings, logoUrl });
+            toast.success("Logo updated!");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to save logo");
+        } finally {
+            setLogoSaving(false);
+        }
+    };
+
+    const handleLogoDelete = async () => {
+        setLogoSaving(true);
+        try {
+            await updateContactSettings({ ...contactSettings, logoUrl: "" });
+            setLogoUrl("");
+            toast.success("Logo removed! Default logo restored.");
+        } catch (err: any) {
+            toast.error(err.message || "Failed to remove logo");
+        } finally {
+            setLogoSaving(false);
+        }
+    };
 
     const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<ProfileFormData>({
         resolver: zodResolver(profileSchema),
@@ -64,8 +96,9 @@ const Profile = () => {
     ];
 
     return (
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in text-black">
-            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 max-w-4xl animate-fade-in text-black">
+            <PageMeta title="My Profile" description="Manage your Aaro Groups profile." robots="noindex, nofollow" />
+            <div className="flex flex-col lg:flex-row gap-fluid">
                 {/* Sidebar/Welcome */}
                 <div className="lg:w-1/3 text-center lg:text-left">
                     <div className="w-24 h-24 rounded-2xl gradient-purple mx-auto lg:mx-0 flex items-center justify-center mb-6 shadow-xl shadow-primary/20 transition-transform hover:scale-105">
@@ -170,6 +203,47 @@ const Profile = () => {
                             Your account details are used to pre-fill your order information for a faster checkout experience. Keep them updated to ensure smooth deliveries.
                         </p>
                     </div>
+
+                    {/* Site Logo — Admin Only */}
+                    {isAdmin && (
+                        <div className="mt-6 bg-card border border-border rounded-2xl overflow-hidden shadow-soft">
+                            <div className="px-6 py-4 bg-secondary/50 border-b border-border flex items-center gap-2">
+                                <Image className="w-4 h-4 text-primary" />
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Site Logo</h3>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <p className="text-xs text-muted-foreground">Upload your brand logo. It will appear in the navbar and footer.</p>
+                                <div className="w-full max-w-[200px] h-20 rounded-xl border border-border bg-secondary/30 flex items-center justify-center p-3">
+                                    <img
+                                        src={logoUrl || fallbackLogo}
+                                        alt="Current Logo"
+                                        className="max-h-full max-w-full object-contain"
+                                        onError={(e) => { (e.target as HTMLImageElement).src = fallbackLogo; }}
+                                    />
+                                </div>
+                                <ImageUpload value={logoUrl} onChange={setLogoUrl} label="Upload New Logo" accept="image/*" maxSizeMB={2} />
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={handleLogoSave}
+                                        disabled={logoSaving}
+                                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:opacity-90 transition-colors disabled:opacity-50"
+                                    >
+                                        {logoSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                                        {logoSaving ? "Saving..." : "Save Logo"}
+                                    </button>
+                                    {logoUrl && (
+                                        <button
+                                            onClick={handleLogoDelete}
+                                            disabled={logoSaving}
+                                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive/20 transition-colors disabled:opacity-50"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" /> Delete
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

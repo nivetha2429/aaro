@@ -18,6 +18,7 @@ const contactSettingsSchema = new mongoose.Schema({
     instagramUrl:      { type: String, default: '' },
     instagramHandle:   { type: String, default: '' },
     whatsappGroupLink: { type: String, default: '' },
+    logoUrl:           { type: String, default: '' },
     branches:          [branchSchema],
 }, { timestamps: true });
 

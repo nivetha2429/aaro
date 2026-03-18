@@ -205,8 +205,21 @@ const Shop = () => {
   }, [debouncedSearch, category, selectedBrands, selectedRAM, selectedStorage, priceRange, sortBy, conditionFilter, products]);
 
   return (
-    <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 pb-24 lg:pb-4">
-      <PageMeta title="Shop" description="Browse all smartphones and laptops at Aaro Systems. Filter by brand, price, RAM, and storage." />
+    <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-4">
+      <PageMeta
+        title="Shop All Products"
+        description="Browse our complete collection of smartphones, laptops & accessories. Filter by brand, price & category. Best deals in Coimbatore at Aaro Groups."
+        keywords="buy phones online, buy laptops online, electronics shop Coimbatore, mobile phones India, best laptop deals"
+        canonicalPath="/shop"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://aarogroups.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://aarogroups.com/shop" }
+          ]
+        }}
+      />
       <div className="flex items-center gap-4 mb-6">
         <button
           aria-label="Go back"
@@ -435,7 +448,7 @@ const Shop = () => {
           </p>
 
           {dataLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
                   <div className="aspect-square bg-secondary/50" />
@@ -448,7 +461,7 @@ const Shop = () => {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} onQuickView={() => setQuickViewProduct(p)} />
               ))}

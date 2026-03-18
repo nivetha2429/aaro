@@ -49,7 +49,7 @@ const Login = () => {
 
     return (
         <div className="min-h-[70vh] flex items-center justify-center px-4 py-8 pb-24 lg:pb-8 animate-fade-in">
-            <PageMeta title="Login" description="Log in to your Aaro Systems account." />
+            <PageMeta title="Login" description="Log in to your Aaro Groups account." robots="noindex, nofollow" />
             <div className="bg-card rounded-2xl p-8 shadow-soft w-full max-w-sm border border-border">
                 <div className="w-14 h-14 rounded-xl gradient-dark mx-auto flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20">
                     <LogIn className="w-7 h-7 text-white" />

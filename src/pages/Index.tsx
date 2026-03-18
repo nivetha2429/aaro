@@ -87,11 +87,16 @@ const Index = () => {
 
   return (
     <>
-      <PageMeta title="Aaro Systems" description="Discover the latest in premium smartphones, laptops, and electronics at Aaro Systems. Best prices, free shipping, and 1-year warranty." />
+      <PageMeta
+        title="Buy Phones & Laptops Online in Coimbatore"
+        description="Shop latest smartphones, laptops & accessories at Aaro Groups Coimbatore. Best prices on iPhone, Samsung, OnePlus, HP, Dell with free shipping & warranty."
+        keywords="buy phones online Coimbatore, buy laptops Coimbatore, Aaro Groups, mobile shop Coimbatore, iPhone price Tamil Nadu, Samsung phones India"
+        canonicalPath="/"
+      />
 
       {/* Hero Banner Carousel */}
       <section
-        className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-2 sm:mt-4"
+        className="w-full section-px mt-2 sm:mt-4"
       >
       <div
         className="relative overflow-hidden rounded-sm sm:rounded-2xl shadow-soft group/hero"
@@ -99,12 +104,16 @@ const Index = () => {
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* Slides */}
-        <div className="relative w-full h-[200px] sm:h-[260px] md:h-[320px] lg:h-[400px] xl:h-[460px] 2xl:h-[520px]">
+        <div className="relative w-full" style={{ height: 'clamp(200px, 15vw + 150px, 520px)' }}>
           {heroBanners.map((banner, idx) => (
             <img
               key={idx}
               src={banner.image}
               alt={banner.title || `Banner ${idx + 1}`}
+              width={1200}
+              height={520}
+              loading={idx === 0 ? "eager" : "lazy"}
+              fetchPriority={idx === 0 ? "high" : undefined}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out ${idx === currentSlide ? "opacity-100" : "opacity-0"}`}
             />
           ))}
@@ -152,15 +161,15 @@ const Index = () => {
       </section>
 
       {/* Features */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-6 sm:mt-8 md:mt-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+      <section className="w-full section-px mt-6 sm:mt-8 md:mt-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-fluid">
           {features.map((f) => (
-            <div key={f.label} className="group flex items-center justify-between p-3 sm:p-4 rounded-sm sm:rounded-2xl bg-white border border-white/50 shadow-soft hover:shadow-xl hover:shadow-primary/5 transition-all cursor-default">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+            <div key={f.label} className="group flex items-center justify-between p-fluid rounded-fluid-lg bg-white border border-white/50 shadow-soft hover:shadow-xl hover:shadow-primary/5 transition-all cursor-default">
+              <div className="flex items-center gap-fluid-sm">
+                <div className="icon-fluid rounded-xl bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                   <f.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="font-bold text-[10px] sm:text-xs uppercase tracking-widest text-foreground">{f.label}</span>
+                <span className="font-bold text-fluid-xs uppercase tracking-widest text-foreground">{f.label}</span>
               </div>
               <div className="h-6 sm:h-8 w-px bg-border/50 mx-1 sm:mx-2" />
               <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-secondary/50 flex items-center justify-center opacity-40 group-hover:opacity-100 group-hover:bg-primary/10 transition-all">
@@ -172,17 +181,17 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-6 sm:mt-8 md:mt-12 lg:mt-16">
+      <section className="w-full section-px mt-6 sm:mt-8 md:mt-12 lg:mt-16">
         <div className="flex items-center justify-between mb-4 sm:mb-6 md:mb-8 animate-slide-up stagger-1">
           <div>
-            <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-black animate-shimmer">Featured Products</h2>
+            <h2 className="text-fluid-xl font-black animate-shimmer">Featured Products</h2>
             <div className="h-1 w-12 bg-primary mt-1 rounded-full" />
           </div>
           <Link to="/shop" className="text-sm text-primary font-bold hover:underline flex items-center gap-1 group">
             View all <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
           {featured.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
@@ -190,38 +199,38 @@ const Index = () => {
       </section>
 
       {/* Categories */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
-        <h2 className="text-base sm:text-xl md:text-2xl lg:text-3xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
-        <div className="grid grid-cols-3 gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
+        <h2 className="text-fluid-xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
+        <div className="grid grid-cols-3 gap-fluid">
           {categories.map((c) => (
-            <Link key={c.name} to={c.link} className="glass-card bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 rounded-sm sm:rounded-2xl p-4 sm:p-8 text-center group relative overflow-hidden">
+            <Link key={c.name} to={c.link} className="glass-card bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 rounded-fluid-lg p-fluid text-center group relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-full -mr-12 -mt-12 transition-all group-hover:scale-150" />
               <c.icon className="w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-primary mb-2 sm:mb-4 group-hover:scale-110 transition-transform relative z-10" />
-              <span className="font-bold text-foreground text-xs sm:text-lg relative z-10">{c.name}</span>
+              <span className="font-bold text-foreground text-fluid-sm relative z-10">{c.name}</span>
             </Link>
           ))}
         </div>
       </section>
 
       {/* Center Banner (editable from admin) */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 lg:mt-24">
-        <Link to={centerBanner?.link || "/shop"} className="group relative h-[200px] sm:h-[260px] md:h-[320px] lg:h-[400px] xl:h-[460px] 2xl:h-[520px] rounded-sm sm:rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center text-center">
+      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24">
+        <Link to={centerBanner?.link || "/shop"} className="group relative rounded-fluid-xl overflow-hidden shadow-2xl flex items-center justify-center text-center" style={{ height: 'clamp(200px, 15vw + 150px, 520px)' }}>
           <img src={centerBanner?.image || heroBanner} alt={centerBanner?.title || "Premium Gadgets Banner"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/60" />
           <div className="relative z-10 px-6">
             <span className="inline-block text-[10px] md:text-xs font-black uppercase tracking-[0.4em] bg-primary text-white px-4 py-2 rounded-full mb-4 shadow-lg animate-pulse">Exclusive Deals</span>
-            <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-6xl font-black text-white mb-4 drop-shadow-2xl tracking-tighter">{centerBanner?.title || "PREMIUM TECH COLLECTION"}</h2>
-            <p className="text-white/80 text-xs md:text-base lg:text-lg max-w-2xl mx-auto font-medium hidden sm:block">{centerBanner?.subtitle || "Upgrade your lifestyle with our curated selection of high-performance devices and luxury tech accessories."}</p>
+            <h2 className="text-fluid-3xl font-black text-white mb-4 drop-shadow-2xl tracking-tighter">{centerBanner?.title || "PREMIUM TECH COLLECTION"}</h2>
+            <p className="text-white/80 text-fluid-sm max-w-2xl mx-auto font-medium hidden sm:block">{centerBanner?.subtitle || "Upgrade your lifestyle with our curated selection of high-performance devices and luxury tech accessories."}</p>
           </div>
         </Link>
       </section>
 
       {/* Brands Showcase */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 group">
+      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 group">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 sm:mb-8 gap-2 sm:gap-4 border-b border-primary/10 pb-4 sm:pb-6">
           <div>
-            <h2 className="text-base sm:text-xl md:text-2xl lg:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1 sm:mb-2">Global Brands</h2>
-            <p className="text-muted-foreground text-[11px] sm:text-xs md:text-sm lg:text-base">Explore our wide range of premium electronics from industry leaders.</p>
+            <h2 className="text-fluid-2xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-1 sm:mb-2">Global Brands</h2>
+            <p className="text-muted-foreground text-fluid-sm">Explore our wide range of premium electronics from industry leaders.</p>
           </div>
         </div>
 
@@ -275,8 +284,8 @@ const Index = () => {
       </section>
 
       {/* Join Our Community */}
-      <section className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-10 sm:mb-16 md:mb-24 animate-scale-in">
-        <div className="glass-morphism rounded-sm sm:rounded-[2.5rem] md:rounded-[4rem] p-4 sm:p-6 md:p-10 lg:p-16 xl:p-20 text-center relative overflow-hidden border border-white/40 shadow-2xl">
+      <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-10 sm:mb-16 md:mb-24 animate-scale-in">
+        <div className="glass-morphism rounded-fluid-xl p-fluid text-center relative overflow-hidden border border-white/40 shadow-2xl" style={{ padding: 'clamp(1rem, 0.5rem + 3vw, 5rem)' }}>
           {/* Decorative blobs */}
           <div className="absolute top-0 left-0 w-72 h-72 bg-primary/10 rounded-full -ml-36 -mt-36 blur-3xl" />
           <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent/10 rounded-full -mr-36 -mb-36 blur-3xl" />
@@ -290,11 +299,11 @@ const Index = () => {
             </div>
 
             <Link to="/community" className="group/elite inline-block">
-              <h3 className="text-lg sm:text-xl md:text-3xl lg:text-5xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 tracking-tighter group-hover/elite:scale-105 transition-transform">
+              <h3 className="text-fluid-3xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4 tracking-tighter group-hover/elite:scale-105 transition-transform">
                 Join Our Community
               </h3>
             </Link>
-            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground mb-8 sm:mb-10 md:mb-14 max-w-xl mx-auto font-medium">Get exclusive deals, flash sales & new arrival updates directly on WhatsApp & Instagram.</p>
+            <p className="text-fluid-sm text-muted-foreground mb-8 sm:mb-10 md:mb-14 max-w-xl mx-auto font-medium">Get exclusive deals, flash sales & new arrival updates directly on WhatsApp & Instagram.</p>
             <div className="flex flex-col sm:flex-row max-w-lg mx-auto gap-4 sm:gap-5">
               <a
                 href={contactSettings.whatsappGroupLink}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Elite = () => {
     return (
-        <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-6 sm:py-12 md:py-24 animate-fade-in">
+        <div className="w-full section-px py-6 sm:py-12 md:py-24 animate-fade-in">
             {/* Hero Section */}
             <div className="text-center mb-20 max-w-3xl mx-auto">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.3em] mb-6 animate-slide-up">

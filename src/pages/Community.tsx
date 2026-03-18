@@ -7,8 +7,13 @@ const Community = () => {
   const { contactSettings: c } = useData();
 
   return (
-  <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 md:py-10 pb-24 lg:pb-10 animate-fade-in">
-    <PageMeta title="Community" description="Join our WhatsApp group for exclusive deals and follow us on Instagram for the latest products and updates." />
+  <div className="w-full section-px py-4 sm:py-6 md:py-10 pb-24 lg:pb-10 animate-fade-in">
+    <PageMeta
+      title="Join Our Community"
+      description="Join the Aaro Groups WhatsApp & Instagram community for exclusive deals, early access to offers & product updates. Connect with fellow tech enthusiasts."
+      keywords="Aaro Groups WhatsApp group, electronics deals community, tech enthusiasts Coimbatore, exclusive offers"
+      canonicalPath="/community"
+    />
 
     {/* Header */}
     <div className="flex items-center gap-3 mb-8 sm:mb-12">

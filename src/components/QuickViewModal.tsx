@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart, Check, X, ExternalLink } from "lucide-react";
 import { Product, Variant } from "@/data/products";
@@ -23,6 +24,14 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [selectedImage, setSelectedImage] = useState("");
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (product) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [product]);
 
   // Load variants when product changes
   useEffect(() => {
@@ -107,14 +116,14 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
     setTimeout(() => setIsAdded(false), 2000);
   };
 
-  return (
-    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+  return createPortal(
+    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={onClose}>
       {/* Backdrop */}
       <div aria-hidden="true" className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
 
       {/* Modal */}
       <div
-        className="relative bg-background rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
+        className="relative bg-background rounded-fluid-lg shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto animate-in zoom-in-95 fade-in duration-200 border border-border"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -128,8 +137,8 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
           {/* Image Section */}
-          <div className="p-6 md:p-8">
-            <div className="aspect-square rounded-2xl bg-secondary/30 flex items-center justify-center overflow-hidden mb-3">
+          <div className="p-fluid">
+            <div className="aspect-square rounded-fluid-lg bg-secondary/30 flex items-center justify-center overflow-hidden mb-3">
               {product.images?.[0] ? (
                 <img
                   src={selectedImage || product.images[0]}
@@ -157,9 +166,9 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
           </div>
 
           {/* Info Section */}
-          <div className="p-6 md:p-8 md:pl-2 flex flex-col">
-            <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">{product.brand}</p>
-            <h2 id="quickview-title" className="text-lg md:text-xl font-black text-foreground leading-tight mb-2">{product.name}</h2>
+          <div className="p-fluid md:pl-2 flex flex-col">
+            <p className="text-fluid-xs font-black text-primary uppercase tracking-widest mb-1">{product.brand}</p>
+            <h2 id="quickview-title" className="text-fluid-lg font-black text-foreground leading-tight mb-2">{product.name}</h2>
 
             <div className="flex items-center gap-1.5 mb-4">
               <div className="flex">
@@ -172,7 +181,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-1">
-              <span className="text-2xl md:text-3xl font-black text-primary tracking-tighter">
+              <span className="text-fluid-2xl font-black text-primary tracking-tighter">
                 {currentPrice > 0 ? `₹${currentPrice.toLocaleString()}` : "Price Pending"}
               </span>
               {currentMRP > currentPrice && currentPrice > 0 && (
@@ -194,7 +203,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
 
             {/* Variant Selectors */}
             {variants.length > 0 && (
-              <div className="space-y-4 mb-6 bg-secondary/20 p-4 rounded-2xl border border-border/50">
+              <div className="space-y-4 mb-6 bg-secondary/20 p-fluid rounded-fluid-lg border border-border/50">
                 {/* RAM */}
                 <div>
                   <label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">RAM</label>
@@ -294,7 +303,8 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

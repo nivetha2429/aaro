@@ -1,7 +1,7 @@
 {
-  "name": "Aaro Systems — Premium Gadgets & Electronics",
+  "name": "Aaro Groups — Buy Phones & Laptops Online",
   "short_name": "Aaro",
-  "description": "Shop the latest smartphones, laptops, and electronics at Aaro Systems. Best prices, free shipping, and 1-year warranty.",
+  "description": "Buy latest smartphones, laptops & accessories at Aaro Groups Coimbatore. Best prices, free shipping & 1-year warranty.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "categories": ["shopping", "electronics"],
+  "categories": ["shopping", "lifestyle"],
   "icons": [
     { "src": "/icons/icon-72x72.png", "sizes": "72x72", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-96x96.png", "sizes": "96x96", "type": "image/png", "purpose": "any" },
@@ -22,7 +22,22 @@
     { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-512x512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Aaro Groups Mobile"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Aaro Groups Desktop"
+    }
+  ],
   "shortcuts": [
     { "name": "Shop All", "short_name": "Shop", "url": "/shop", "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },
     { "name": "Phones", "short_name": "Phones", "url": "/phones", "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },

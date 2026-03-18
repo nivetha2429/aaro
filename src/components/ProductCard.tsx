@@ -47,8 +47,8 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
   };
 
   return (
-    <div className="glass-card rounded-sm sm:rounded-3xl p-1 sm:p-2 md:p-3 group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect overflow-hidden">
-      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden rounded-sm sm:rounded-2xl mb-1 sm:mb-3 w-full">
+    <div className="glass-card rounded-fluid-lg p-fluid group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect overflow-hidden">
+      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden rounded-fluid mb-1 sm:mb-3 w-full">
         <div className="w-full h-full bg-secondary/30 flex items-center justify-center relative">
           {product.images && product.images.length > 0 ? (
             <>
@@ -109,9 +109,9 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
 
       <div className="flex-1 flex flex-col px-0.5 sm:px-1">
         <div className="mb-1">
-          <p className="text-[9px] sm:text-[10px] font-black text-primary uppercase tracking-widest mb-0.5">{product.brand}</p>
+          <p className="text-fluid-xs font-black text-primary uppercase tracking-widest mb-0.5">{product.brand}</p>
           <Link to={`/product/${product.id}`}>
-            <h3 className="font-black text-foreground text-xs sm:text-sm leading-tight hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
+            <h3 className="font-black text-foreground text-fluid-sm leading-tight hover:text-primary transition-colors line-clamp-2">{product.name}</h3>
           </Link>
         </div>
 
@@ -121,22 +121,22 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
               <Star key={i} aria-hidden="true" className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
             ))}
           </div>
-          <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground">({product.reviewCount})</span>
+          <span className="text-fluid-xs font-bold text-muted-foreground">({product.reviewCount})</span>
         </div>
 
         <div className="mt-auto">
           <div className="flex items-baseline gap-1 sm:gap-2 mb-1.5 sm:mb-3">
-            <span className="text-sm sm:text-lg md:text-xl font-black text-primary tracking-tighter">
+            <span className="text-fluid-lg font-black text-primary tracking-tighter">
               {currentPrice > 0 ? `₹${currentPrice.toLocaleString()}` : "Price Pending"}
             </span>
             {originalPrice > currentPrice && currentPrice > 0 && (
-              <span className="text-[9px] sm:text-[10px] text-muted-foreground line-through opacity-50 font-bold">₹{originalPrice.toLocaleString()}</span>
+              <span className="text-fluid-xs text-muted-foreground line-through opacity-50 font-bold">₹{originalPrice.toLocaleString()}</span>
             )}
           </div>
 
           <button
             onClick={handleAddToCart}
-            className={`w-full py-2.5 sm:py-3 min-h-[44px] rounded-sm sm:rounded-full text-[11px] sm:text-xs font-black transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 border border-white/10 ${isAdded
+            className={`w-full py-fluid min-h-[44px] rounded-fluid font-black transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 text-fluid-xs border border-white/10 ${isAdded
               ? "bg-green-500 text-white shadow-lg shadow-green-500/20"
               : isAdmin
                 ? "bg-gray-400 text-white cursor-not-allowed opacity-80"
