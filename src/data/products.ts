@@ -161,23 +161,20 @@ export interface ContactSettings {
   branches: Branch[];
 }
 
+// Empty defaults — all real data comes from admin panel → backend DB
 export const DEFAULT_CONTACT: ContactSettings = {
-  phone: "+91 70942 23143",
-  email: "aarosystems.s@gmail.com",
-  address: "Karur, India",
-  whatsappNumber: "917094223143",
-  instagramUrl: "https://instagram.com/aarosystems",
-  instagramHandle: "@aarosystems",
-  whatsappGroupLink: "https://chat.whatsapp.com/YOUR_GROUP_INVITE_LINK",
+  phone: "",
+  email: "",
+  address: "",
+  whatsappNumber: "",
+  instagramUrl: "",
+  instagramHandle: "",
+  whatsappGroupLink: "",
   logoUrl: "",
-  branches: [
-    { name: "AARO Systems — Karur Main", address: "123, Jawahar Bazaar, Near Bus Stand, Karur, Tamil Nadu 639001", phone: "+91 86680 54205", whatsapp: "917094223143", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Karur+Bus+Stand+Tamil+Nadu" },
-    { name: "AARO Systems — Karur Branch 2", address: "45, Kovai Road, Thanthonimalai, Karur, Tamil Nadu 639002", phone: "+91 70104 52495", whatsapp: "917010452495", hours: "Mon – Sat: 10:00 AM – 8:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Thanthonimalai+Karur+Tamil+Nadu" },
-    { name: "AARO Systems — Karur Branch 3", address: "78, Pallapatti Main Road, Karur, Tamil Nadu 639003", phone: "+91 86680 54205", whatsapp: "917094223143", hours: "Mon – Sat: 10:00 AM – 9:00 PM", closed: "Sunday: Closed", mapUrl: "https://maps.google.com/?q=Pallapatti+Karur+Tamil+Nadu" },
-  ],
+  branches: [],
 };
 
-export const WHATSAPP_NUMBER = DEFAULT_CONTACT.whatsappNumber;
-export const INSTAGRAM_URL = DEFAULT_CONTACT.instagramUrl;
-export const INSTAGRAM_LINK = DEFAULT_CONTACT.instagramUrl;
-export const WHATSAPP_GROUP_LINK = DEFAULT_CONTACT.whatsappGroupLink;
+export const WHATSAPP_NUMBER = "";
+export const INSTAGRAM_URL = "";
+export const INSTAGRAM_LINK = "";
+export const WHATSAPP_GROUP_LINK = "";

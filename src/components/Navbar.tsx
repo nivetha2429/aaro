@@ -14,12 +14,12 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
   const { totalItems } = useCart();
-  const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, isAdmin, isSuperAdmin, logout } = useAuth();
   const { products, contactSettings } = useData();
 
   const navigate = useNavigate();
   const location = useLocation();
-  const isInsideAdmin = location.pathname.startsWith("/admin");
+  const isInsideAdmin = location.pathname.startsWith("/admin") || location.pathname.startsWith("/superadmin");
 
   // Debounce search to prevent filtering on every keystroke
   const debouncedSearch = useDebounce(searchQuery, 250);
@@ -213,7 +213,7 @@ const Navbar = () => {
                     {user?.name?.charAt(0).toUpperCase() || "U"}
                   </div>
                 </button>
-                <div role="menu" className={`absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-xl shadow-xl py-2 transition-all transform z-[60] origin-top-right ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
+                <div role="menu" className={`absolute right-0 top-full mt-2 w-44 sm:w-48 bg-card border border-border rounded-xl shadow-xl py-2 transition-all transform z-[60] origin-top-right ${isProfileOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"}`}>
                   <div className="px-4 py-2 border-b border-border mb-1">
                     <p className="text-xs font-bold text-foreground truncate">{user?.name}</p>
                     <p className="text-[11px] text-muted-foreground truncate">{user?.email}</p>
@@ -223,8 +223,8 @@ const Navbar = () => {
                   {/* Admin inside admin panel: My Profile, View Store, Logout */}
                   {/* Regular user: My Orders, My Profile, Logout */}
                   {isAdmin && !isInsideAdmin && (
-                    <Link to="/admin/dashboard" className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
-                      <LayoutDashboard className="w-4 h-4 text-primary" /> Admin Panel
+                    <Link to={isSuperAdmin ? "/superadmin" : "/admin/dashboard"} className="flex items-center gap-3 px-4 py-2 text-xs text-foreground hover:bg-secondary" onClick={() => setIsProfileOpen(false)}>
+                      <LayoutDashboard className="w-4 h-4 text-primary" /> {isSuperAdmin ? "Super Admin" : "Admin Panel"}
                     </Link>
                   )}
 
@@ -327,11 +327,11 @@ const Navbar = () => {
                   </div>
                   {/* Admin outside admin panel: Admin Panel, My Profile, Logout */}
                   {isAdmin && !isInsideAdmin && (
-                    <Link to="/admin/dashboard" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
+                    <Link to={isSuperAdmin ? "/superadmin" : "/admin/dashboard"} className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
                       <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
                         <LayoutDashboard className="w-4 h-4" />
                       </div>
-                      <span className="font-bold text-sm text-primary">Admin Panel</span>
+                      <span className="font-bold text-sm text-primary">{isSuperAdmin ? "Super Admin" : "Admin Panel"}</span>
                     </Link>
                   )}
 
@@ -404,7 +404,7 @@ const Navbar = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
               placeholder="What are you looking for?"
-              className="w-full h-16 bg-white/90 border border-primary/20 shadow-xl rounded-full pl-12 pr-4 font-bold placeholder:font-medium outline-none focus:ring-2 focus:ring-primary/40 transition-all relative z-10"
+              className="w-full h-12 sm:h-16 bg-white/90 border border-primary/20 shadow-xl rounded-full pl-12 pr-4 font-bold placeholder:font-medium outline-none focus:ring-2 focus:ring-primary/40 transition-all relative z-10"
             />
 
             {/* Mobile Search Dropdown */}

@@ -68,7 +68,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
               )}
             </>
           ) : (
-            <div className="text-4xl sm:text-6xl md:text-8xl drop-shadow-xl transform transition-all group-hover:rotate-6">
+            <div className="text-4xl sm:text-5xl md:text-6xl drop-shadow-xl transform transition-all group-hover:rotate-6">
               {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
             </div>
           )}
@@ -77,22 +77,22 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
         {/* Condition badge — top-left overlay on image */}
         <div className="absolute top-1.5 sm:top-3 left-1.5 sm:left-3 z-10">
           {(product.condition || "new") === "new" ? (
-            <div className="bg-green-500 text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
+            <div className="bg-green-500 text-white text-[10px] sm:text-[11px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
               New
             </div>
           ) : (
-            <div className="bg-amber-500 text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
+            <div className="bg-amber-500 text-white text-[10px] sm:text-[11px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase">
               Refurbished
             </div>
           )}
         </div>
         {product.tag && (
-          <div className="absolute top-7 sm:top-10 left-1.5 sm:left-3 bg-primary text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase z-10">
+          <div className="absolute top-7 sm:top-10 left-1.5 sm:left-3 bg-primary text-white text-[10px] sm:text-[11px] font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full shadow-lg tracking-wider uppercase z-10">
             {product.tag}
           </div>
         )}
         {discount > 0 && (
-          <div className="absolute top-1.5 sm:top-3 right-1.5 sm:right-3 gradient-offer text-white text-[9px] sm:text-[10px] font-black px-1.5 sm:px-3 py-0.5 sm:py-1.5 rounded-full shadow-lg backdrop-blur-md">
+          <div className="absolute top-1.5 sm:top-3 right-1.5 sm:right-3 gradient-offer text-white text-[10px] sm:text-[11px] font-black px-2 sm:px-3 py-0.5 sm:py-1.5 rounded-full shadow-lg backdrop-blur-md">
             -{discount}%
           </div>
         )}

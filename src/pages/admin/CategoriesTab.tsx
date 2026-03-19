@@ -76,9 +76,9 @@ const BrandCard = ({ brand, categoryName, onEdit, onDelete }: { brand: Brand; ca
   const showLogo = imgSrc && !imgError;
 
   return (
-    <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl p-3 sm:p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden">
+    <Card className="border-none shadow-sm rounded-lg sm:rounded-3xl p-3 sm:p-5 group hover:shadow-xl transition-all duration-300 text-center relative overflow-hidden flex flex-col items-center">
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleUploadFile} />
-      <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto rounded-xl sm:rounded-2xl bg-secondary/50 flex items-center justify-center mb-2 sm:mb-3 overflow-hidden border border-border relative">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto rounded-lg sm:rounded-xl bg-secondary/50 flex items-center justify-center mb-2 sm:mb-3 overflow-hidden border border-border relative">
         {busy
           ? <Loader2 className="w-6 h-6 text-primary animate-spin" />
           : showLogo
@@ -192,19 +192,19 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
               <Plus className="w-4 h-4 mr-2" />New Category
             </Button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {categories.map(c => (
-              <Card key={c.id} className="border-none shadow-sm rounded-lg sm:rounded-3xl p-2.5 sm:p-6 group hover:shadow-xl transition-all duration-300">
+              <Card key={c.id} className="border-none shadow-sm rounded-lg sm:rounded-3xl p-3 sm:p-5 group hover:shadow-xl transition-all duration-300 flex flex-col">
                 <div className="w-full h-28 sm:h-40 bg-[#f8f9fc] rounded-xl sm:rounded-2xl mb-3 sm:mb-4 overflow-hidden border border-border flex items-center justify-center relative group-hover:border-primary/20 transition-colors">
                   {c.image ? <img src={c.image} alt={c.name} className="w-full h-full object-cover rounded-xl sm:rounded-2xl transition-transform group-hover:scale-105" /> : <Layers className="w-8 h-8 sm:w-10 sm:h-10 text-[#eaedf3]" />}
                 </div>
-                <div className="flex justify-between items-start mb-2 sm:mb-4">
-                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Layers className="w-4 h-4 sm:w-6 sm:h-6" /></div>
-                  <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[8px] sm:text-[10px]">{brands.filter(b => b.category === (c.slug || c.name.toLowerCase())).length} Brands</Badge>
+                <div className="flex justify-between items-center mb-2 sm:mb-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Layers className="w-4 h-4 sm:w-5 sm:h-5" /></div>
+                  <Badge className="bg-primary/10 text-primary border-none rounded-lg text-[9px] sm:text-[10px]">{brands.filter(b => b.category === (c.slug || c.name.toLowerCase())).length} Brands</Badge>
                 </div>
-                <h4 className="text-xs sm:text-sm font-bold text-[#1a1f36] mb-1">{c.name}</h4>
-                <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-4">
-                  <Button variant="outline" onClick={() => openCategoryForm(c)} className="flex-1 rounded-xl h-8 sm:h-10 text-[9px] sm:text-[10px] font-bold"><Pencil className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />Edit</Button>
+                <h4 className="text-xs sm:text-sm font-bold text-[#1a1f36] mb-1 truncate">{c.name}</h4>
+                <div className="flex gap-1.5 sm:gap-2 mt-auto pt-2 sm:pt-3">
+                  <Button variant="outline" onClick={() => openCategoryForm(c)} className="flex-1 rounded-xl h-8 sm:h-10 text-[10px] sm:text-[11px] font-bold"><Pencil className="w-3 h-3 mr-1" />Edit</Button>
                   <Button variant="ghost" size="icon" onClick={() => deleteCategory(c.id)} className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl hover:bg-destructive/10 hover:text-destructive"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4" /></Button>
                 </div>
               </Card>
@@ -226,8 +226,8 @@ const CategoriesTab = ({ pendingAction, onActionHandled }: CategoriesTabProps) =
               if (catBrands.length === 0) return null;
               return (
                 <div key={c.id}>
-                  <h4 className="text-xs font-black uppercase tracking-widest text-[#7a869a] mb-4 flex items-center gap-2">{c.name} Brands</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                  <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-[#7a869a] mb-3 sm:mb-4 flex items-center gap-2"><Layers className="w-3.5 h-3.5 text-primary/40" />{c.name} Brands</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                     {catBrands.map(b => (
                       <BrandCard key={b.id} brand={b} categoryName={c.name} onEdit={() => openBrandForm(b)} onDelete={() => deleteBrand(b.id)} />
                     ))}

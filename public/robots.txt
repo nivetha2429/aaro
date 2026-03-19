@@ -10,6 +10,7 @@ Allow: /community
 Allow: /product/
 
 Disallow: /admin/
+Disallow: /superadmin/
 Disallow: /api/
 Disallow: /order
 Disallow: /my-orders

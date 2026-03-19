@@ -23,6 +23,8 @@ import contactSettingsRouter from './routes/contactSettings.js';
 import userRouter from './routes/users.js';
 import { createUploadRouter } from './routes/upload.js';
 import sitemapRouter from './routes/sitemap.js';
+import superadminRouter from './routes/superadmin.js';
+import { createSeoMiddleware } from './middleware/seoPrerender.js';
 
 dotenv.config();
 
@@ -157,12 +159,16 @@ app.use('/api/orders', orderRouter);
 app.use('/api/banners', bannerRouter);
 app.use('/api/contact-settings', contactSettingsRouter);
 app.use('/api/admin/users', userRouter);
+app.use('/api/superadmin', superadminRouter);
 app.use('/api/upload', createUploadRouter(uploadsPath));
 app.use('/sitemap.xml', sitemapRouter);
 
 // ── Static: React Frontend & SPA Catch-all ──
 const distPath = path.join(__dirname, '..', 'dist');
 const indexHtml = path.join(distPath, 'index.html');
+
+// ── SEO: Prerender for search engine bots (injects real content into HTML) ──
+app.use(createSeoMiddleware(indexHtml));
 app.use(express.static(distPath, {
     maxAge: '1y',
     immutable: true,

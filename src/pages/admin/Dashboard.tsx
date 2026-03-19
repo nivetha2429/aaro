@@ -87,9 +87,9 @@ const AdminDashboard = () => {
           <nav className="flex-1 space-y-0.5 overflow-y-auto pr-1">
             {SIDEBAR_ITEMS.map(item => (
               <button key={item.id} onClick={() => { setActiveTab(item.id); if (window.innerWidth < 1280) setIsSidebarOpen(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === item.id ? "bg-primary text-white shadow-md shadow-primary/25" : "text-[#4f566b] hover:bg-[#f4f7fa]"}`}>
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${activeTab === item.id ? "bg-primary text-white shadow-md shadow-primary/25" : "text-[#4f566b] hover:bg-[#f4f7fa]"}`}>
                 <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </button>
             ))}
           </nav>

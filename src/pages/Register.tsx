@@ -50,7 +50,7 @@ const Register = () => {
     return (
         <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 pb-24 lg:pb-12 animate-fade-in">
             <PageMeta title="Create Account" description="Register for an Aaro Groups account to track orders and get exclusive deals." robots="noindex, nofollow" />
-            <div className="bg-card rounded-2xl p-8 shadow-soft w-full max-w-sm border border-border">
+            <div className="bg-card rounded-2xl p-5 sm:p-8 shadow-soft w-full max-w-sm border border-border">
                 <div className="w-14 h-14 rounded-xl gradient-dark mx-auto flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20">
                     <UserPlus className="w-7 h-7 text-white" />
                 </div>

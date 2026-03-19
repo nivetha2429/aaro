@@ -252,9 +252,9 @@ const ProductDetails = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
-        title={`${product.brand} ${product.name} — Buy Online`}
-        description={`Buy ${product.brand} ${product.name}${selectedVariant ? ` (${[selectedVariant.ram, selectedVariant.storage].filter(Boolean).join('/')})` : ''} at best price in India. ${(product.condition || 'new') === 'new' ? 'Brand new' : 'Refurbished'} with warranty. Free shipping from Aaro Groups Coimbatore.`}
-        keywords={`${product.brand} ${product.name} price, buy ${product.name} online, ${product.brand} ${product.category} Coimbatore, ${product.name} specs`}
+        title={`${product.brand} ${product.name} Price in Coimbatore`}
+        description={`Buy ${product.brand} ${product.name}${selectedVariant ? ` (${[selectedVariant.ram, selectedVariant.storage].filter(Boolean).join('/')})` : ''} at best price in Coimbatore. ${(product.condition || 'new') === 'new' ? 'Brand new' : 'Refurbished'} with warranty. EMI available. WhatsApp order. Aaro Groups.`}
+        keywords={`${product.brand} ${product.name} price Coimbatore, buy ${product.name} online, ${product.brand} ${product.category} Coimbatore, ${product.name} specs, ${product.name} EMI, ${product.brand} shop Coimbatore`}
         ogImage={product.images?.[0]}
         canonicalPath={`/product/${product.id}`}
         structuredData={{
@@ -288,7 +288,7 @@ const ProductDetails = () => {
               <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
                 className="w-full h-full object-contain drop-shadow-3xl transition-all duration-700 group-hover:scale-105" />
             ) : (
-              <div className="text-6xl sm:text-8xl md:text-[10rem] transition-transform duration-700 group-hover:scale-110">
+              <div className="text-5xl sm:text-7xl md:text-8xl transition-transform duration-700 group-hover:scale-110">
                 {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
               </div>
             )}
@@ -380,7 +380,7 @@ const ProductDetails = () => {
                   <button
                     key={ram}
                     onClick={() => setSelectedRAM(ram)}
-                    className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedRAM === ram
+                    className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedRAM === ram
                       ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                       : "bg-white border-transparent text-foreground hover:border-primary/30"
                       }`}
@@ -402,7 +402,7 @@ const ProductDetails = () => {
                       key={storage}
                       disabled={isLowStock}
                       onClick={() => setSelectedStorage(storage)}
-                      className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedStorage === storage
+                      className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedStorage === storage
                         ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                         : isLowStock
                           ? "bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through"
@@ -427,7 +427,7 @@ const ProductDetails = () => {
                       key={color}
                       disabled={isLowStock}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-4 md:px-6 py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedColor === color
+                      className={`px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 rounded-full text-xs font-black transition-all duration-300 border-2 ${selectedColor === color
                         ? "border-primary text-primary bg-primary/5 shadow-md shadow-primary/10 scale-105"
                         : isLowStock
                           ? "bg-gray-100 text-gray-400 border-transparent cursor-not-allowed line-through"
@@ -477,7 +477,7 @@ const ProductDetails = () => {
               <div className="divide-y divide-border/30">
                 {specEntries.map(([key, val]) => (
                   <div key={key} className="flex flex-col xs:flex-row xs:items-baseline gap-1 xs:gap-fluid px-fluid py-fluid hover:bg-secondary/20 transition-colors">
-                    <span className="text-fluid-xs font-black uppercase tracking-wider text-muted-foreground xs:min-w-[90px] sm:min-w-[120px] md:min-w-[150px] shrink-0">
+                    <span className="text-fluid-xs font-black uppercase tracking-wider text-muted-foreground xs:min-w-[80px] sm:min-w-[110px] md:min-w-[140px] shrink-0">
                       {SPEC_LABELS[key] || key}
                     </span>
                     <span className="text-fluid-sm font-bold text-foreground break-words">{val}</span>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, ChevronLeft, ChevronRight, MessageCircle, Instagram } from "lucide-react";
+import { Smartphone, Laptop, Tag, Truck, Shield, Award, Headphones, ArrowRight, ChevronLeft, ChevronRight, MessageCircle, Instagram, Package } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import SkeletonCard from "@/components/SkeletonCard";
 import BrandLogo from "@/components/BrandLogo";
@@ -11,11 +11,17 @@ import smartphoneBanner from "@/assets/banners/smartphone.jpg";
 import laptopBanner from "@/assets/banners/laptop.jpg";
 import accessoriesBanner from "@/assets/banners/accessories.jpg";
 
-const categories = [
-  { name: "Laptops", icon: Laptop, link: "/laptops" },
-  { name: "Phones", icon: Smartphone, link: "/phones" },
-  { name: "Accessory", icon: Headphones, link: "/accessories" },
-];
+const CATEGORY_ICONS: Record<string, any> = {
+  laptop: Laptop,
+  phone: Smartphone,
+  accessory: Headphones,
+};
+
+const CATEGORY_LINKS: Record<string, string> = {
+  laptop: "/laptops",
+  phone: "/phones",
+  accessory: "/accessories",
+};
 
 const features = [
   { icon: Truck, label: "Free Shipping" },
@@ -45,7 +51,7 @@ const defaultHeroBanners = [
 ];
 
 const Index = () => {
-  const { products, brands, banners, contactSettings, loading } = useData();
+  const { products, brands, banners, contactSettings, categories: dbCategories, loading } = useData();
   const featured = products.filter((p) => p.featured);
 
   // Resolve DB banner images (map /src/assets paths to Vite imports, pass through valid URLs)
@@ -200,19 +206,32 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories — dynamic from DB */}
+      {dbCategories.length > 0 && (
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
         <h2 className="text-fluid-xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
-        <div className="grid grid-cols-3 gap-fluid">
-          {categories.map((c) => (
-            <Link key={c.name} to={c.link} className="glass-card bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 rounded-fluid-lg p-fluid text-center group relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/10 to-transparent rounded-full -mr-12 -mt-12 transition-all group-hover:scale-150" />
-              <c.icon className="w-7 h-7 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-primary mb-2 sm:mb-4 group-hover:scale-110 transition-transform relative z-10" />
-              <span className="font-bold text-foreground text-fluid-sm relative z-10">{c.name}</span>
-            </Link>
-          ))}
+        <div className={`grid gap-fluid ${dbCategories.length <= 3 ? "grid-cols-3" : dbCategories.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-" + Math.min(dbCategories.length, 6)}`}>
+          {dbCategories.map((c) => {
+            const slug = c.slug || c.name.toLowerCase();
+            const Icon = CATEGORY_ICONS[slug] || Package;
+            const link = CATEGORY_LINKS[slug] || `/shop?category=${slug}`;
+            return (
+              <Link key={c.id} to={link} className="relative rounded-fluid-lg shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 group flex items-center justify-center overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                {c.image ? (
+                  <img src={c.image} alt={c.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 blur-[2px] group-hover:blur-[1px]" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20" />
+                )}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors duration-700" />
+                <div className="relative z-10 mx-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-2.5 sm:px-7 sm:py-3 shadow-[0_8px_32px_rgba(0,0,0,0.1)] group-hover:bg-white/10 group-hover:border-white/20 group-hover:shadow-[0_8px_32px_rgba(255,255,255,0.05)] transition-all duration-700 ease-out will-change-transform">
+                  <span className="font-black text-white text-fluid-sm sm:text-fluid-lg drop-shadow-lg tracking-tight">{c.name}</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
+      )}
 
       {/* Center Banner (editable from admin) */}
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24">

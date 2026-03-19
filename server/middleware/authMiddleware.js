@@ -23,11 +23,23 @@ export const authMiddleware = (req, res, next) => {
 };
 
 // Re-check role from DB — revoked admins are blocked even with a valid token
+// superadmin passes all admin checks too
 export const isAdmin = async (req, res, next) => {
     try {
         const user = await User.findById(req.userId).select("role").lean();
-        if (user?.role === "admin") return next();
+        if (user?.role === "admin" || user?.role === "superadmin") return next();
         return res.status(403).json({ message: "Forbidden - Admin access required" });
+    } catch {
+        return res.status(500).json({ message: "Authorization check failed" });
+    }
+};
+
+// Strict superadmin-only check
+export const isSuperAdmin = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId).select("role").lean();
+        if (user?.role === "superadmin") return next();
+        return res.status(403).json({ message: "Forbidden - Super Admin access required" });
     } catch {
         return res.status(500).json({ message: "Authorization check failed" });
     }

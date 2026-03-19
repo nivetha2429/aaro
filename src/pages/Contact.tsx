@@ -10,9 +10,9 @@ const Contact = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6 animate-fade-in">
       <PageMeta
-        title="Contact Us"
-        description="Visit Aaro Groups store in Coimbatore or call us for product enquiries. Phone, WhatsApp & store visit available. Open Monday to Saturday."
-        keywords="Aaro Groups contact, electronics shop Coimbatore address, phone store near me, mobile shop contact number"
+        title="Contact Aaro Groups | Mobile Shop Coimbatore | Phone Number Address"
+        description="Visit Aaro Groups store in Coimbatore or call us for product enquiries. Phone, WhatsApp & store visit available. Open Monday to Saturday. Best mobile & laptop shop."
+        keywords="Aaro Groups contact, Aaro Groups phone number, electronics shop Coimbatore address, phone store near me Coimbatore, mobile shop contact number Coimbatore, laptop shop Coimbatore location"
         canonicalPath="/contact"
         structuredData={{
           "@context": "https://schema.org",
@@ -30,8 +30,8 @@ const Contact = () => {
       />
 
       <div className="flex items-center gap-3 mb-6">
-        <Link to="/" className="w-9 h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
-          <ArrowLeft className="w-4 h-4" />
+        <Link to="/" className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </Link>
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight">Contact Us</h1>
@@ -49,35 +49,35 @@ const Contact = () => {
             <h2 className="text-sm sm:text-base font-black text-foreground mb-4 tracking-tight">{branch.name}</h2>
 
             <div className="flex items-start gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                <MapPin className="w-4 h-4 text-primary" />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
               </div>
               <div>
                 <p className="text-xs font-bold text-foreground">Address</p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">{branch.address}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{branch.address}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-                <Phone className="w-4 h-4 text-green-600" />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+                <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
               </div>
               <div>
                 <p className="text-xs font-bold text-foreground">Phone</p>
-                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="text-[11px] text-muted-foreground hover:text-primary transition-colors mt-0.5 block">
+                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="text-xs text-muted-foreground hover:text-primary transition-colors mt-0.5 block">
                   {branch.phone}
                 </a>
               </div>
             </div>
 
             <div className="flex items-start gap-3 mb-5">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                <Clock className="w-4 h-4 text-amber-600" />
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-600" />
               </div>
               <div>
                 <p className="text-xs font-bold text-foreground">Business Hours</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">{branch.hours}</p>
-                <p className="text-[11px] text-muted-foreground">{branch.closed}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{branch.hours}</p>
+                <p className="text-xs text-muted-foreground">{branch.closed}</p>
               </div>
             </div>
 

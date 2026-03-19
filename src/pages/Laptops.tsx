@@ -33,9 +33,9 @@ const Laptops = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
-        title="Buy Laptops Online"
-        description="Buy laptops at best prices in Coimbatore. HP, Dell, Lenovo, Apple MacBook & more. Gaming, business & student laptops with warranty at Aaro Groups."
-        keywords="buy laptop Coimbatore, HP laptop price, Dell laptop India, MacBook Coimbatore, gaming laptop Tamil Nadu, student laptop deals"
+        title="Buy Laptops in Coimbatore | HP Dell Lenovo MacBook | Best Price"
+        description="Buy laptops at best prices in Coimbatore. HP, Dell, Lenovo, ASUS, Apple MacBook & more. Gaming, business & student laptops with warranty. EMI available. Aaro Groups."
+        keywords="buy laptop Coimbatore, HP laptop price Coimbatore, Dell laptop Coimbatore, MacBook Coimbatore, Lenovo laptop Tamil Nadu, gaming laptop Coimbatore, student laptop deals, best laptop shop Coimbatore"
         canonicalPath="/laptops"
         structuredData={{
           "@context": "https://schema.org",

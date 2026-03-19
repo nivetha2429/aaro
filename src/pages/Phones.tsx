@@ -33,9 +33,9 @@ const Phones = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
-        title="Buy Mobile Phones Online"
-        description="Buy latest mobile phones at best prices in Coimbatore. iPhone, Samsung, OnePlus, Xiaomi, Vivo & more. New & refurbished phones with warranty at Aaro Groups."
-        keywords="buy mobile phone Coimbatore, iPhone price India, Samsung phone online, OnePlus Coimbatore, refurbished phones India"
+        title="Buy Mobile Phones in Coimbatore | iPhone Samsung OnePlus"
+        description="Buy latest mobile phones at best prices in Coimbatore. iPhone, Samsung, OnePlus, Realme, Xiaomi, Vivo & more. New & refurbished phones with warranty. EMI available. Aaro Groups."
+        keywords="buy mobile phone Coimbatore, iPhone price Coimbatore, Samsung phone online, OnePlus Coimbatore, Realme phones Coimbatore, Xiaomi phones Tamil Nadu, refurbished phones Coimbatore, best phone shop Coimbatore"
         canonicalPath="/phones"
         structuredData={{
           "@context": "https://schema.org",

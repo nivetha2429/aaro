@@ -27,7 +27,7 @@ const MobileNav = () => {
                             <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isActive ? "bg-primary text-white shadow-md shadow-primary/30" : "text-muted-foreground"}`}>
                                 <item.icon className={`w-[18px] h-[18px] sm:w-5 sm:h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
                             </div>
-                            <span className={`text-[9px] sm:text-[10px] font-bold transition-all duration-300 leading-tight ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                            <span className={`text-[10px] sm:text-[11px] font-bold transition-all duration-300 leading-tight ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                                 {item.name}
                             </span>
                         </Link>

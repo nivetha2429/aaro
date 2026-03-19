@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { Search, SlidersHorizontal, Check, Headphones } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import SkeletonCard from "@/components/SkeletonCard";
 import PageMeta from "@/components/PageMeta";
 import { useData } from "@/context/DataContext";
 
 const Accessories = () => {
-  const { products } = useData();
+  const { products, loading } = useData();
   const allAccessories = useMemo(() => products.filter((p) => p.category === "accessory"), [products]);
   const brands = useMemo(() => [...new Set(allAccessories.map((p) => p.brand))].sort(), [allAccessories]);
 
@@ -32,9 +33,9 @@ const Accessories = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-6">
       <PageMeta
-        title="Buy Accessories Online"
-        description="Shop phone & laptop accessories at Aaro Groups Coimbatore. Cases, chargers, earbuds, headphones & more at best prices with fast delivery."
-        keywords="phone accessories Coimbatore, laptop accessories India, earbuds online, charger price, headphones Coimbatore"
+        title="Mobile Accessories in Coimbatore | Cases Chargers Earphones"
+        description="Shop phone & laptop accessories at Aaro Groups Coimbatore. Cases, chargers, earbuds, headphones, screen protectors & more at best prices. Fast delivery."
+        keywords="mobile accessories Coimbatore, phone cases Coimbatore, charger price Coimbatore, earbuds Coimbatore, headphones Tamil Nadu, screen protector, laptop accessories Coimbatore"
         canonicalPath="/accessories"
         structuredData={{
           "@context": "https://schema.org",
@@ -116,7 +117,13 @@ const Accessories = () => {
 
         {/* Product Grid */}
         <div className="flex-1 w-full">
-          {filteredAccessories.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          ) : filteredAccessories.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredAccessories.map((p) => (
                 <ProductCard key={p.id} product={p} />

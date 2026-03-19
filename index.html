@@ -4,16 +4,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-  <title>Aaro Groups | Buy Phones & Laptops Online in Coimbatore</title>
+  <title>Aaro Groups | Buy Mobile Phones, Laptops & Accessories in Coimbatore</title>
 
-  <!-- SEO -->
-  <meta name="description" content="Buy latest smartphones, laptops & accessories at Aaro Groups Coimbatore. Best prices on iPhone, Samsung, OnePlus, HP, Dell. Free shipping & 1-year warranty." />
-  <meta name="keywords" content="buy phones online Coimbatore, buy laptops Coimbatore, Aaro Groups, mobile shop Coimbatore, iPhone Coimbatore, Samsung phones Tamil Nadu, laptop store near me, refurbished phones India" />
+  <!-- SEO — rendered before React loads so Google crawler sees it -->
+  <meta name="description" content="Shop latest mobile phones, laptops, accessories in Coimbatore. Best prices on iPhone, Samsung, OnePlus, Realme, Xiaomi, HP, Dell. EMI available. WhatsApp order. Free shipping & warranty. Aaro Groups." />
+  <meta name="keywords" content="mobile phones Coimbatore, laptops Coimbatore, buy iPhone Coimbatore, Samsung phones Coimbatore, OnePlus Coimbatore, Realme phones, Xiaomi phones, used phones Coimbatore, second hand phones, accessories Coimbatore, phone shop Coimbatore, laptop shop Coimbatore, Aaro Groups, aarogroups.com, best phone price Coimbatore, EMI mobile Coimbatore, refurbished phones Coimbatore, HP laptop Coimbatore, Dell laptop Coimbatore" />
   <meta name="author" content="Aaro Groups" />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large" />
   <meta name="language" content="English" />
   <meta name="geo.region" content="IN-TN" />
-  <meta name="geo.placename" content="Coimbatore" />
+  <meta name="geo.placename" content="Coimbatore, Tamil Nadu, India" />
+  <meta name="geo.position" content="11.0168;76.9558" />
+  <meta name="ICBM" content="11.0168, 76.9558" />
   <link rel="canonical" href="https://aarogroups.com/" />
 
   <!-- Theme & PWA -->
@@ -28,16 +31,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Aaro" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-  <link rel="shortcut icon" href="/favicon.ico" />
-  <link rel="mask-icon" href="/icons/icon-512x512.png" color="#e05a1e" />
+  <!-- Favicon — cache-busted, dynamically replaced with uploaded logo -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png?v=2026" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96x96.png?v=2026" />
+  <link rel="shortcut icon" href="/icons/icon-192x192.png?v=2026" />
+
+  <!-- Pre-React favicon: if admin uploaded a logo, use it immediately -->
+  <script>
+  (function(){var u=localStorage.getItem("aaro_logo");if(u){var v=Date.now();document.querySelectorAll("link[rel*='icon']").forEach(function(e){e.remove()});["icon","shortcut icon","apple-touch-icon"].forEach(function(r){var l=document.createElement("link");l.rel=r;l.href=u+"?v="+v;document.head.appendChild(l)});}})();
+  </script>
 
   <!-- Resource Hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,55 +55,65 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Aaro Groups" />
-  <meta property="og:title" content="Aaro Groups | Buy Phones & Laptops Online in Coimbatore" />
-  <meta property="og:description" content="Shop latest smartphones, laptops & accessories. Best prices in Coimbatore with free shipping & 1-year warranty." />
+  <meta property="og:title" content="Aaro Groups | Mobile Phones, Laptops & Accessories in Coimbatore" />
+  <meta property="og:description" content="Buy latest mobile phones, laptops, accessories in Coimbatore at best prices. iPhone, Samsung, OnePlus, Realme, Xiaomi available. WhatsApp order, EMI available." />
   <meta property="og:url" content="https://aarogroups.com/" />
   <meta property="og:image" content="https://aarogroups.com/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Aaro Groups - Buy Phones, Laptops & Accessories" />
+  <meta property="og:image:alt" content="Aaro Groups — Mobile Phones, Laptops & Accessories Shop in Coimbatore" />
   <meta property="og:locale" content="en_IN" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Aaro Groups | Buy Phones & Laptops Online in Coimbatore" />
-  <meta name="twitter:description" content="Shop latest smartphones, laptops & accessories. Best prices in Coimbatore." />
+  <meta name="twitter:title" content="Aaro Groups | Mobile Phones & Laptops Coimbatore" />
+  <meta name="twitter:description" content="Best prices on phones, laptops & accessories in Coimbatore. WhatsApp order available. EMI options." />
   <meta name="twitter:image" content="https://aarogroups.com/og-image.jpg" />
 
-  <!-- Structured Data: Organization + WebSite -->
+  <!-- Structured Data: Store + WebSite -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "Store",
     "name": "Aaro Groups",
     "url": "https://aarogroups.com",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://aarogroups.com/icons/icon-512x512.png",
-      "width": 512,
-      "height": 512
-    },
+    "logo": "https://aarogroups.com/icons/icon-512x512.png",
     "image": "https://aarogroups.com/og-image.jpg",
-    "description": "Premium smartphones, laptops, and electronics store in Coimbatore, Tamil Nadu",
-    "telephone": "+917010452495",
-    "contactPoint": [
-      {
-        "@type": "ContactPoint",
-        "telephone": "+917010452495",
-        "contactType": "sales",
-        "areaServed": "IN",
-        "availableLanguage": ["English", "Tamil"]
-      }
-    ],
+    "description": "Mobile phones, laptops and accessories shop in Coimbatore. Best prices on iPhone, Samsung, OnePlus, HP, Dell. EMI available.",
+    "telephone": "+917094223143",
+    "email": "aarosystems.s@gmail.com",
     "address": {
       "@type": "PostalAddress",
+      "streetAddress": "Coimbatore",
       "addressLocality": "Coimbatore",
       "addressRegion": "Tamil Nadu",
+      "postalCode": "641001",
       "addressCountry": "IN"
     },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 11.0168,
+      "longitude": 76.9558
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+      "opens": "09:00",
+      "closes": "21:00"
+    },
+    "priceRange": "₹₹",
+    "currenciesAccepted": "INR",
+    "paymentAccepted": "Cash, UPI, Card, EMI",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+917094223143",
+      "contactType": "sales",
+      "areaServed": "IN",
+      "availableLanguage": ["English", "Tamil"]
+    },
     "sameAs": [
-      "https://instagram.com/aaro",
-      "https://wa.me/917010452495"
+      "https://www.instagram.com/aarogroups",
+      "https://wa.me/917094223143"
     ]
   }
   </script>
@@ -119,16 +133,31 @@
 </head>
 
 <body>
+  <!-- SEO: Crawlable content visible before React hydrates (hidden visually, read by bots) -->
+  <noscript>
+    <h1>Aaro Groups — Buy Mobile Phones, Laptops & Accessories in Coimbatore</h1>
+    <p>Shop the latest smartphones from Apple, Samsung, OnePlus, Realme, Xiaomi, Vivo, and OPPO at the best prices in Coimbatore, Tamil Nadu. We also sell laptops from HP, Dell, Lenovo, ASUS, and Apple MacBook. Accessories including cases, chargers, earphones, and screen protectors available. EMI options, WhatsApp ordering, free shipping, and 1-year warranty on all products. Visit Aaro Groups today!</p>
+    <nav>
+      <a href="/phones">Buy Mobile Phones</a> |
+      <a href="/laptops">Buy Laptops</a> |
+      <a href="/accessories">Mobile Accessories</a> |
+      <a href="/shop">All Products</a> |
+      <a href="/brands">Brands</a> |
+      <a href="/offers">Offers & Deals</a> |
+      <a href="/contact">Contact Us</a>
+    </nav>
+  </noscript>
+
   <div id="root">
     <!-- Initial loader shown before React hydrates -->
-    <div id="initial-loader" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(-45deg,#f3e8ff,#e9d5ff,#f5f3ff,#f8f0ff);flex-direction:column;gap:20px;">
+    <div id="initial-loader" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(-45deg,#f3e8ff,#e9d5ff,#f5f3ff,#f8f0ff);flex-direction:column;gap:clamp(12px, 2vw, 20px);">
       <div id="loader-logo">
-        <span style="font-size:28px;font-weight:900;letter-spacing:-0.5px;color:#1a1a2e;animation:aaroLogoP 1.8s ease-in-out infinite;">AARO<span style="color:#7c3aed;font-style:italic;">Systems</span></span>
+        <span style="font-size:clamp(20px, 4vw, 28px);font-weight:900;letter-spacing:-0.5px;color:#1a1a2e;animation:aaroLogoP 1.8s ease-in-out infinite;">AARO<span style="color:#7c3aed;font-style:italic;">Systems</span></span>
       </div>
       <script>
         (function(){var u=localStorage.getItem("aaro_logo");if(u){var d=document.getElementById("loader-logo");d.innerHTML='<img src="'+u+'" alt="AARO Systems" style="height:clamp(80px,10vw,120px);max-width:clamp(220px,28vw,300px);width:auto;display:block;object-fit:contain;animation:aaroLogoP 1.8s ease-in-out infinite;" />';}})();
       </script>
-      <div style="width:120px;height:4px;border-radius:999px;background:rgba(124,58,237,0.1);overflow:hidden;position:relative;">
+      <div style="width:clamp(80px, 15vw, 120px);height:4px;border-radius:999px;background:rgba(124,58,237,0.1);overflow:hidden;position:relative;">
         <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.6),transparent);animation:aaroShim 1.4s ease-in-out infinite;"></div>
       </div>
       <div style="display:flex;gap:6px;">

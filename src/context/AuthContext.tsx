@@ -6,7 +6,7 @@ interface User {
     name: string;
     email: string;
     phone?: string;
-    role: "customer" | "admin";
+    role: "customer" | "admin" | "superadmin";
 }
 
 interface AuthContextType {
@@ -18,6 +18,7 @@ interface AuthContextType {
     updateUser: (user: User) => void;
     isAuthenticated: boolean;
     isAdmin: boolean;
+    isSuperAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -124,7 +125,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const value = useMemo(() => ({
         user, token, loading, login, logout, updateUser,
         isAuthenticated: !!token,
-        isAdmin: user?.role === "admin",
+        isAdmin: user?.role === "admin" || user?.role === "superadmin",
+        isSuperAdmin: user?.role === "superadmin",
     }), [user, token, loading, login, logout, updateUser]);
 
     return (

@@ -7,7 +7,7 @@ const Footer = () => {
   return (
     <footer className="bg-background border-t border-border mt-0 pb-20 lg:pb-10">
       <div className="w-full section-px pt-4 sm:pt-6 pb-16 lg:pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-fluid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-fluid">
 
           {/* Logo & Description */}
           <div className="text-center md:text-left">
@@ -38,7 +38,7 @@ const Footer = () => {
             <h4 className="font-black mb-3 sm:mb-5 uppercase text-fluid-xs tracking-[0.2em] text-primary">Contact Us</h4>
             <div className="flex flex-col items-center md:items-start gap-2.5 sm:gap-3 text-fluid-sm text-muted-foreground font-medium">
               <span className="inline-flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-primary/60 shrink-0" /> {c.phone}</span>
-              <span className="inline-flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-primary/60 shrink-0" /><span className="text-[10px] sm:text-xs md:text-sm break-all">{c.email}</span></span>
+              <span className="inline-flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-primary/60 shrink-0" /><span className="text-xs sm:text-sm break-words">{c.email}</span></span>
               <span className="inline-flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-primary/60 shrink-0" /> {c.address}</span>
             </div>
           </div>
@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border section-mt pt-4 sm:pt-6 md:pt-8 text-center text-fluid-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-          &copy; 2024 AARO SYSTEMS. All rights reserved.
+          &copy; 2026 AARO SYSTEMS. All rights reserved.
         </div>
       </div>
     </footer>

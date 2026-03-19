@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 // ── Countdown box ──────────────────────────────────────────────────────────────
 const Box = ({ value, label }: { value: number; label: string }) => (
   <div className="flex flex-col items-center gap-1">
-    <div className="w-12 h-12 rounded-xl bg-white/50 border border-white/50 backdrop-blur-sm flex items-center justify-center shadow-soft">
-      <span className="text-xl font-black text-primary tabular-nums">{String(value).padStart(2, "0")}</span>
+    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/50 border border-white/50 backdrop-blur-sm flex items-center justify-center shadow-soft">
+      <span className="text-base sm:text-xl font-black text-primary tabular-nums">{String(value).padStart(2, "0")}</span>
     </div>
-    <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{label}</span>
+    <span className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{label}</span>
   </div>
 );
 
@@ -155,10 +155,10 @@ export const OfferPopup = () => {
 
               {/* Heading + sub */}
               <h2 id="offer-heading" className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent leading-tight mb-2">{heading}</h2>
-              <p className="text-muted-foreground text-sm mb-8 max-w-xs">{sub}</p>
+              <p className="text-muted-foreground text-xs sm:text-sm mb-6 sm:mb-8 max-w-xs">{sub}</p>
 
               {/* Countdown */}
-              <div className="mb-8">
+              <div className="mb-6 sm:mb-8">
                 <div className="flex items-center gap-1.5 mb-3">
                   <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">

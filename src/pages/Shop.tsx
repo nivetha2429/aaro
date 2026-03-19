@@ -9,7 +9,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { Product } from "@/data/products";
 
 const Shop = () => {
-  const { products, loading: dataLoading } = useData();
+  const { products, categories: dbCategories, loading: dataLoading } = useData();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -207,9 +207,9 @@ const Shop = () => {
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-24 lg:pb-4">
       <PageMeta
-        title="Shop All Products"
-        description="Browse our complete collection of smartphones, laptops & accessories. Filter by brand, price & category. Best deals in Coimbatore at Aaro Groups."
-        keywords="buy phones online, buy laptops online, electronics shop Coimbatore, mobile phones India, best laptop deals"
+        title="Online Mobile & Laptop Shop Coimbatore | Best Deals"
+        description="Browse our complete collection of smartphones, laptops & accessories. Filter by brand, price & category. Best deals in Coimbatore. EMI & WhatsApp order available. Aaro Groups."
+        keywords="online mobile shop Coimbatore, buy phones online Coimbatore, buy laptops online Coimbatore, electronics shop Coimbatore, mobile phones Tamil Nadu, best laptop deals Coimbatore, Aaro Groups shop"
         canonicalPath="/shop"
         structuredData={{
           "@context": "https://schema.org",
@@ -282,7 +282,7 @@ const Shop = () => {
           )}
           {category && (
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white rounded-full border border-primary/20 text-xs font-bold text-foreground shadow-sm">
-              Category: {category === "phone" ? "Phones" : category === "accessory" ? "Accessories" : "Laptops"}
+              Category: {dbCategories.find(c => (c.slug || c.name.toLowerCase()) === category)?.name || category}
               <button aria-label="Clear category filter" onClick={() => handleCategoryChange("")} className="ml-1 hover:text-red-500"><X className="w-3 h-3" /></button>
             </div>
           )}
@@ -336,7 +336,7 @@ const Shop = () => {
             <div>
               <h3 className="font-black text-foreground text-xs uppercase tracking-widest mb-4 border-b border-primary/10 pb-2">Category</h3>
               <div className="space-y-3">
-                {[{ label: "All Products", value: "" }, { label: "Phones", value: "phone" }, { label: "Laptops", value: "laptop" }, { label: "Accessories", value: "accessory" }].map((c) => (
+                {[{ label: "All Products", value: "" }, ...dbCategories.map(c => ({ label: c.name, value: c.slug || c.name.toLowerCase() }))].map((c) => (
                   <label key={c.value} className="flex items-center gap-3 text-sm cursor-pointer group">
                     <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${category === c.value ? "bg-primary border-primary" : "border-border group-hover:border-primary/50"}`}>
                       {category === c.value && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -443,7 +443,7 @@ const Shop = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {/* Result count */}
-          <p className="text-sm text-muted-foreground mb-4 font-medium">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-4 font-medium">
             {dataLoading ? "Loading products..." : `${filtered.length} product${filtered.length !== 1 ? "s" : ""} found`}
           </p>
 

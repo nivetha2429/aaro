@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MobileNav from "@/components/MobileNav";
 import AdminRoute from "@/components/AdminRoute";
+import SuperAdminRoute from "@/components/SuperAdminRoute";
 import { OfferPopup } from "@/components/OfferPopup";
 
 // Eager-load the home page (critical path)
@@ -36,6 +37,7 @@ const Brands = lazy(() => import("./pages/Brands"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Community = lazy(() => import("./pages/Community"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const SuperAdminDashboard = lazy(() => import("./pages/superadmin/SuperAdminDashboard"));
 
 // Global error boundary — prevents white-screen crashes
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; errorMessage: string }> {
@@ -113,29 +115,31 @@ const ICON_PAGES = ["/", "/phones", "/laptops", "/accessories", "/brands", "/con
 const AppContents = () => {
   const location = useLocation();
   const { loading: dataLoading, contactSettings } = useData();
-  const isAdminPath = location.pathname.startsWith("/admin");
+  const isAdminPath = location.pathname.startsWith("/admin") || location.pathname.startsWith("/superadmin");
   const showIcons = ICON_PAGES.includes(location.pathname);
 
-  // Update favicon, apple-touch-icon & cache logo for initial loader
+  // Cache logo URL + update browser favicon with cache busting
   useEffect(() => {
     const logoUrl = contactSettings.logoUrl;
+    const storedLogo = localStorage.getItem("aaro_logo");
+
     if (logoUrl) {
       localStorage.setItem("aaro_logo", logoUrl);
     } else {
       localStorage.removeItem("aaro_logo");
     }
+
     if (!logoUrl) return;
-    const setIcon = (selector: string, url: string) => {
-      const el = document.querySelector(selector) as HTMLLinkElement | null;
-      if (el) el.href = url;
-    };
-    setIcon('link[rel="icon"][sizes="192x192"]', logoUrl);
-    setIcon('link[rel="icon"][sizes="96x96"]', logoUrl);
-    setIcon('link[rel="icon"][sizes="48x48"]', logoUrl);
-    setIcon('link[rel="icon"][sizes="32x32"]', logoUrl);
-    setIcon('link[rel="icon"][sizes="16x16"]', logoUrl);
-    setIcon('link[rel="shortcut icon"]', logoUrl);
-    setIcon('link[rel="apple-touch-icon"]', logoUrl);
+
+    // Force favicon refresh — remove all old icons, create fresh ones with timestamp
+    const v = Date.now();
+    document.querySelectorAll("link[rel*='icon']").forEach(el => el.remove());
+    (["icon", "shortcut icon", "apple-touch-icon"] as const).forEach(rel => {
+      const link = document.createElement("link");
+      link.rel = rel;
+      link.href = `${logoUrl}?v=${v}`;
+      document.head.appendChild(link);
+    });
   }, [contactSettings.logoUrl]);
 
   // Read cached logo for the loading screen (before contactSettings loads)
@@ -181,6 +185,9 @@ const AppContents = () => {
                 {/* Admin Routes */}
                 <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+
+                {/* Super Admin Routes */}
+                <Route path="/superadmin" element={<SuperAdminRoute><SuperAdminDashboard /></SuperAdminRoute>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
