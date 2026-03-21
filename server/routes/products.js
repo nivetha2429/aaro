@@ -5,6 +5,7 @@ import Review from '../models/Review.js';
 import ProductModel from '../models/ProductModel.js';
 import { authMiddleware, isAdmin } from '../middleware/authMiddleware.js';
 import { mongoError, productSchema, variantStandaloneSchema, productModelSchema, zodError } from '../lib/validate.js';
+import { getCache, setCache, invalidateCache } from '../lib/cache.js';
 
 const router = Router();
 
@@ -20,6 +21,16 @@ router.get('/', async (req, res) => {
         const validCategories = ['phone', 'laptop', 'accessory'];
         if (category && !validCategories.includes(category)) {
             return res.status(400).json({ message: 'Invalid category. Must be one of: phone, laptop, accessory' });
+        }
+
+        // Check in-memory cache (skip for paginated requests — admin use case)
+        const cacheKey = `products:${category || 'all'}:${brand || 'all'}:${page}`;
+        if (page === 0) {
+            const cached = getCache(cacheKey);
+            if (cached) {
+                res.set('Cache-Control', 'public, max-age=60');
+                return res.json(cached);
+            }
         }
 
         const filter = {};
@@ -51,6 +62,9 @@ router.get('/', async (req, res) => {
         if (page > 0) {
             return res.json({ products: result, total, page, pages: Math.ceil(total / limit) });
         }
+
+        // Store in cache for 60 seconds
+        setCache(cacheKey, result, 60_000);
         res.json(result);
     } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -78,6 +92,7 @@ router.post('/variants', authMiddleware, isAdmin, async (req, res) => {
             return res.status(400).json({ message: 'Price cannot be greater than original price' });
         }
         const variant = await new Variant(parsed.data).save();
+        invalidateCache('products:');
         res.status(201).json(variant);
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
@@ -93,6 +108,7 @@ router.put('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
         }
         const variant = await Variant.findByIdAndUpdate(req.params.id, parsed.data, { new: true, runValidators: true });
         if (!variant) return res.status(404).json({ message: 'Variant not found' });
+        invalidateCache('products:');
         res.json(variant);
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
@@ -103,6 +119,7 @@ router.delete('/variants/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const deleted = await Variant.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ message: 'Variant not found' });
+        invalidateCache('products:');
         res.json({ message: 'Variant deleted' });
     } catch {
         res.status(500).json({ message: 'Internal server error' });
@@ -154,6 +171,7 @@ router.post('/', authMiddleware, isAdmin, async (req, res) => {
             await Variant.insertMany(variants.map(v => ({ ...v, productId: product._id })));
         }
 
+        invalidateCache('products:');
         res.status(201).json(product.toObject());
     } catch (err) {
         res.status(400).json({ message: mongoError(err) });
@@ -179,6 +197,7 @@ router.put('/:id', authMiddleware, isAdmin, async (req, res) => {
         const { variants, ...productData } = parsed.data;
         const updated = await Product.findByIdAndUpdate(req.params.id, productData, { new: true, runValidators: true });
         if (!updated) return res.status(404).json({ message: 'Product not found' });
+        invalidateCache('products:');
 
         if (variants?.length) {
             const existing = await Variant.find({ productId: req.params.id });
@@ -206,6 +225,7 @@ router.delete('/:id', authMiddleware, isAdmin, async (req, res) => {
     try {
         const deleted = await Product.findByIdAndDelete(req.params.id);
         if (!deleted) return res.status(404).json({ message: 'Product not found' });
+        invalidateCache('products:');
         try {
             await Promise.all([
                 Review.deleteMany({ productId: req.params.id }),
