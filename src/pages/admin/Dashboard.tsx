@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users, Phone, Loader2 } from "lucide-react";
+import { X, Package, Smartphone, LogOut, LayoutDashboard, Menu, Bell, Layers, Star, Tag, Image, ShoppingBag, Users, Phone, Loader2, ImageIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ const BannersTab = React.lazy(() => import("./BannersTab"));
 const OrdersTab = React.lazy(() => import("./OrdersTab"));
 const UsersTab = React.lazy(() => import("./UsersTab"));
 const ContactTab = React.lazy(() => import("./ContactTab"));
+const ProfileTab = React.lazy(() => import("./ProfileTab"));
 
 
 const TabLoader = () => (
@@ -31,6 +32,7 @@ const SIDEBAR_ITEMS = [
   { id: "banners", icon: Image, label: "Banners" },
   { id: "contact", icon: Phone, label: "Contact" },
   { id: "users", icon: Users, label: "Users" },
+  { id: "profile", icon: ImageIcon, label: "Logo" },
 ];
 
 const AdminDashboard = () => {
@@ -146,6 +148,7 @@ const AdminDashboard = () => {
               {activeTab === "banners" && <BannersTab />}
               {activeTab === "contact" && <ContactTab />}
               {activeTab === "users" && <UsersTab />}
+              {activeTab === "profile" && <ProfileTab />}
             </div>
           </Suspense>
         </div>
