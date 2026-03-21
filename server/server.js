@@ -49,7 +49,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
             fontSrc: ["'self'", 'https:'],
@@ -64,7 +64,7 @@ app.use(helmet({
 // ── CORS ──
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['https://aaro-qsgk.onrender.com'];
+    : ['https://aaro-qsgk.onrender.com', 'https://aarogroups.com', 'https://www.aarogroups.com'];
 
 if (!IS_PROD) {
     allowedOrigins.push('http://localhost:8000', 'http://localhost:5173', 'http://localhost:3000');
