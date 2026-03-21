@@ -75,7 +75,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-[75vw] max-w-60 bg-white border-r border-[#eaedf3] transform transition-transform duration-300 ease-in-out xl:relative xl:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-64 sm:w-[75vw] sm:max-w-60 bg-white border-r border-[#eaedf3] transform transition-transform duration-300 ease-in-out xl:relative xl:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="h-full flex flex-col p-4">
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center gap-2">

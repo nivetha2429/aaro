@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-0">
               {c.logoUrl ? (
-                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(120px, 18vw, 170px)', maxWidth: 'clamp(360px, 45vw, 540px)' }} />
+                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(80px, 14vw, 160px)', maxWidth: 'clamp(160px, 40vw, 480px)' }} />
               ) : (
                 <span className="text-xl font-black tracking-tight text-foreground">AARO<span className="text-primary italic">Systems</span></span>
               )}

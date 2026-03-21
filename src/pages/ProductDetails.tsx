@@ -288,7 +288,7 @@ const ProductDetails = () => {
               <img src={selectedImage || product.images[0]} alt={product.name} loading="lazy"
                 className="w-full h-full object-contain drop-shadow-3xl transition-all duration-700 group-hover:scale-105" />
             ) : (
-              <div className="text-5xl sm:text-7xl md:text-8xl transition-transform duration-700 group-hover:scale-110">
+              <div className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl transition-transform duration-700 group-hover:scale-110">
                 {product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}
               </div>
             )}

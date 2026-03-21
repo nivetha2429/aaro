@@ -12,7 +12,7 @@ const WhatsAppButton = () => {
       className="fixed bottom-[5.5rem] lg:bottom-6 right-4 z-50 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[hsl(142,70%,45%)] text-white flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all whatsapp-pulse click-scale"
       aria-label="Chat on WhatsApp"
     >
-      <MessageCircle className="w-7 h-7" />
+      <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
     </a>
   );
 };

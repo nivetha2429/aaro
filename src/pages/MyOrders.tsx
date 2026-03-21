@@ -84,7 +84,7 @@ const MyOrders = () => {
                                     {order.items.map((item: any, idx: number) => (
                                         <div key={idx} className="flex items-center gap-fluid-sm border-b border-border/50 pb-3 last:border-0">
                                             {/* Product Image */}
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-fluid bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-fluid bg-secondary/50 border border-border flex items-center justify-center shrink-0 overflow-hidden">
                                                 {item.product?.images?.[0] ? (
                                                     <img
                                                         src={item.product.images[0]}

@@ -55,7 +55,7 @@ const Brands = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-4 justify-items-center">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4 justify-items-center">
         {brands.map((brand) => (
           <Link
             key={brand.name}
@@ -67,18 +67,18 @@ const Brands = () => {
 
             <div className="relative z-10 h-full flex flex-col items-center justify-center text-center gap-1.5 sm:gap-2 p-2 sm:p-4">
               {/* Brand Logo or Initial */}
-              <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-sm sm:rounded-2xl bg-white border border-border shadow-sm flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-sm sm:rounded-2xl bg-white border border-border shadow-sm flex items-center justify-center overflow-hidden">
                 <BrandLogo
                   src={brand.image}
                   name={brand.name}
-                  imgClassName="w-9 h-9 sm:w-10 sm:h-10 md:w-14 md:h-14 object-contain transition-all duration-300"
-                  fallbackClassName="text-lg sm:text-2xl font-black text-foreground/40 tracking-tight"
+                  imgClassName="w-8 h-8 sm:w-9 sm:h-9 md:w-12 md:h-12 lg:w-14 lg:h-14 object-contain transition-all duration-300"
+                  fallbackClassName="text-base sm:text-lg md:text-2xl font-black text-foreground/40 tracking-tight"
                 />
               </div>
 
               {/* Brand Name */}
               <div className="text-center w-full">
-                <p className="font-bold text-muted-foreground text-[11px] sm:text-sm leading-tight group-hover:text-primary transition-colors truncate">{brand.name}</p>
+                <p className="font-bold text-muted-foreground text-[10px] sm:text-[11px] md:text-sm leading-tight group-hover:text-primary transition-colors truncate">{brand.name}</p>
                 <p className="text-muted-foreground/60 text-[10px] sm:text-[11px] font-bold mt-0.5">
                   {brand.count} {brand.count === 1 ? "model" : "models"}
                 </p>

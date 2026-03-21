@@ -210,7 +210,7 @@ const Index = () => {
       {dbCategories.length > 0 && (
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
         <h2 className="text-fluid-xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
-        <div className={`grid gap-fluid ${dbCategories.length <= 3 ? "grid-cols-3" : dbCategories.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-" + Math.min(dbCategories.length, 6)}`}>
+        <div className={`grid gap-fluid ${dbCategories.length <= 3 ? "grid-cols-2 sm:grid-cols-3" : dbCategories.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-" + Math.min(dbCategories.length, 6)}`}>
           {dbCategories.map((c) => {
             const slug = c.slug || c.name.toLowerCase();
             const Icon = CATEGORY_ICONS[slug] || Package;

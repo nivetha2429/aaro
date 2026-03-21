@@ -147,7 +147,7 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
                   loading="lazy"
                 />
               ) : (
-                <span className="text-7xl">{product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}</span>
+                <span className="text-5xl sm:text-6xl md:text-7xl">{product.category === "phone" ? "📱" : product.category === "accessory" ? "🎧" : "💻"}</span>
               )}
             </div>
             {product.images && product.images.length > 1 && (
