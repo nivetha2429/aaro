@@ -18,7 +18,7 @@ const Contact = () => {
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
           "name": "Aaro Groups",
-          "telephone": "+917010452495",
+          "telephone": "+917094223143",
           "address": {
             "@type": "PostalAddress",
             "addressLocality": "Coimbatore",
