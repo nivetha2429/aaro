@@ -165,7 +165,7 @@ const OrderForm = () => {
     );
   }
 
-  const inputClass = "w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium";
+  const inputClass = "w-full px-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium";
 
   return (
     <div className="w-full section-px py-4 sm:py-6 pb-32 lg:pb-6 max-w-lg animate-fade-in">
@@ -214,7 +214,7 @@ const OrderForm = () => {
                 placeholder="House no., Street, Area, Landmark..."
                 {...register("address")}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none transition-all font-medium"
+                className="w-full px-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none transition-all font-medium"
               />
               {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
             </div>

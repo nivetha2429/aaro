@@ -70,7 +70,7 @@ const Login = () => {
                                 type="email"
                                 placeholder="Email address"
                                 {...register("email")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                         </div>
                         {errors.email && <p className="text-xs text-destructive mt-1 ml-1">{errors.email.message}</p>}
@@ -84,7 +84,7 @@ const Login = () => {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 {...register("password")}
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                             <button
                                 type="button"

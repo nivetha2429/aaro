@@ -67,7 +67,7 @@ const Register = () => {
                                 type="text"
                                 placeholder="Full Name"
                                 {...reg("name")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                             />
                         </div>
                         {errors.name && <p className="text-xs text-destructive mt-1 ml-1">{errors.name.message}</p>}
@@ -81,7 +81,7 @@ const Register = () => {
                                 type="email"
                                 placeholder="Email address"
                                 {...reg("email")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                             />
                         </div>
                         {errors.email && <p className="text-xs text-destructive mt-1 ml-1">{errors.email.message}</p>}
@@ -98,7 +98,7 @@ const Register = () => {
                                 inputMode="numeric"
                                 onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '').slice(0, 10); }}
                                 {...reg("phone")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                             />
                         </div>
                         {errors.phone && <p className="text-xs text-destructive mt-1 ml-1">{errors.phone.message}</p>}
@@ -112,7 +112,7 @@ const Register = () => {
                                 type="password"
                                 placeholder="Create Password (min 6 chars)"
                                 {...reg("password")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
                             />
                         </div>
                         {errors.password && <p className="text-xs text-destructive mt-1 ml-1">{errors.password.message}</p>}

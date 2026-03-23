@@ -73,7 +73,7 @@ const ForgotPassword = () => {
                                 type="email"
                                 placeholder="Email address"
                                 {...register("email")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                         </div>
                         {errors.email && <p className="text-xs text-destructive mt-1 ml-1">{errors.email.message}</p>}
@@ -90,7 +90,7 @@ const ForgotPassword = () => {
                                 inputMode="numeric"
                                 onInput={(e) => { e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '').slice(0, 10); }}
                                 {...register("phone")}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                         </div>
                         {errors.phone && <p className="text-xs text-destructive mt-1 ml-1">{errors.phone.message}</p>}
@@ -104,7 +104,7 @@ const ForgotPassword = () => {
                                 type={showPassword ? "text" : "password"}
                                 placeholder="New password"
                                 {...register("newPassword")}
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                             <button
                                 type="button"
@@ -126,7 +126,7 @@ const ForgotPassword = () => {
                                 type={showConfirm ? "text" : "password"}
                                 placeholder="Confirm new password"
                                 {...register("confirmPassword")}
-                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all font-medium"
+                                className="w-full pl-10 pr-12 py-3 rounded-xl border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all font-medium"
                             />
                             <button
                                 type="button"

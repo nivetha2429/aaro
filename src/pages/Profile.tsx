@@ -11,6 +11,35 @@ import PageMeta from "@/components/PageMeta";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
 
+const SecureInput = ({ label, name, type = "text", value, onChange, placeholder, showPass, onTogglePass }: {
+    label: string; name: string; type?: string; value: string;
+    onChange: (v: string) => void; placeholder?: string;
+    showPass: Record<string, boolean>; onTogglePass: (key: string) => void;
+}) => {
+    const isPassword = type === "password";
+    const visible = showPass[name];
+    return (
+        <div>
+            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">{label}</label>
+            <div className="relative">
+                <input
+                    type={isPassword && !visible ? "password" : "text"}
+                    value={value}
+                    onChange={e => onChange(e.target.value)}
+                    placeholder={placeholder}
+                    autoComplete="off"
+                    className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50"
+                />
+                {isPassword && (
+                    <button type="button" onClick={() => onTogglePass(name)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                        {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const Profile = () => {
     const { user, token, updateUser, login, isAdmin } = useAuth();
     const { contactSettings, updateContactSettings } = useData();
@@ -122,32 +151,7 @@ const Profile = () => {
         }
     };
 
-    const SecureInput = ({ label, name, type = "text", value, onChange, placeholder }: {
-        label: string; name: string; type?: string; value: string;
-        onChange: (v: string) => void; placeholder?: string;
-    }) => {
-        const isPassword = type === "password";
-        const visible = showPass[name];
-        return (
-            <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">{label}</label>
-                <div className="relative">
-                    <input
-                        type={isPassword && !visible ? "password" : "text"}
-                        value={value}
-                        onChange={e => onChange(e.target.value)}
-                        placeholder={placeholder}
-                        className="w-full border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    />
-                    {isPassword && (
-                        <button type="button" onClick={() => togglePass(name)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                            {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                    )}
-                </div>
-            </div>
-        );
-    };
+    // SecureInput moved outside component — see top of file
 
     const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<ProfileFormData>({
         resolver: zodResolver(profileSchema),
@@ -284,7 +288,7 @@ const Profile = () => {
                                                         id={`profile-${item.key}`}
                                                         type={item.type}
                                                         {...register(item.key)}
-                                                        className={`w-full mt-1 bg-secondary/50 border rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all ${errors[item.key] ? "border-destructive" : "border-border"}`}
+                                                        className={`w-full mt-1 bg-white border rounded-lg px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all ${errors[item.key] ? "border-destructive" : "border-border"}`}
                                                     />
                                                     {errors[item.key] && <p className="text-xs text-destructive mt-1 ml-1">{errors[item.key]?.message}</p>}
                                                 </div>
@@ -370,9 +374,9 @@ const Profile = () => {
                                 <form onSubmit={handleEmailUpdate} className="space-y-3">
                                     <p className="text-sm font-bold text-foreground">Change Email</p>
                                     <div className="text-xs text-muted-foreground">Current: <span className="font-medium text-foreground">{user?.email}</span></div>
-                                    <SecureInput label="Current Password" name="ep" type="password" value={emailForm.currentPassword} onChange={v => setEmailForm(p => ({ ...p, currentPassword: v }))} placeholder="Enter current password" />
-                                    <SecureInput label="New Email" name="ne" value={emailForm.newEmail} onChange={v => setEmailForm(p => ({ ...p, newEmail: v }))} placeholder="Enter new email" />
-                                    <SecureInput label="Confirm Email" name="ce" value={emailForm.confirmEmail} onChange={v => setEmailForm(p => ({ ...p, confirmEmail: v }))} placeholder="Confirm new email" />
+                                    <SecureInput label="Current Password" name="ep" type="password" value={emailForm.currentPassword} onChange={v => setEmailForm(p => ({ ...p, currentPassword: v }))} placeholder="Enter current password" showPass={showPass} onTogglePass={togglePass} />
+                                    <SecureInput label="New Email" name="ne" value={emailForm.newEmail} onChange={v => setEmailForm(p => ({ ...p, newEmail: v }))} placeholder="Enter new email" showPass={showPass} onTogglePass={togglePass} />
+                                    <SecureInput label="Confirm Email" name="ce" value={emailForm.confirmEmail} onChange={v => setEmailForm(p => ({ ...p, confirmEmail: v }))} placeholder="Confirm new email" showPass={showPass} onTogglePass={togglePass} />
                                     <button type="submit" disabled={emailLoading} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
                                         {emailLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />} Save Email
                                     </button>
@@ -383,9 +387,9 @@ const Profile = () => {
                                 {/* Change Password */}
                                 <form onSubmit={handlePasswordUpdate} className="space-y-3">
                                     <p className="text-sm font-bold text-foreground">Change Password</p>
-                                    <SecureInput label="Current Password" name="cp" type="password" value={passForm.currentPassword} onChange={v => setPassForm(p => ({ ...p, currentPassword: v }))} placeholder="Enter current password" />
-                                    <SecureInput label="New Password" name="np" type="password" value={passForm.newPassword} onChange={v => setPassForm(p => ({ ...p, newPassword: v }))} placeholder="Min 8 characters" />
-                                    <SecureInput label="Confirm Password" name="cfp" type="password" value={passForm.confirmPassword} onChange={v => setPassForm(p => ({ ...p, confirmPassword: v }))} placeholder="Re-enter new password" />
+                                    <SecureInput label="Current Password" name="cp" type="password" value={passForm.currentPassword} onChange={v => setPassForm(p => ({ ...p, currentPassword: v }))} placeholder="Enter current password" showPass={showPass} onTogglePass={togglePass} />
+                                    <SecureInput label="New Password" name="np" type="password" value={passForm.newPassword} onChange={v => setPassForm(p => ({ ...p, newPassword: v }))} placeholder="Min 8 characters" showPass={showPass} onTogglePass={togglePass} />
+                                    <SecureInput label="Confirm Password" name="cfp" type="password" value={passForm.confirmPassword} onChange={v => setPassForm(p => ({ ...p, confirmPassword: v }))} placeholder="Re-enter new password" showPass={showPass} onTogglePass={togglePass} />
                                     <button type="submit" disabled={passLoading} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
                                         {passLoading && <Loader2 className="w-3.5 h-3.5 animate-spin" />} Save Password
                                     </button>
