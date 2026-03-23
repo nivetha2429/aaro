@@ -53,7 +53,7 @@ const ForgotPassword = () => {
 
     return (
         <div className="min-h-[70vh] flex items-center justify-center px-4 py-8 pb-24 lg:pb-8 animate-fade-in">
-            <PageMeta title="Forgot Password" description="Reset your Aaro Systems account password." />
+            <PageMeta title="Forgot Password" description="Reset your Aaro Groups account password." />
             <div className="bg-card rounded-2xl p-8 shadow-soft w-full max-w-sm border border-border">
                 <div className="w-14 h-14 rounded-xl gradient-dark mx-auto flex items-center justify-center mb-6 shadow-lg shadow-slate-900/20">
                     <KeyRound className="w-7 h-7 text-white" />

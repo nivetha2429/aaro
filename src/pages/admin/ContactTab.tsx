@@ -95,7 +95,7 @@ const ContactTab = () => {
                     </div>
                     <div>
                         <label className={labelClass}>Email</label>
-                        <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="aarosystems.s@gmail.com" className={inputClass} />
+                        <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="aarogroups@gmail.com" className={inputClass} />
                     </div>
                     <div className="sm:col-span-2">
                         <label className={labelClass}>Address</label>
@@ -121,11 +121,11 @@ const ContactTab = () => {
                     </div>
                     <div>
                         <label className={labelClass}>Instagram URL</label>
-                        <input value={form.instagramUrl} onChange={e => setForm(f => ({ ...f, instagramUrl: e.target.value }))} placeholder="https://instagram.com/aarosystems" className={inputClass} />
+                        <input value={form.instagramUrl} onChange={e => setForm(f => ({ ...f, instagramUrl: e.target.value }))} placeholder="https://instagram.com/aaro_groups" className={inputClass} />
                     </div>
                     <div>
                         <label className={labelClass}>Instagram Handle</label>
-                        <input value={form.instagramHandle} onChange={e => setForm(f => ({ ...f, instagramHandle: e.target.value }))} placeholder="@aarosystems" className={inputClass} />
+                        <input value={form.instagramHandle} onChange={e => setForm(f => ({ ...f, instagramHandle: e.target.value }))} placeholder="@aaro_groups" className={inputClass} />
                     </div>
                 </div>
             </div>
@@ -168,7 +168,7 @@ const ContactTab = () => {
                                 <div className="px-3.5 pb-4 space-y-3 border-t border-gray-50">
                                     <div className="pt-3">
                                         <label className={labelClass}>Branch Name</label>
-                                        <input value={branch.name} onChange={e => updateBranch(i, "name", e.target.value)} placeholder="AARO Systems — Karur Main" className={inputClass} />
+                                        <input value={branch.name} onChange={e => updateBranch(i, "name", e.target.value)} placeholder="AARO Groups — Karur Main" className={inputClass} />
                                     </div>
                                     <div>
                                         <label className={labelClass}>Address</label>

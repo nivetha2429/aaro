@@ -75,9 +75,9 @@ const AaroLoader = ({ fullScreen = false, logoUrl = "" }: { fullScreen?: boolean
   <div className={`${fullScreen ? "min-h-screen" : "min-h-[60vh]"} flex items-center justify-center bg-background`}>
     <div className="flex flex-col items-center gap-5">
       {logoUrl ? (
-        <img src={logoUrl} alt="AARO Systems" className="block object-contain aaro-loader-logo" style={{ height: 'clamp(80px, 10vw, 120px)', maxWidth: 'clamp(220px, 28vw, 300px)' }} />
+        <img src={logoUrl} alt="AARO Groups" className="block object-contain aaro-loader-logo" style={{ height: 'clamp(80px, 10vw, 120px)', maxWidth: 'clamp(220px, 28vw, 300px)' }} />
       ) : (
-        <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground aaro-loader-logo">AARO<span className="text-primary italic">Systems</span></span>
+        <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground aaro-loader-logo">AARO<span className="text-primary italic">Groups</span></span>
       )}
       <div className="w-32 h-1 rounded-full bg-primary/10 aaro-loader-bar" />
       <div className="flex items-center gap-1.5">

@@ -102,10 +102,10 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
           {contactSettings.logoUrl ? (
-            <img src={contactSettings.logoUrl} alt="AARO Systems" className="block object-contain transition-transform group-hover:scale-105 -my-2 sm:-my-4 lg:-my-6" style={{ height: 'clamp(48px, 8vw, 130px)', maxWidth: 'clamp(110px, 25vw, 450px)' }} />
+            <img src={contactSettings.logoUrl} alt="AARO Groups" className="block object-contain transition-transform group-hover:scale-105 -my-2 sm:-my-4 lg:-my-6" style={{ height: 'clamp(48px, 8vw, 130px)', maxWidth: 'clamp(110px, 25vw, 450px)' }} />
           ) : (
             <span className="text-lg sm:text-xl font-black tracking-tight text-foreground transition-transform group-hover:scale-105">
-              AARO<span className="text-primary italic">Systems</span>
+              AARO<span className="text-primary italic">Groups</span>
             </span>
           )}
         </Link>
@@ -379,7 +379,7 @@ const Navbar = () => {
           </nav>
 
           <div className="p-6 bg-secondary/30 text-center border-t border-border/50">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">AARO PREMIUM TECH</p>
+            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">AARO GROUPS</p>
           </div>
         </div>
       </div>

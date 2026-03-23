@@ -13,9 +13,9 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-0">
               {c.logoUrl ? (
-                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(60px, 10vw, 140px)', maxWidth: 'clamp(140px, 35vw, 420px)' }} />
+                <img src={c.logoUrl} alt="AARO Groups" className="block object-contain" style={{ height: 'clamp(60px, 10vw, 140px)', maxWidth: 'clamp(140px, 35vw, 420px)' }} />
               ) : (
-                <span className="text-xl font-black tracking-tight text-foreground">AARO<span className="text-primary italic">Systems</span></span>
+                <span className="text-xl font-black tracking-tight text-foreground">AARO<span className="text-primary italic">Groups</span></span>
               )}
             </div>
             <p className="text-muted-foreground text-fluid-xs leading-relaxed max-w-xs mx-auto md:mx-0">Your one-stop shop for premium phones and laptops at unbeatable prices.</p>
@@ -64,7 +64,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border section-mt pt-4 sm:pt-6 md:pt-8 text-center text-fluid-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-          &copy; 2026 AARO SYSTEMS. All rights reserved.
+          &copy; 2026 AARO GROUPS. All rights reserved.
         </div>
       </div>
     </footer>

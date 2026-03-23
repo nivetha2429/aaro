@@ -12,7 +12,7 @@ const Offers = () => {
 
   return (
     <div className="min-h-screen pb-24 lg:pb-0">
-      <PageMeta title="Offers & Deals" description="Grab the latest deals and discounts on smartphones, laptops, and accessories at Aaro Systems." />
+      <PageMeta title="Offers & Deals" description="Grab the latest deals and discounts on smartphones, laptops, and accessories at Aaro Groups." />
 
       {/* Hero Section */}
       <section className="relative h-[220px] sm:h-[300px] md:h-[380px] lg:h-[420px] xl:h-[480px] overflow-hidden">

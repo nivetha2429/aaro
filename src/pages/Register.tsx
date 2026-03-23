@@ -55,7 +55,7 @@ const Register = () => {
                     <UserPlus className="w-7 h-7 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground text-center mb-2">Create Account</h2>
-                <p className="text-muted-foreground text-center text-sm mb-8">Join AARO Systems today</p>
+                <p className="text-muted-foreground text-center text-sm mb-8">Join AARO Groups today</p>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>

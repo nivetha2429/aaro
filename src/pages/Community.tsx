@@ -123,7 +123,7 @@ const Community = () => {
     {/* Back to Home */}
     <div className="text-center">
       <Link to="/" className="text-sm font-black text-primary hover:underline uppercase tracking-widest inline-flex items-center gap-2">
-        <ArrowLeft className="w-4 h-4" /> Back to AARO Systems
+        <ArrowLeft className="w-4 h-4" /> Back to AARO Groups
       </Link>
     </div>
   </div>

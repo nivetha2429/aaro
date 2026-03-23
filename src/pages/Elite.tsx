@@ -51,7 +51,7 @@ const Elite = () => {
                     {
                         icon: Gem,
                         title: "Premium Unboxing",
-                        desc: "Elite orders are shipped with special limited-edition packaging and exclusive AARO system accessories.",
+                        desc: "Elite orders are shipped with special limited-edition packaging and exclusive AARO Groups accessories.",
                         color: "text-rose-500",
                         bg: "bg-rose-50"
                     },
@@ -105,7 +105,7 @@ const Elite = () => {
             {/* Back to Home */}
             <div className="text-center">
                 <Link to="/" className="text-sm font-black text-primary hover:underline uppercase tracking-widest flex items-center justify-center gap-2">
-                    &larr; Back to AARO Systems
+                    &larr; Back to AARO Groups
                 </Link>
             </div>
         </div>

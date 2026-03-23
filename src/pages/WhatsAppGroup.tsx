@@ -8,7 +8,7 @@ const WhatsAppGroup = () => {
 
   return (
     <div className="w-full section-px py-6 sm:py-12 md:py-24 animate-fade-in">
-      <PageMeta title="Join WhatsApp Group" description="Join the AARO Systems WhatsApp group for exclusive deals, offers, and new arrivals." />
+      <PageMeta title="Join WhatsApp Group" description="Join the AARO Groups WhatsApp group for exclusive deals, offers, and new arrivals." />
 
       {/* Hero Section */}
       <div className="text-center mb-12 sm:mb-20 max-w-3xl mx-auto">
@@ -114,7 +114,7 @@ const WhatsAppGroup = () => {
       {/* Back to Home */}
       <div className="text-center">
         <Link to="/" className="text-sm font-black text-primary hover:underline uppercase tracking-widest flex items-center justify-center gap-2">
-          <ArrowLeft className="w-4 h-4" /> Back to AARO Systems
+          <ArrowLeft className="w-4 h-4" /> Back to AARO Groups
         </Link>
       </div>
     </div>
