@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useData } from "@/context/DataContext";
 
 interface PageMetaProps {
   title: string;
@@ -14,7 +15,6 @@ interface PageMetaProps {
 const SITE_NAME = "Aaro Groups";
 const SITE_URL = "https://aarogroups.com";
 const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
-const DEFAULT_IMAGE = OG_IMAGE;
 
 const PageMeta = ({
   title,
@@ -26,9 +26,11 @@ const PageMeta = ({
   structuredData,
   canonicalPath,
 }: PageMetaProps) => {
+  const { contactSettings } = useData();
   const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
   const canonical = canonicalPath ? `${SITE_URL}${canonicalPath}` : ogUrl;
-  const image = ogImage || DEFAULT_IMAGE;
+  // Use DB logo for OG image, fallback to og-image.jpg
+  const image = ogImage || contactSettings.logoUrl || OG_IMAGE;
   const url = ogUrl || canonical || SITE_URL;
 
   const schemaArray = structuredData

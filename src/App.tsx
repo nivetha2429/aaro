@@ -74,11 +74,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 const AaroLoader = ({ fullScreen = false, logoUrl = "" }: { fullScreen?: boolean; logoUrl?: string }) => (
   <div className={`${fullScreen ? "min-h-screen" : "min-h-[60vh]"} flex items-center justify-center bg-background`}>
     <div className="flex flex-col items-center gap-5">
-      {logoUrl ? (
-        <img src={logoUrl} alt="AARO Groups" className="block object-contain aaro-loader-logo" style={{ height: 'clamp(80px, 10vw, 120px)', maxWidth: 'clamp(220px, 28vw, 300px)' }} />
-      ) : (
-        <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground aaro-loader-logo">AARO<span className="text-primary italic">Groups</span></span>
-      )}
+      <img src={logoUrl || "/logo-wide.png"} alt="AARO Groups" onError={(e) => { (e.target as HTMLImageElement).src = "/logo-wide.png"; }} className="block object-contain aaro-loader-logo" style={{ height: 'clamp(40px, 5vw + 10px, 70px)', maxWidth: 'clamp(160px, 25vw + 40px, 350px)' }} />
       <div className="w-32 h-1 rounded-full bg-primary/10 aaro-loader-bar" />
       <div className="flex items-center gap-1.5">
         <div className="w-2 h-2 rounded-full bg-primary aaro-dot-1" />
@@ -118,35 +114,48 @@ const AppContents = () => {
   const isAdminPath = location.pathname.startsWith("/admin") || location.pathname.startsWith("/superadmin");
   const showIcons = ICON_PAGES.includes(location.pathname);
 
-  // Cache logo URL + update browser favicon with cache busting
+  // Update browser favicon + structured data logo from DB
   useEffect(() => {
-    const logoUrl = contactSettings.logoUrl;
-    const storedLogo = localStorage.getItem("aaro_logo");
+    const dbLogo = contactSettings.logoUrl;
 
-    if (logoUrl) {
-      localStorage.setItem("aaro_logo", logoUrl);
+    // Validate logo URL exists before using it for favicon
+    const setFavicon = (src: string) => {
+      const v = Date.now();
+      document.querySelectorAll("link[rel*='icon']").forEach(el => el.remove());
+      (["icon", "shortcut icon", "apple-touch-icon"] as const).forEach(rel => {
+        const link = document.createElement("link");
+        link.rel = rel;
+        link.href = `${src}?v=${v}`;
+        document.head.appendChild(link);
+      });
+    };
+
+    if (dbLogo) {
+      // Test if DB logo loads, fallback to static if broken
+      const img = new Image();
+      img.onload = () => setFavicon(dbLogo);
+      img.onerror = () => setFavicon("/favicon-32x32.png");
+      img.src = dbLogo;
     } else {
-      localStorage.removeItem("aaro_logo");
+      setFavicon("/favicon-32x32.png");
     }
 
-    if (!logoUrl) return;
-
-    // Force favicon refresh — remove all old icons, create fresh ones with timestamp
-    const v = Date.now();
-    document.querySelectorAll("link[rel*='icon']").forEach(el => el.remove());
-    (["icon", "shortcut icon", "apple-touch-icon"] as const).forEach(rel => {
-      const link = document.createElement("link");
-      link.rel = rel;
-      link.href = `${logoUrl}?v=${v}`;
-      document.head.appendChild(link);
+    // Update structured data (ld+json) logo for Google
+    const effectiveFull = dbLogo && !dbLogo.startsWith("/uploads") ? (dbLogo.startsWith("http") ? dbLogo : `https://aarogroups.com${dbLogo}`) : "https://aarogroups.com/logo.png";
+    document.querySelectorAll('script[type="application/ld+json"]').forEach(el => {
+      try {
+        const data = JSON.parse(el.textContent || "");
+        if (data["@type"] === "Store" || data["@type"] === "LocalBusiness") {
+          data.logo = effectiveFull;
+          data.image = effectiveFull;
+          el.textContent = JSON.stringify(data);
+        }
+      } catch {}
     });
   }, [contactSettings.logoUrl]);
 
-  // Read cached logo for the loading screen (before contactSettings loads)
-  const cachedLogo = contactSettings.logoUrl || localStorage.getItem("aaro_logo") || "";
-
   if (dataLoading) {
-    return <AaroLoader fullScreen logoUrl={cachedLogo} />;
+    return <AaroLoader fullScreen logoUrl={contactSettings.logoUrl || "/logo.png"} />;
   }
 
   return (

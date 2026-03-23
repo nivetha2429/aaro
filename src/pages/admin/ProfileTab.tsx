@@ -13,12 +13,6 @@ const ProfileTab = () => {
     setSaving(true);
     try {
       await updateContactSettings({ ...contactSettings, logoUrl });
-      // Persist to localStorage so favicon/loader update immediately without reload
-      if (logoUrl) {
-        localStorage.setItem("aaro_logo", logoUrl);
-      } else {
-        localStorage.removeItem("aaro_logo");
-      }
       toast.success("Logo saved!");
     } catch {
       toast.error("Failed to save logo");
@@ -31,7 +25,6 @@ const ProfileTab = () => {
     setSaving(true);
     try {
       await updateContactSettings({ ...contactSettings, logoUrl: "" });
-      localStorage.removeItem("aaro_logo");
       setLogoUrl("");
       toast.success("Logo removed — using default");
     } catch {
