@@ -101,7 +101,7 @@ const Navbar = () => {
       <div className="w-full section-px py-0 flex items-center justify-between gap-2 sm:gap-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <img src={contactSettings.logoUrl || "/logo-wide.png"} alt="AARO Groups" onError={(e) => { (e.target as HTMLImageElement).src = "/logo-wide.png"; }} className="block object-contain transition-transform group-hover:scale-105" style={{ height: 'clamp(22px, 2vw + 10px, 38px)', maxWidth: 'clamp(80px, 10vw + 30px, 200px)' }} />
+          <img src={contactSettings.logoUrl || "/logo-wide.png"} alt="AARO Groups" onError={(e) => { (e.target as HTMLImageElement).src = "/logo-wide.png"; }} className="block object-contain transition-transform group-hover:scale-105" style={{ height: 'clamp(18px, 1.5vw + 8px, 30px)', maxWidth: 'clamp(65px, 8vw + 20px, 160px)' }} />
         </Link>
 
         {/* Desktop Navigation */}

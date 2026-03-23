@@ -11,8 +11,8 @@ const Footer = () => {
 
           {/* Logo & Description */}
           <div className="text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-2 mb-0">
-              <img src={c.logoUrl || "/logo-wide.png"} alt="AARO Groups" onError={(e) => { (e.target as HTMLImageElement).src = "/logo-wide.png"; }} className="block object-contain" style={{ height: 'clamp(32px, 4vw + 10px, 60px)', maxWidth: 'clamp(120px, 20vw + 40px, 320px)' }} />
+            <div className="flex items-center justify-center md:justify-start gap-2 mb-3 sm:mb-4">
+              <img src={c.logoUrl || "/logo-wide.png"} alt="AARO Groups" onError={(e) => { (e.target as HTMLImageElement).src = "/logo-wide.png"; }} className="block object-contain" style={{ height: 'clamp(22px, 2vw + 8px, 40px)', maxWidth: 'clamp(80px, 12vw + 30px, 220px)' }} />
             </div>
             <p className="text-muted-foreground text-fluid-xs leading-relaxed max-w-xs mx-auto md:mx-0">Your one-stop shop for premium phones and laptops at unbeatable prices.</p>
           </div>
