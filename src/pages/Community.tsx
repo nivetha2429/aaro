@@ -107,7 +107,7 @@ const Community = () => {
         </div>
 
         <a
-          href={c.instagramUrl}
+          href={c.instagramUrl || "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr"}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 text-white py-3.5 sm:py-4 min-h-[44px] rounded-xl sm:rounded-2xl font-black text-sm hover:opacity-90 hover:-translate-y-1 transition-all shadow-xl shadow-pink-500/20 active:scale-[0.98]"

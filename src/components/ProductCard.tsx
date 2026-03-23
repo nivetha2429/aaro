@@ -48,7 +48,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
 
   return (
     <div className="glass-card rounded-fluid-lg p-fluid group animate-fade-in relative flex flex-col h-full bg-white/60 backdrop-blur-lg border border-primary/10 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 hover:-translate-y-2 click-scale shine-effect overflow-hidden">
-      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden rounded-fluid mb-1 sm:mb-3 w-full">
+      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden rounded-fluid mb-1 sm:mb-2 md:mb-3 w-full">
         <div className="w-full h-full bg-secondary/30 flex items-center justify-center relative">
           {product.images && product.images.length > 0 ? (
             <>
@@ -118,7 +118,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
         <div className="flex items-center gap-1 mb-1.5 sm:mb-2.5">
           <div className="flex items-center" aria-label={`Rating: ${product.rating} out of 5`}>
             {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} aria-hidden="true" className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
+              <Star key={i} aria-hidden="true" className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 ${i < Math.floor(product.rating) ? "fill-accent text-accent" : "text-border"}`} />
             ))}
           </div>
           <span className="text-fluid-xs font-bold text-muted-foreground">({product.reviewCount})</span>

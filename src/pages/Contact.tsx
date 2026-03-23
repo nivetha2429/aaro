@@ -25,12 +25,16 @@ const Contact = () => {
             "addressRegion": "Tamil Nadu",
             "addressCountry": "IN"
           },
-          "openingHours": "Mo-Sa 09:00-21:00"
+          "openingHours": "Mo-Sa 09:00-21:00",
+          "sameAs": [
+            "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr",
+            "https://wa.me/917094223143"
+          ]
         }}
       />
 
       <div className="flex items-center gap-3 mb-6">
-        <Link to="/" className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
+        <Link to="/" className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Back to home">
           <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </Link>
         <div>
@@ -40,11 +44,11 @@ const Contact = () => {
       </div>
 
       {/* Branch Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {branches.map((branch, i) => (
           <div
             key={branch._id || i}
-            className="glass-card rounded-sm sm:rounded-3xl p-5 sm:p-6 border border-white/40 shadow-xl shadow-primary/5 flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1"
+            className="glass-card rounded-sm sm:rounded-3xl p-4 sm:p-5 md:p-6 border border-white/40 shadow-xl shadow-primary/5 flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:-translate-y-1"
           >
             <h2 className="text-sm sm:text-base font-black text-foreground mb-4 tracking-tight">{branch.name}</h2>
 
@@ -64,7 +68,7 @@ const Contact = () => {
               </div>
               <div>
                 <p className="text-xs font-bold text-foreground">Phone</p>
-                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="text-xs text-muted-foreground hover:text-primary transition-colors mt-0.5 block">
+                <a href={`tel:${branch.phone.replace(/\s/g, "")}`} className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors mt-0.5 block">
                   {branch.phone}
                 </a>
               </div>
@@ -76,8 +80,8 @@ const Contact = () => {
               </div>
               <div>
                 <p className="text-xs font-bold text-foreground">Business Hours</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{branch.hours}</p>
-                <p className="text-xs text-muted-foreground">{branch.closed}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">{branch.hours}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{branch.closed}</p>
               </div>
             </div>
 

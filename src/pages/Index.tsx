@@ -111,7 +111,7 @@ const Index = () => {
         onMouseLeave={() => setIsPaused(false)}
       >
         {/* Slides */}
-        <div className="relative w-full" style={{ height: 'clamp(200px, 15vw + 150px, 520px)' }}>
+        <div className="relative w-full" style={{ height: 'clamp(200px, 20vw + 120px, 520px)' }}>
           {heroBanners.map((banner, idx) => (
             <img
               key={idx}
@@ -169,7 +169,7 @@ const Index = () => {
 
       {/* Features */}
       <section className="w-full section-px mt-6 sm:mt-8 md:mt-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-fluid">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-fluid">
           {features.map((f) => (
             <div key={f.label} className="group flex items-center justify-between p-fluid rounded-fluid-lg bg-white border border-white/50 shadow-soft hover:shadow-xl hover:shadow-primary/5 transition-all cursor-default">
               <div className="flex items-center gap-fluid-sm">
@@ -198,7 +198,7 @@ const Index = () => {
             View all <span className="group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
           {loading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
             : featured.map((p) => <ProductCard key={p.id} product={p} />)
@@ -210,7 +210,7 @@ const Index = () => {
       {dbCategories.length > 0 && (
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 animate-slide-up stagger-2">
         <h2 className="text-fluid-xl font-black animate-shimmer mb-4 sm:mb-6 md:mb-8">Shop by Category</h2>
-        <div className={`grid gap-fluid ${dbCategories.length <= 3 ? "grid-cols-2 sm:grid-cols-3" : dbCategories.length === 4 ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-" + Math.min(dbCategories.length, 6)}`}>
+        <div className={`grid gap-fluid ${dbCategories.length <= 3 ? "grid-cols-2 sm:grid-cols-3" : dbCategories.length === 4 ? "grid-cols-2 sm:grid-cols-4" : dbCategories.length <= 6 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-" + dbCategories.length : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"}`}>
           {dbCategories.map((c) => {
             const slug = c.slug || c.name.toLowerCase();
             const Icon = CATEGORY_ICONS[slug] || Package;
@@ -235,7 +235,7 @@ const Index = () => {
 
       {/* Center Banner (editable from admin) */}
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24">
-        <Link to={centerBanner?.link || "/shop"} className="group relative rounded-fluid-xl overflow-hidden shadow-2xl flex items-center justify-center text-center" style={{ height: 'clamp(200px, 15vw + 150px, 520px)' }}>
+        <Link to={centerBanner?.link || "/shop"} className="group relative rounded-fluid-xl overflow-hidden shadow-2xl flex items-center justify-center text-center" style={{ height: 'clamp(200px, 20vw + 120px, 520px)' }}>
           <img src={centerBanner?.image || heroBanner} alt={centerBanner?.title || "Premium Gadgets Banner"} className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-black/60" />
           <div className="relative z-10 px-6">
@@ -306,7 +306,7 @@ const Index = () => {
 
       {/* Join Our Community */}
       <section className="w-full section-px mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-4 sm:mb-6 md:mb-8 animate-scale-in">
-        <div className="glass-morphism rounded-fluid-xl p-fluid text-center relative overflow-hidden border border-white/40 shadow-2xl" style={{ padding: 'clamp(1rem, 0.5rem + 3vw, 5rem)' }}>
+        <div className="glass-morphism rounded-fluid-xl p-fluid text-center relative overflow-hidden border border-white/40 shadow-2xl" style={{ padding: 'clamp(1.5rem, 0.5rem + 2vw, 3.5rem)' }}>
           {/* Decorative blobs */}
           <div className="absolute top-0 left-0 w-72 h-72 bg-primary/10 rounded-full -ml-36 -mt-36 blur-3xl" />
           <div className="absolute bottom-0 right-0 w-72 h-72 bg-accent/10 rounded-full -mr-36 -mb-36 blur-3xl" />
@@ -336,7 +336,7 @@ const Index = () => {
                 WhatsApp Group
               </a>
               <a
-                href={contactSettings.instagramUrl}
+                href={contactSettings.instagramUrl || "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex-1 inline-flex items-center justify-center gap-2.5 bg-white/50 backdrop-blur-sm text-foreground border border-white/50 px-6 py-4 md:py-5 min-h-[52px] rounded-full font-black text-sm md:text-base shadow-soft hover:bg-pink-500/10 hover:border-pink-500/30 hover:text-pink-600 hover:shadow-card hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]"

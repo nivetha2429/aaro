@@ -167,14 +167,14 @@ export const DEFAULT_CONTACT: ContactSettings = {
   email: "",
   address: "",
   whatsappNumber: "",
-  instagramUrl: "",
-  instagramHandle: "",
+  instagramUrl: "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr",
+  instagramHandle: "@aaro_groups",
   whatsappGroupLink: "",
   logoUrl: "",
   branches: [],
 };
 
 export const WHATSAPP_NUMBER = "";
-export const INSTAGRAM_URL = "";
-export const INSTAGRAM_LINK = "";
+export const INSTAGRAM_URL = "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr";
+export const INSTAGRAM_LINK = "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr";
 export const WHATSAPP_GROUP_LINK = "";

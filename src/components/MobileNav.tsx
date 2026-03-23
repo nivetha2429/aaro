@@ -13,7 +13,7 @@ const MobileNav = () => {
     ];
 
     return (
-        <nav aria-label="Mobile navigation" className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-primary/10 px-1 sm:px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-10px_40px_-15px_rgba(76,29,149,0.15)]">
+        <nav aria-label="Mobile navigation" className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-primary/10 px-1 sm:px-4 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_40px_-15px_rgba(76,29,149,0.15)]">
             <div className="flex items-center justify-around">
                 {NAV_ITEMS.map((item) => {
                     const isActive = location.pathname === item.path;
@@ -25,9 +25,9 @@ const MobileNav = () => {
                             className="flex flex-col items-center justify-center gap-0.5 min-w-[44px] min-h-[44px] p-1 group transition-all"
                         >
                             <div className={`relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 ${isActive ? "bg-primary text-white shadow-md shadow-primary/30" : "text-muted-foreground"}`}>
-                                <item.icon className={`w-[18px] h-[18px] sm:w-5 sm:h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
+                                <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`} />
                             </div>
-                            <span className={`text-[10px] sm:text-[11px] font-bold transition-all duration-300 leading-tight ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                            <span className={`text-[10px] sm:text-xs font-bold transition-all duration-300 leading-tight ${isActive ? "text-primary" : "text-muted-foreground"}`}>
                                 {item.name}
                             </span>
                         </Link>

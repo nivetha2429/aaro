@@ -13,7 +13,7 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-2 mb-0">
               {c.logoUrl ? (
-                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(80px, 14vw, 160px)', maxWidth: 'clamp(160px, 40vw, 480px)' }} />
+                <img src={c.logoUrl} alt="AARO Systems" className="block object-contain" style={{ height: 'clamp(60px, 10vw, 140px)', maxWidth: 'clamp(140px, 35vw, 420px)' }} />
               ) : (
                 <span className="text-xl font-black tracking-tight text-foreground">AARO<span className="text-primary italic">Systems</span></span>
               )}
@@ -37,9 +37,9 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <h4 className="font-black mb-3 sm:mb-5 uppercase text-fluid-xs tracking-[0.2em] text-primary">Contact Us</h4>
             <div className="flex flex-col items-center md:items-start gap-2.5 sm:gap-3 text-fluid-sm text-muted-foreground font-medium">
-              <span className="inline-flex items-center gap-2"><Phone className="w-3.5 h-3.5 text-primary/60 shrink-0" /> {c.phone}</span>
-              <span className="inline-flex items-center gap-2"><Mail className="w-3.5 h-3.5 text-primary/60 shrink-0" /><span className="text-xs sm:text-sm break-words">{c.email}</span></span>
-              <span className="inline-flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-primary/60 shrink-0" /> {c.address}</span>
+              <span className="inline-flex items-center gap-2"><Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary/60 shrink-0" /> {c.phone}</span>
+              <span className="inline-flex items-center gap-2"><Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary/60 shrink-0" /><span className="text-xs sm:text-sm break-all max-w-[200px] sm:max-w-none">{c.email}</span></span>
+              <span className="inline-flex items-center gap-2"><MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary/60 shrink-0" /> {c.address}</span>
             </div>
           </div>
 
@@ -47,11 +47,11 @@ const Footer = () => {
           <div className="text-center md:text-left">
             <h4 className="font-black mb-3 sm:mb-5 uppercase text-fluid-xs tracking-[0.2em] text-primary">Connect</h4>
             <div className="flex flex-col items-center md:items-start gap-2.5 sm:gap-3">
-              <a href={c.instagramUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fluid-sm text-muted-foreground hover:text-primary transition-all group">
+              <a href={c.instagramUrl || "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr"} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fluid-sm text-muted-foreground hover:text-primary transition-all group">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
                   <Instagram className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </div>
-                <span className="font-bold">{c.instagramHandle}</span>
+                <span className="font-bold">{c.instagramHandle || "@aaro_groups"}</span>
               </a>
               <a href={`https://wa.me/${c.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fluid-sm text-muted-foreground hover:text-primary transition-all group">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors shrink-0">

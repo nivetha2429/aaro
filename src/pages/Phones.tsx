@@ -52,7 +52,7 @@ const Phones = () => {
           <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest opacity-70">Next-Gen Mobile Devices</p>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:max-w-xs lg:max-w-md h-12">
+        <div className="flex items-center gap-2 w-full md:max-w-xs lg:max-w-md h-10 sm:h-12">
           <div className="relative flex-1 h-full">
             <input
               type="text"
@@ -74,7 +74,7 @@ const Phones = () => {
 
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* Brand Filter Sidebar */}
-        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 shrink-0`}>
+        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 xl:w-72 shrink-0`}>
           <div className="glass-card rounded-sm sm:rounded-[2rem] p-4 sm:p-6 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5 space-y-6">
             {/* Condition Filter */}
             <div>
@@ -119,19 +119,19 @@ const Phones = () => {
         {/* Product Grid */}
         <div className="flex-1 w-full">
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {Array.from({ length: 8 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
             </div>
           ) : filteredPhones.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filteredPhones.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
           ) : (
-            <div className="py-12 md:py-24 glass-card rounded-sm sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center px-6 sm:px-10 border border-dashed border-primary/20 bg-primary/5">
+            <div className="py-8 sm:py-12 md:py-16 lg:py-24 glass-card rounded-sm sm:rounded-[2.5rem] flex flex-col items-center justify-center text-center px-6 sm:px-10 border border-dashed border-primary/20 bg-primary/5">
               <div className="w-14 h-14 sm:w-20 sm:h-20 bg-background/50 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-inner">
                 <Smartphone className="w-7 h-7 sm:w-10 sm:h-10 text-muted-foreground/50" />
               </div>
@@ -139,7 +139,7 @@ const Phones = () => {
               <p className="text-muted-foreground max-w-xs mb-8">We couldn't find any products matching your specific filters.</p>
               <button
                 onClick={() => { setSearch(""); setSelectedBrands([]); }}
-                className="gradient-purple text-primary-foreground px-8 py-3.5 rounded-sm sm:rounded-2xl font-black hover:opacity-90 transition-all shadow-xl shadow-primary/20"
+                className="gradient-purple text-primary-foreground px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-sm sm:rounded-2xl font-black text-sm hover:opacity-90 transition-all shadow-xl shadow-primary/20"
               >
                 Reset Filters
               </button>

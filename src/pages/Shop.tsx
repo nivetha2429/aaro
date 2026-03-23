@@ -241,11 +241,11 @@ const Shop = () => {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-10 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+            className="w-full h-10 sm:h-12 pl-10 pr-4 rounded-xl border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
           />
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         </div>
-        <div className="flex gap-2 h-12">
+        <div className="flex gap-2 h-10 sm:h-12">
           <label htmlFor="shop-sort" className="sr-only">Sort products</label>
           <select
             id="shop-sort"
@@ -318,7 +318,7 @@ const Shop = () => {
 
       <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6">
         {/* Sidebar Filters */}
-        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 shrink-0`}>
+        <aside className={`${showFilters ? "block" : "hidden"} md:block w-full md:w-56 lg:w-64 xl:w-72 shrink-0`}>
           <div className="glass-card rounded-2xl p-4 sm:p-5 md:p-6 space-y-8 md:sticky md:top-24 border border-white/40 shadow-xl shadow-primary/5">
             {/* Condition Filter */}
             <div>
@@ -448,7 +448,7 @@ const Shop = () => {
           </p>
 
           {dataLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="bg-card border border-border rounded-2xl overflow-hidden animate-pulse">
                   <div className="aspect-square bg-secondary/50" />
@@ -461,7 +461,7 @@ const Shop = () => {
               ))}
             </div>
           ) : filtered.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-fluid">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} onQuickView={() => setQuickViewProduct(p)} />
               ))}
