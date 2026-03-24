@@ -27,8 +27,8 @@ const Contact = () => {
           },
           "openingHours": "Mo-Sa 09:00-21:00",
           "sameAs": [
-            "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr",
-            "https://wa.me/917094223143"
+            contactSettings.instagramUrl || "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr",
+            `https://wa.me/${contactSettings.whatsappNumber || "917094223143"}`
           ]
         }}
       />

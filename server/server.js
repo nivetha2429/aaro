@@ -64,7 +64,7 @@ app.use(helmet({
 // ── CORS ──
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['https://aaro-qsgk.onrender.com', 'https://aarogroups.com', 'https://www.aarogroups.com'];
+    : ['https://aarogroups.com', 'https://www.aarogroups.com'];
 
 if (!IS_PROD) {
     allowedOrigins.push('http://localhost:8000', 'http://localhost:5173', 'http://localhost:3000');
@@ -226,22 +226,7 @@ const server = app.listen(PORT, '0.0.0.0', () => {
     logger.info(`MONGODB_URI: ${process.env.MONGODB_URI ? 'set' : 'MISSING'}`);
 
     // Connect to DB after port is bound (so health check works even during DB connect)
-    connectDB().then(() => {
-
-        // ── Keep-alive ping (prevents Render free tier from sleeping) ──
-        if (IS_PROD && process.env.RENDER_EXTERNAL_URL) {
-            const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes
-            setInterval(async () => {
-                try {
-                    const res = await fetch(`${process.env.RENDER_EXTERNAL_URL}/health`);
-                    logger.info(`Keep-alive ping: ${res.status}`);
-                } catch (err) {
-                    logger.warn(`Keep-alive ping failed: ${err.message}`);
-                }
-            }, PING_INTERVAL);
-            logger.info('Keep-alive pinger started (every 14 min)');
-        }
-    }).catch(err => {
+    connectDB().catch(err => {
         logger.error({ err }, 'DB connection failed after retries');
     });
 });

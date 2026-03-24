@@ -16,7 +16,7 @@ const ReviewSection = ({ productId }: { productId?: string }) => {
               </div>
               <span className="font-medium text-foreground text-sm">{review.name}</span>
             </div>
-            <span className="text-xs text-muted-foreground">{review.date}</span>
+            <span className="text-xs text-muted-foreground">{review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ""}</span>
           </div>
           <div className="flex items-center gap-0.5 mb-2">
             {Array.from({ length: 5 }).map((_, i) => (

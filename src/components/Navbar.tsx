@@ -1,14 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ShoppingCart, Menu, X, Search, User, LogOut, LayoutDashboard, Package, ChevronRight, Smartphone, Laptop, Home, Tag, Headphones, Phone, Users, Store } from "lucide-react";
+import { ShoppingCart, X, Search, User, LogOut, LayoutDashboard, Package, Store } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useData } from "@/context/DataContext";
 import { toast } from "sonner";
 
 const Navbar = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,17 +71,17 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (isMenuOpen || isSearchOpen) {
+    if (isSearchOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-  }, [isMenuOpen, isSearchOpen]);
+    return () => { document.body.style.overflow = "unset"; };
+  }, [isSearchOpen]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
-        setIsMenuOpen(false);
         setIsSearchOpen(false);
       }
     };
@@ -249,135 +248,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay & Sidebar */}
-      <div
-        className={`fixed inset-0 z-[100] lg:hidden ${isMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
-      >
-        {/* Backdrop */}
-        <div
-          className={`absolute inset-0 bg-background/40 backdrop-blur-sm transition-opacity duration-500 ${isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
-          onClick={() => setIsMenuOpen(false)}
-        />
-
-        {/* Sidebar */}
-        <div
-          className={`absolute left-0 top-0 bottom-0 w-[90%] max-w-[280px] sm:max-w-[320px] bg-white transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col shadow-[20px_0_60px_-15px_rgba(76,29,149,0.3)] ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
-        >
-          <div className="p-6 border-b border-primary/10 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white shadow-md">
-                <Menu className="w-5 h-5" />
-              </div>
-              <p className="font-black text-xs tracking-widest text-foreground">MENU</p>
-            </div>
-            <button aria-label="Close menu" onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full bg-white/50 hover:bg-secondary/80 transition-colors border border-black/5">
-              <X className="w-5 h-5 text-muted-foreground" />
-            </button>
-          </div>
-
-          <nav className="flex-1 overflow-y-auto p-6 space-y-8">
-            <div className="space-y-2">
-              <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Navigation</p>
-              {[
-                { label: "Home", path: "/", icon: Home },
-                { label: "Laptops", path: "/laptops", icon: Laptop },
-                { label: "Phones", path: "/phones", icon: Smartphone },
-                { label: "Accessory", path: "/accessories", icon: Headphones },
-                { label: "Brands", path: "/brands", icon: Tag },
-                { label: "Community", path: "/community", icon: Users },
-                { label: "Contact", path: "/contact", icon: Phone },
-              ].map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all group border border-foreground/10 hover:border-foreground/20"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-foreground/10 flex items-center justify-center text-foreground group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                      <link.icon className="w-4 h-4" />
-                    </div>
-                    <span className="font-black text-sm tracking-tight text-primary">{link.label}</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-foreground/40 group-hover:text-primary group-hover:opacity-100 transition-all" />
-                </Link>
-              ))}
-            </div>
-
-            <div className="h-px bg-border/50 mx-2" />
-
-            <div className="space-y-2">
-              <p className="text-[11px] font-black text-muted-foreground uppercase tracking-widest ml-2 mb-4">Account Services</p>
-              {isAuthenticated ? (
-                <div className="space-y-2">
-                  <div className="p-4 bg-secondary/50 rounded-2xl mb-4 flex items-center gap-3 border border-border">
-                    <div className="w-10 h-10 rounded-full gradient-purple flex items-center justify-center text-white font-black">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="truncate">
-                      <p className="font-bold text-xs text-foreground truncate">{user?.name}</p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase">{user?.role}</p>
-                    </div>
-                  </div>
-                  {/* Admin outside admin panel: Admin Panel, My Profile, Logout */}
-                  {isAdmin && !isInsideAdmin && (
-                    <Link to={isSuperAdmin ? "/superadmin" : "/admin/dashboard"} className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
-                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                        <LayoutDashboard className="w-4 h-4" />
-                      </div>
-                      <span className="font-bold text-sm text-primary">{isSuperAdmin ? "Super Admin" : "Admin Panel"}</span>
-                    </Link>
-                  )}
-
-                  <Link to="/profile" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
-                    <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                      <User className="w-4 h-4" />
-                    </div>
-                    <span className="font-bold text-sm text-primary">My Profile</span>
-                  </Link>
-
-                  {/* Admin inside admin panel: View Store */}
-                  {isAdmin && isInsideAdmin && (
-                    <Link to="/" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
-                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                        <Store className="w-4 h-4" />
-                      </div>
-                      <span className="font-bold text-sm text-primary">View Store</span>
-                    </Link>
-                  )}
-
-                  {/* Regular user: My Orders */}
-                  {!isAdmin && (
-                    <Link to="/my-orders" className="flex items-center gap-4 p-4 rounded-2xl bg-foreground/8 hover:bg-foreground/12 transition-all border border-foreground/10 hover:border-foreground/20" onClick={() => setIsMenuOpen(false)}>
-                      <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary transition-colors">
-                        <Package className="w-4 h-4" />
-                      </div>
-                      <span className="font-bold text-sm text-primary">My Orders</span>
-                    </Link>
-                  )}
-
-                  <button onClick={() => { handleLogout(); setIsMenuOpen(false); }} className="w-full flex items-center gap-4 p-4 rounded-xl text-red-500 hover:bg-red-50 transition-all font-bold text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
-                      <LogOut className="w-4 h-4" />
-                    </div>
-                    Log Out
-                  </button>
-                </div>
-              ) : (
-                <Link to="/login" className="flex items-center justify-center gap-3 p-4 rounded-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-all shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 mt-4 active:scale-95" onClick={() => setIsMenuOpen(false)}>
-                  <User className="w-5 h-5" />
-                  <span className="font-black text-sm uppercase tracking-widest">Sign In</span>
-                </Link>
-              )}
-            </div>
-          </nav>
-
-          <div className="p-6 bg-secondary/30 text-center border-t border-border/50">
-            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">AARO GROUPS</p>
-          </div>
-        </div>
-      </div>
-
       {/* Mobile Search Overlay */}
       <div
         className={`fixed inset-0 z-[110] bg-white/80 backdrop-blur-2xl transition-all duration-300 lg:hidden ${isSearchOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
@@ -403,7 +273,7 @@ const Navbar = () => {
 
             {/* Mobile Search Dropdown */}
             {searchQuery.length > 1 && searchResults.length > 0 && (
-              <div className="absolute top-16 left-0 right-0 mt-2 bg-white border border-primary/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-primary/10 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 z-50">
                 <div className="max-h-[50vh] overflow-y-auto w-full">
                   {searchResults.map((p, i) => (
                     <Link

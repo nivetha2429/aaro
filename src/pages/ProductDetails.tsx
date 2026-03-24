@@ -221,7 +221,7 @@ const ProductDetails = () => {
       toast.error("This variant is out of stock. Please choose another option.");
       return;
     }
-    const url = `https://wa.me/${contactSettings.whatsappNumber}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
+    const url = `https://wa.me/${contactSettings.whatsappNumber || "917094223143"}?text=${encodeURIComponent(buildWhatsAppMessage())}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
 

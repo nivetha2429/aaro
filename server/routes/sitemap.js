@@ -41,8 +41,11 @@ router.get('/', async (_req, res) => {
             xml += `  <url>\n    <loc>${DOMAIN}/product/${p._id}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
         }
 
-        // Brand pages
+        // Brand pages (deduplicate by name to avoid duplicate URLs)
+        const seenBrands = new Set();
         for (const b of brands) {
+            if (seenBrands.has(b.name)) continue;
+            seenBrands.add(b.name);
             const lastmod = b.updatedAt ? new Date(b.updatedAt).toISOString().split('T')[0] : today();
             xml += `  <url>\n    <loc>${DOMAIN}/shop?brand=${encodeURIComponent(b.name)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
         }

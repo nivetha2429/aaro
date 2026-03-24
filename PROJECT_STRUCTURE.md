@@ -9,7 +9,7 @@
 | Frontend  | React 18 + TypeScript + Vite + TailwindCSS | 8000  |
 | Backend   | Express.js + Mongoose                      | 5000  |
 | Database  | MongoDB Atlas (fallback: MongoMemoryServer)| 27017 |
-| Deploy    | Render.com (auto-deploy from `main`)       |       |
+| Deploy    | Hostinger VPS (aarogroups.com)              |       |
 
 ---
 
@@ -213,7 +213,7 @@ Aaro/
 │   ├── fetchLogos.js             #   Fetch brand logos from web
 │   ├── fix_logos.js              #   Fix broken logo URLs
 │   │
-│   └── uploads/                  #   Multer upload destination (ephemeral on Render)
+│   └── uploads/                  #   Multer upload destination
 │
 └── aaro-tests/                   # ══ E2E TESTS (Playwright) ══
     ├── playwright.config.ts

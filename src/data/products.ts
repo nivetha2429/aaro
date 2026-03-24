@@ -166,7 +166,7 @@ export const DEFAULT_CONTACT: ContactSettings = {
   phone: "",
   email: "",
   address: "",
-  whatsappNumber: "",
+  whatsappNumber: "917094223143",
   instagramUrl: "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr",
   instagramHandle: "@aaro_groups",
   whatsappGroupLink: "",
@@ -174,7 +174,7 @@ export const DEFAULT_CONTACT: ContactSettings = {
   branches: [],
 };
 
-export const WHATSAPP_NUMBER = "";
+export const WHATSAPP_NUMBER = "917094223143";
 export const INSTAGRAM_URL = "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr";
 export const INSTAGRAM_LINK = "https://www.instagram.com/aaro_groups?igsh=MTZvOTcweHVma3UyeA%3D%3D&utm_source=qr";
 export const WHATSAPP_GROUP_LINK = "";

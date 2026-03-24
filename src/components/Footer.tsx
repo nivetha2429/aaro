@@ -6,8 +6,8 @@ const Footer = () => {
   const { contactSettings: c } = useData();
   return (
     <footer className="bg-background border-t border-border mt-0 pb-20 lg:pb-10">
-      <div className="w-full section-px pt-4 sm:pt-6 pb-16 lg:pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-fluid">
+      <div className="w-full section-px pt-4 sm:pt-6 pb-4 lg:pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-fluid">
 
           {/* Logo & Description */}
           <div className="text-center md:text-left">
@@ -49,7 +49,7 @@ const Footer = () => {
                 </div>
                 <span className="font-bold">{c.instagramHandle || "@aaro_groups"}</span>
               </a>
-              <a href={`https://wa.me/${c.whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fluid-sm text-muted-foreground hover:text-primary transition-all group">
+              <a href={`https://wa.me/${c.whatsappNumber || "917094223143"}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-fluid-sm text-muted-foreground hover:text-primary transition-all group">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors shrink-0">
                   <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
                 </div>
@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border section-mt pt-4 sm:pt-6 md:pt-8 text-center text-fluid-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-          &copy; 2026 AARO GROUPS. All rights reserved.
+          &copy; {new Date().getFullYear()} AARO GROUPS. All rights reserved.
         </div>
       </div>
     </footer>

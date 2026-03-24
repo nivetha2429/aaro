@@ -25,13 +25,15 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
   const [selectedImage, setSelectedImage] = useState("");
 
-  // Lock body scroll when modal is open
+  // Lock body scroll and handle Escape key when modal is open
   useEffect(() => {
     if (product) {
       document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
+      const handleEsc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+      document.addEventListener("keydown", handleEsc);
+      return () => { document.body.style.overflow = ""; document.removeEventListener("keydown", handleEsc); };
     }
-  }, [product]);
+  }, [product, onClose]);
 
   // Load variants when product changes
   useEffect(() => {
@@ -113,11 +115,12 @@ const QuickViewModal = ({ product, onClose }: QuickViewModalProps) => {
     });
     toast.success(`${product.name} added to cart!`);
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    const timer = setTimeout(() => setIsAdded(false), 2000);
+    return () => clearTimeout(timer);
   };
 
   return createPortal(
-    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-labelledby="quickview-title" className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4" onClick={onClose}>
       {/* Backdrop */}
       <div aria-hidden="true" className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" />
 

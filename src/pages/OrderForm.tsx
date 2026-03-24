@@ -87,7 +87,7 @@ const OrderForm = () => {
     setLoading(true);
     try {
       const fullAddress = `${data.address}, ${data.city}, ${data.state} - ${data.pincode}`;
-      const waUrl = `https://api.whatsapp.com/send?phone=${contactSettings.whatsappNumber}&text=${encodeURIComponent(buildWhatsAppMessage())}`;
+      const waUrl = `https://api.whatsapp.com/send?phone=${contactSettings.whatsappNumber || "917094223143"}&text=${encodeURIComponent(buildWhatsAppMessage())}`;
 
       const response = await fetch(`${API_URL}/orders`, {
         method: "POST",

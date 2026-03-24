@@ -94,7 +94,7 @@ const UsersTab = () => {
           </div>
           <div>
             <h2 className="text-lg font-bold text-[#1a1f36]">Users</h2>
-            <p className="text-xs text-[#7a869a]">{users.length} registered users</p>
+            <p className="text-xs text-[#7a869a]">{customers.length} registered users</p>
           </div>
         </div>
         <div className="relative w-full sm:w-64">

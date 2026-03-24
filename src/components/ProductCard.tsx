@@ -43,7 +43,8 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
     });
     toast.success(`${product.name} added to cart!`);
     setIsAdded(true);
-    setTimeout(() => setIsAdded(false), 2000);
+    const timer = setTimeout(() => setIsAdded(false), 2000);
+    return () => clearTimeout(timer);
   };
 
   return (
@@ -100,7 +101,7 @@ const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView?:
           <button
             aria-label={`Quick view ${product.name}`}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onQuickView(); }}
-            className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm text-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-lg border border-border opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white flex items-center gap-1"
+            className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm text-foreground px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider shadow-lg border border-border opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white flex items-center gap-1"
           >
             <Eye className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Quick View
           </button>

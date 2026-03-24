@@ -162,7 +162,7 @@ const AppContents = () => {
     <div className="w-full min-h-screen bg-background selection:bg-primary/20">
       <ScrollToTop />
       <div className="w-full bg-background min-h-screen flex flex-col relative">
-        <Toaster richColors position="bottom-right" />
+        <Toaster richColors position="top-right" />
         {!isAdminPath && <Navbar />}
         <main className={`flex-1 ${!isAdminPath ? "pb-20 lg:pb-0" : ""}`}>
           <div key={location.pathname} className="page-transition">

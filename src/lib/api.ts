@@ -30,6 +30,7 @@ export async function apiFetch<T>(path: string, options: FetchOptions = {}): Pro
   const response = await fetch(`${API_URL}${path}`, {
     ...rest,
     headers,
+    credentials: "include",
     body: body ? JSON.stringify(body) : undefined,
   });
 
