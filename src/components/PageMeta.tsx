@@ -29,8 +29,8 @@ const PageMeta = ({
   const { contactSettings } = useData();
   const fullTitle = title === SITE_NAME ? title : `${title} | ${SITE_NAME}`;
   const canonical = canonicalPath ? `${SITE_URL}${canonicalPath}` : ogUrl;
-  // Use DB logo for OG image, fallback to og-image.jpg
-  const image = ogImage || contactSettings.logoUrl || OG_IMAGE;
+  // Use og-image.jpg for social sharing (1200x630), not the logo
+  const image = ogImage || OG_IMAGE;
   const url = ogUrl || canonical || SITE_URL;
 
   const schemaArray = structuredData

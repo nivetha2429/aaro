@@ -141,7 +141,7 @@ const AppContents = () => {
     }
 
     // Update structured data (ld+json) logo for Google
-    const effectiveFull = dbLogo && !dbLogo.startsWith("/uploads") ? (dbLogo.startsWith("http") ? dbLogo : `https://aarogroups.com${dbLogo}`) : "https://aarogroups.com/logo.png";
+    const effectiveFull = dbLogo && !dbLogo.startsWith("/uploads") ? (dbLogo.startsWith("http") ? dbLogo : `https://aarogroups.com${dbLogo}`) : "https://aarogroups.com/logo-wide.png";
     document.querySelectorAll('script[type="application/ld+json"]').forEach(el => {
       try {
         const data = JSON.parse(el.textContent || "");
