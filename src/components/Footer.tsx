@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-border section-mt pt-4 sm:pt-6 md:pt-8 text-center text-fluid-xs font-bold uppercase tracking-widest text-muted-foreground/60">
-          &copy; {new Date().getFullYear()} AARO GROUPS. All rights reserved.
+          &copy; {new Date().getFullYear()} AARO GROUPS. All rights reserved. Developed by Endlessscript.
         </div>
       </div>
     </footer>
